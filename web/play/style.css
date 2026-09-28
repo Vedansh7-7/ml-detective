@@ -1400,3 +1400,12 @@ textarea.code {
   .scout-body { grid-template-columns: 1fr; }
   .scout-list { border-right: 0; border-bottom: 3px solid var(--ink); max-height: 34vh; }
 }
+
+/* Cloudflare Turnstile: invisible unless it needs a click, then shown bottom-centre */
+.captcha-host {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 100;
+  transform: translateX(-50%);
+}

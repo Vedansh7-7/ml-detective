@@ -2,6 +2,7 @@
 // Scout and presence. backend.js falls back to local play if this can't
 // connect (offline, or guest sign-in unavailable).
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { captchaToken } from "./captcha.js";
 import { SUPABASE_KEY, SUPABASE_URL } from "./config.js";
 
 export const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -17,7 +18,13 @@ export async function connect() {
     user = data.session.user;
     return user;
   }
-  const { data: signed, error } = await sb.auth.signInAnonymously();
+  // if the bot check can't produce a token, still try: it only matters once
+  // CAPTCHA is enforced in Supabase, and then the sign-in fails cleanly
+  const token = await captchaToken(20_000).catch((err) => {
+    console.warn("ML Detective: bot check --", err.message);
+    return undefined;
+  });
+  const { data: signed, error } = await sb.auth.signInAnonymously({ options: { captchaToken: token } });
   if (error) throw error;
   user = signed.user;
   return user;
@@ -174,14 +181,19 @@ export async function isAdmin() {
   return !!data;
 }
 export async function adminSignIn(email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({
+    email, password, options: { captchaToken: await captchaToken() },
+  });
   if (error) throw error;
   user = data.user;
   return user;
 }
 export async function adminSignUp(email, password) {
   const { data, error } = await sb.auth.signUp({
-    email, password, options: { emailRedirectTo: location.origin + location.pathname + "#weekly" },
+    email, password, options: {
+      emailRedirectTo: location.origin + location.pathname + "#weekly",
+      captchaToken: await captchaToken(),
+    },
   });
   if (error) throw error;
   return data;
