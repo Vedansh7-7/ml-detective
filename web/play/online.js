@@ -42,7 +42,7 @@ export async function setName(name) {
 export async function boardRows({ caseIds = null, roomCode = null, since = null, until = null, source = caseIds ? null : "core" } = {}) {
   let q = sb.from("board").select("*").order("created_at", { ascending: false }).limit(1000);
   if (source) q = q.eq("source", source);
-  q = roomCode ? q.eq("room_code", roomCode) : q.is("room_code", null);
+  if (roomCode) q = q.eq("room_code", roomCode);   // room board; otherwise every solve counts
   if (caseIds) q = q.in("case_id", caseIds);
   if (since) q = q.gte("created_at", since);
   if (until) q = q.lte("created_at", until);
@@ -101,6 +101,50 @@ export async function weeks() {
     .order("starts_at", { ascending: false }).limit(20);
   if (error) throw error;
   return data;
+}
+
+// ---------- Stakeout rooms ----------
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // no 0/O or 1/I to misread
+const newCode = () => Array.from(crypto.getRandomValues(new Uint32Array(6)),
+  (n) => CODE_ALPHABET[n % CODE_ALPHABET.length]).join("");
+
+export async function createRoom(caseId) {
+  for (let tries = 0; tries < 5; tries++) {
+    const code = newCode();
+    const { error } = await sb.from("rooms").insert({ code, host_id: user.id, case_id: caseId });
+    if (!error) return code;
+    if (error.code !== "23505") throw error;         // anything but a code collision
+  }
+  throw new Error("couldn't open a room, try again");
+}
+
+export async function getRoom(code) {
+  const { data, error } = await sb.from("rooms").select("code, host_id, case_id, status, starts_at, cases(title, level)")
+    .eq("code", code.toUpperCase()).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function startRoom(code, delaySeconds = 5) {
+  const startsAt = new Date(Date.now() + delaySeconds * 1000).toISOString();
+  const { error } = await sb.from("rooms").update({ status: "running", starts_at: startsAt }).eq("code", code);
+  if (error) throw error;
+}
+
+// live room: row changes (lobby -> running) + who's in it (presence)
+export function watchRoom(code, name, { onRoom, onPeople }) {
+  const channel = sb.channel(`room:${code}`, { config: { presence: { key: user.id } } });
+  channel
+    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `code=eq.${code}` },
+        (payload) => onRoom(payload.new))
+    .on("presence", { event: "sync" }, () => {
+      const people = Object.values(channel.presenceState()).map((metas) => metas[0]);
+      onPeople(people);
+    })
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") channel.track({ name, id: user.id });
+    });
+  return () => sb.removeChannel(channel);
 }
 
 // ---------- admin (weekly drops) ----------

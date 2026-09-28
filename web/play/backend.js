@@ -210,6 +210,32 @@ const routes = {
     return { current, upcoming, past: pastBoards };
   },
 
+  // ---------- Stakeout ----------
+  "/api/rooms/create": async ({ case_id }) => {
+    await ready;
+    if (!online) return { error: "Stakeout needs the online archive -- you're playing offline right now." };
+    return { code: await online.createRoom(case_id) };
+  },
+  "/api/rooms/get": async ({ code }) => {
+    await ready;
+    if (!online) return { error: "Stakeout needs the online archive -- you're playing offline right now." };
+    const room = await online.getRoom(String(code || "").trim());
+    if (!room) return { error: "No Stakeout with that code. Check it with the host." };
+    return { room, me: online.currentUser().id };
+  },
+  "/api/rooms/start": async ({ code }) => {
+    await online.startRoom(code);
+    return { ok: true };
+  },
+  "/api/rooms/board": async ({ code }) => {
+    const rows = await online.boardRows({ roomCode: code, source: null });
+    if (!rows.length) return { results: [] };
+    // score on the case-wide (learned) par, same as the win card and the main board
+    const all = await online.boardRows({ caseIds: [rows[0].dataset_id] });
+    const par = parFor(rows[0].level, all, rows[0].par);
+    return { results: rank(rows, () => par) };
+  },
+
   // ---------- admin: weekly drops ----------
   "/api/admin/status": async () => {
     await ready;
@@ -337,6 +363,12 @@ async function submitLocal(text) {
   game.attempts += 1;
   const hints = decode(game.verdict.hints);
   return { correct: false, attempts: game.attempts, hint: hints[Math.min(game.attempts, hints.length) - 1] };
+}
+
+// live Stakeout room (realtime row changes + presence); returns an unsubscribe
+export async function watchRoom(code, name, handlers) {
+  await ready;
+  return online ? online.watchRoom(code, name, handlers) : () => {};
 }
 
 export async function api(path, body, onStep) {
