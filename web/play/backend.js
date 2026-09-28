@@ -14,7 +14,7 @@ const STORE_SOLVES = "mld.solves.v1";
 const STORE_NAME = "mld.name";
 const STORE_FEEDBACK = "mld.feedback.v1";
 const STORE_UPLOADS = "mld.uploads.v1";
-const CONNECT_TIMEOUT_MS = 8000;
+const CONNECT_TIMEOUT_MS = 30_000;   // includes the bot check, which may ask the player to click
 
 const AVAILABLE_PACKAGES = ["pandas", "numpy", "matplotlib", "seaborn", "scikit-learn", "scipy"];
 
