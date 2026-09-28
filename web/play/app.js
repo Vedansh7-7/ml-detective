@@ -126,8 +126,10 @@ $("#join-form").addEventListener("submit", (e) => { e.preventDefault(); leaveSpl
 // 2. hero / archive
 // ---------------------------------------------------------------------------
 async function loadArchive() {
-  const [{ levels, inbox }, results] = await Promise.all([api("/api/levels"), api("/api/leaderboard")]);
-  const solvedIds = new Set(results.map((r) => r.dataset_id));
+  const [{ levels, inbox }, results, mine] = await Promise.all(
+    [api("/api/levels"), api("/api/leaderboard"), api("/api/mine")]);
+  const solvedIds = new Set(mine.solved || []);
+  state.solvedIds = solvedIds;
   renderInbox(inbox);
 
   const wrap = $("#level-sections");
@@ -232,6 +234,7 @@ function openStory(item) {
   $(".intro-title", intro).textContent = item.story.title;
   renderNarrative($(".intro-narrative", intro), item.story.narrative);
   paintDoodle($(".intro-doodle", intro), item.story.doodle);
+  $("#intro-scout").hidden = state.local || !(state.solvedIds && state.solvedIds.has(item.story.id));
 
   go("story-intro", "travel");
 }
@@ -482,11 +485,13 @@ async function submitVerdict() {
   const answer = $("#answer-box").value.trim();
   if (!answer) return;
 
-  const data = await api("/api/submit", { answer });
+  const data = await api("/api/submit", { answer, share: $("#share-scout").checked });
   if (data.error) { showToast(data.error); return; }
 
   if (data.correct) {
     state.solved = true;
+    (state.solvedIds ??= new Set()).add(state.story.id);
+    $("#win-scout").hidden = !!state.local;
     stopTimer();
     $("#win-time").textContent = fmtTime(data.elapsed_seconds);
     $("#win-steps").textContent = data.steps;
@@ -539,6 +544,81 @@ $("#win-stay").addEventListener("click", () => $("#win-overlay").classList.remov
 $("#win-home").addEventListener("click", backToArchive);
 
 // ---------------------------------------------------------------------------
+// Scout: other detectives' notebooks for a case you've closed. The backend
+// only returns them once you have a solve of your own for that case.
+// ---------------------------------------------------------------------------
+function setScout(open) {
+  $("#scout").hidden = !open;
+}
+
+async function openScout(caseId) {
+  setScout(true);
+  const list = $("#scout-list");
+  const view = $("#scout-view");
+  list.innerHTML = "";
+  view.innerHTML = "";
+  view.appendChild(el("p", "scout-empty", "Loading notebooks…"));
+  const data = await api("/api/scout", { case_id: caseId });
+  view.innerHTML = "";
+  if (data.error) {
+    view.appendChild(el("p", "scout-empty", data.error));
+    return;
+  }
+  if (!data.solves.length) {
+    view.appendChild(el("p", "scout-empty",
+      "No shared notebooks for this case yet. Yours will show up here for the next detective."));
+    return;
+  }
+  view.appendChild(el("p", "scout-empty", "Pick a solve on the left to read its notebook."));
+  data.solves.forEach((s, i) => {
+    const li = el("li");
+    const btn = el("button", "scout-pick");
+    btn.type = "button";
+    btn.append(el("b", null, `#${i + 1} ${s.player}`),
+               el("span", null, `${s.score} pts · ${fmtTime(s.elapsed_seconds)} · ${s.cells} cells · ${s.attempts} ${s.attempts === 1 ? "try" : "tries"}`));
+    btn.addEventListener("click", () => {
+      list.querySelectorAll(".scout-pick").forEach((b) => b.classList.toggle("on", b === btn));
+      showScoutNotebook(s, caseId);
+    });
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+function showScoutNotebook(solve, caseId) {
+  const view = $("#scout-view");
+  view.innerHTML = "";
+  const head = el("div", "scout-nb-head");
+  head.appendChild(el("span", null, `${solve.player}'s notebook · ${solve.score} pts`));
+  // forking only makes sense inside the same case's notebook
+  const inThisCase = $("#ide").classList.contains("active") && state.story && state.story.id === caseId;
+  if (inThisCase) {
+    const fork = el("button", "fb-btn", "Fork into my notebook");
+    fork.addEventListener("click", () => {
+      let last = $("#cells").lastElementChild;
+      solve.notebook.forEach((code) => { last = newCell(code, last); });
+      setScout(false);
+      $("#win-overlay").classList.remove("show");   // back to the notebook to use them
+      showToast(`Forked ${solve.notebook.length} cells. Run them to see the outputs.`);
+    });
+    head.appendChild(fork);
+  } else {
+    head.appendChild(el("span", "scout-note", "Open the case to fork this notebook"));
+  }
+  view.appendChild(head);
+  (solve.notebook || []).forEach((code, i) => {
+    const cell = el("div", "scout-cell");
+    cell.append(el("span", "scout-gutter", `[${i + 1}]`), el("pre", null, code));
+    view.appendChild(cell);
+  });
+}
+
+$("#scout-close").addEventListener("click", () => setScout(false));
+$("#scout").addEventListener("click", (e) => { if (e.target.id === "scout") setScout(false); });
+$("#win-scout").addEventListener("click", () => openScout(state.story.id));
+$("#intro-scout").addEventListener("click", () => openScout(state.story.id));
+
+// ---------------------------------------------------------------------------
 // tabs: Cases · Weekly · Stakeout · Upload (deep-linkable as #weekly etc.)
 // ---------------------------------------------------------------------------
 function selectTab(name) {
@@ -561,6 +641,7 @@ selectTab(location.hash.slice(1));
 // ---------------------------------------------------------------------------
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
+    setScout(false);
     setDrawer(false);
     setNotes(false);
     setFeedback(false);

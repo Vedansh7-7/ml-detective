@@ -112,6 +112,7 @@
       <div class="intro-narrative narrative"></div>
       <div class="intro-actions">
         <button id="begin-btn" class="soft-btn primary">Begin the investigation</button>
+        <button id="intro-scout" class="soft-btn ghost" hidden>Scout this case</button>
         <button id="intro-back" class="soft-btn ghost">← Back to the archive</button>
       </div>
       <p id="py-loader" class="py-loader" hidden>
@@ -174,6 +175,8 @@
       <h4>Your verdict</h4>
       <input id="answer-box" placeholder="What's hiding in this data?" autocomplete="off">
       <button id="submit-btn" class="soft-btn primary full">Submit verdict</button>
+      <label class="share-toggle"><input type="checkbox" id="share-scout" checked>
+        Share my notebook in Scout once I solve it</label>
       <ol id="hint-list"></ol>
     </div>
   </aside>
@@ -221,6 +224,7 @@
       </div>
       <p id="win-explain"></p>
       <div class="win-actions">
+        <button id="win-scout" class="soft-btn ghost">Scout this case</button>
         <button id="win-stay" class="soft-btn ghost">Keep exploring</button>
         <button id="win-home" class="soft-btn primary">Back to the archive</button>
       </div>
@@ -229,6 +233,25 @@
 </section>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Scout: other detectives' notebooks for a case you've closed -->
+<div id="scout" class="scout-overlay" hidden>
+  <div class="scout-card" role="dialog" aria-modal="true" aria-labelledby="scout-title">
+    <div class="scout-head">
+      <div>
+        <div class="scout-kicker">SCOUT</div>
+        <h2 id="scout-title">How other detectives cracked it</h2>
+      </div>
+      <button id="scout-close" class="fb-btn ghost" aria-label="Close Scout">Close</button>
+    </div>
+    <div class="scout-body">
+      <ol id="scout-list" class="scout-list"></ol>
+      <div id="scout-view" class="scout-view">
+        <p class="scout-empty">Pick a solve on the left to read its notebook.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- feedback: floating button on every screen after the splash -->
 <button id="fb-open" class="fb-open" hidden>✎ Feedback</button>
