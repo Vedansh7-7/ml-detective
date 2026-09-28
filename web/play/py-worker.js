@@ -21,6 +21,16 @@ async function boot() {
 }
 const ready = boot();
 
+let ingestLoaded = null;
+function loadIngest() {
+  ingestLoaded ??= (async () => {
+    const src = await (await fetch("../py/story_ingest.py")).text();
+    py.FS.writeFile(`${HOME}/story_ingest.py`, src);
+    py.runPython("import story_ingest");
+  })();
+  return ingestLoaded;
+}
+
 const handlers = {
   async ping() {
     return ready;
@@ -49,6 +59,32 @@ json.dumps({"shape": list(_df.shape)})`));
     const out = JSON.parse(py.runPython("json.dumps(kernel.run_code(_code, G, _cell))"));
     out.runtime = (performance.now() - t0) / 1000;
     return out;
+  },
+
+  // story packs (Upload, Weekly drops): the desktop ingester's own checks
+  async screen({ text }) {
+    await loadIngest();
+    py.globals.set("_text", text);
+    return JSON.parse(py.runPython(`
+try:
+    _pack = story_ingest.parse_pack(_text)
+    _errs = story_ingest.screen_pack(_pack)
+except ValueError as _e:
+    _pack, _errs = None, [str(_e)]
+ok = not _errs
+json.dumps({"errors": _errs, "pack": _pack if ok else None,
+            "code": story_ingest._joined(_pack["data"]["code"]) if ok else None,
+            "seed": _pack["data"]["seed"] if ok else None})`));
+  },
+
+  async build({ pack, columns, rows }) {
+    await loadIngest();
+    py.globals.set("_pack_json", JSON.stringify(pack));
+    py.globals.set("_cols", JSON.stringify(columns));
+    py.globals.set("_rows", rows);
+    return JSON.parse(py.runPython(`
+_errs, _case = story_ingest.build_case(json.loads(_pack_json), json.loads(_cols), int(_rows))
+json.dumps({"errors": _errs, "case": _case})`));
   },
 
   // offline verdict: hashed answer keys, same rule as kernel.check_answer

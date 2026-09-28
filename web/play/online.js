@@ -39,7 +39,7 @@ export async function setName(name) {
 }
 
 // board rows in the shape the UI (and scoring.rank) already uses
-export async function boardRows({ caseIds = null, roomCode = null, since = null, until = null, source = "core" } = {}) {
+export async function boardRows({ caseIds = null, roomCode = null, since = null, until = null, source = caseIds ? null : "core" } = {}) {
   let q = sb.from("board").select("*").order("created_at", { ascending: false }).limit(1000);
   if (source) q = q.eq("source", source);
   q = roomCode ? q.eq("room_code", roomCode) : q.is("room_code", null);
@@ -88,6 +88,54 @@ export async function scout(caseId) {
 export async function sendFeedback(row) {
   const { error } = await sb.from("feedback").insert({ player_id: user.id, ...row });
   if (error) throw error;
+}
+
+// ---------- Weekly Challenge ----------
+export const weeklyCsvUrl = (caseId) =>
+  `${SUPABASE_URL}/storage/v1/object/public/cases/weekly/${caseId}.csv`;
+
+// every scheduled week (newest first) with its public case
+export async function weeks() {
+  const { data, error } = await sb.from("weekly_challenges")
+    .select("case_id, starts_at, ends_at, cases(id, level, title, story, meta, par)")
+    .order("starts_at", { ascending: false }).limit(20);
+  if (error) throw error;
+  return data;
+}
+
+// ---------- admin (weekly drops) ----------
+export function isGuest() {
+  return !user || user.is_anonymous;
+}
+export async function isAdmin() {
+  if (isGuest()) return false;
+  const { data } = await sb.rpc("is_admin");
+  return !!data;
+}
+export async function adminSignIn(email, password) {
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  user = data.user;
+  return user;
+}
+export async function adminSignUp(email, password) {
+  const { data, error } = await sb.auth.signUp({
+    email, password, options: { emailRedirectTo: location.origin + location.pathname + "#weekly" },
+  });
+  if (error) throw error;
+  return data;
+}
+export async function signOutToGuest() {
+  await sb.auth.signOut();
+  user = null;
+  return connect();
+}
+export async function callAdmin(payload) {
+  const { data, error } = await sb.functions.invoke("admin", { body: payload });
+  if (error) {
+    try { return await error.context.json(); } catch { return { error: error.message }; }
+  }
+  return data;
 }
 
 // "N detectives online": everyone on the site shares one presence channel

@@ -331,67 +331,58 @@ def run_generator(code, seed, out_csv):
 # ---------------------------------------------------------------------------
 # filing one pack
 # ---------------------------------------------------------------------------
-def file_pack(pack):
-    """Validate + generate + write. Returns (ok, errors). Nothing is
-    written into the game unless every check passes."""
+def screen_pack(pack):
+    """Every check that doesn't need the pack's code to run: schema,
+    palette contrast, the doodle SVG, the code screen and spoilers.
+    Returns a list of problems (empty = go ahead and run the generator).
+    Shared by file_pack() and the browser version (Upload, Weekly drops)."""
     errors = validate_pack(pack)
     if errors:
-        return False, errors
+        return errors
 
-    story, meta, secret = pack["story"], pack["meta"], pack["secret"]
-    palette = story["palette"]
+    palette = pack["story"]["palette"]
     for fg, bg, minimum, why in CONTRAST_RULES:
         ratio = contrast(palette[fg], palette[bg])
         if ratio < minimum:
             errors.append(f"palette: {fg} on {bg} has contrast {ratio:.2f}:1, needs at least "
                           f"{minimum}:1 ({why})")
-
-    svg = _joined(pack["doodle_svg"])
-    code = _joined(pack["data"]["code"])
-    errors += check_svg(svg)
-    errors += check_code_safety(code)
+    errors += check_svg(_joined(pack["doodle_svg"]))
+    errors += check_code_safety(_joined(pack["data"]["code"]))
     errors += check_spoilers(pack)
+    return errors
+
+
+def build_case(pack, columns, n_rows):
+    """Checks that need the generated data's shape, then the case's parts.
+    Returns (errors, case) where case = {meta, secret, story, svg}."""
+    story, meta, secret = pack["story"], pack["meta"], pack["secret"]
+    errors = []
+    declared = list(meta["columns"])
+    missing, extra = set(declared) - set(columns), set(columns) - set(declared)
+    if missing:
+        errors.append(f"meta.columns describes columns the data doesn't have: {sorted(missing)}")
+    if extra:
+        errors.append(f"the data has columns meta.columns doesn't describe: {sorted(extra)}")
+    if secret["target_column"] not in columns:
+        errors.append(f"secret.target_column '{secret['target_column']}' is not a column in the data")
+    if not MIN_ROWS <= n_rows <= MAX_ROWS:
+        errors.append(f"the data has {n_rows} rows; it must have {MIN_ROWS}-{MAX_ROWS}")
+    if not MIN_COLS <= len(columns) <= MAX_COLS:
+        errors.append(f"the data has {len(columns)} columns; it must have {MIN_COLS}-{MAX_COLS}")
     if errors:
-        return False, errors
+        return errors, None
 
-    pid = pack["id"]
-    os.makedirs(DATASETS_DIR, exist_ok=True)
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_csv = os.path.join(tmp, "data.csv")
-        result = run_generator(code, pack["data"]["seed"], tmp_csv)
-        if not result.get("ok"):
-            return False, ["running the pack's code failed:\n" + result.get("error", "unknown error")]
-
-        columns = result["columns"]
-        declared = list(meta["columns"])
-        missing, extra = set(declared) - set(columns), set(columns) - set(declared)
-        if missing or extra:
-            if missing:
-                errors.append(f"meta.columns describes columns the data doesn't have: {sorted(missing)}")
-            if extra:
-                errors.append(f"the data has columns meta.columns doesn't describe: {sorted(extra)}")
-        if secret["target_column"] not in columns:
-            errors.append(f"secret.target_column '{secret['target_column']}' is not a column in the data")
-        if not MIN_ROWS <= result["rows"] <= MAX_ROWS:
-            errors.append(f"the data has {result['rows']} rows; it must have {MIN_ROWS}-{MAX_ROWS}")
-        if not MIN_COLS <= len(columns) <= MAX_COLS:
-            errors.append(f"the data has {len(columns)} columns; it must have {MIN_COLS}-{MAX_COLS}")
-        if errors:
-            return False, errors
-
-        shutil.move(tmp_csv, os.path.join(DATASETS_DIR, f"{pid}.csv"))
-
-    level = pack["level"]
-    files = {
-        os.path.join(DATASETS_DIR, f"{pid}.meta.json"): {
+    pid, level, palette = pack["id"], pack["level"], story["palette"]
+    return [], {
+        "meta": {
             "id": pid,
             "category": level,
             "title": meta.get("title") or story["title"],
             "description": meta["description"],
-            "n_rows": result["rows"],
+            "n_rows": n_rows,
             "columns": {c: meta["columns"][c] for c in columns},  # in data order
         },
-        os.path.join(SECRETS_DIR, f"{pid}.json"): {
+        "secret": {
             "id": pid,
             "category": level,
             "fault_type": secret["fault_type"],
@@ -400,9 +391,7 @@ def file_pack(pack):
             "accepted_answers": secret["accepted_answers"],
             "hints": secret["hints"],
         },
-        # the story file goes last: its presence is what makes the case
-        # show up in the archive, so it must only appear once the rest exists
-        os.path.join(DATASETS_DIR, f"{pid}.story.json"): {
+        "story": {
             "id": pid,
             "level": level,
             "title": story["title"],
@@ -414,11 +403,40 @@ def file_pack(pack):
                         "dark": _luminance(palette["bg"]) < 0.2},
             "doodle": f"{pid}.svg",
         },
+        "svg": _joined(pack["doodle_svg"]),
     }
+
+
+def file_pack(pack):
+    """Validate + generate + write. Returns (ok, errors). Nothing is
+    written into the game unless every check passes."""
+    errors = screen_pack(pack)
+    if errors:
+        return False, errors
+
+    pid = pack["id"]
+    os.makedirs(DATASETS_DIR, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_csv = os.path.join(tmp, "data.csv")
+        result = run_generator(_joined(pack["data"]["code"]), pack["data"]["seed"], tmp_csv)
+        if not result.get("ok"):
+            return False, ["running the pack's code failed:\n" + result.get("error", "unknown error")]
+        errors, case = build_case(pack, result["columns"], result["rows"])
+        if errors:
+            return False, errors
+        shutil.move(tmp_csv, os.path.join(DATASETS_DIR, f"{pid}.csv"))
+
     os.makedirs(SECRETS_DIR, exist_ok=True)
     os.makedirs(DOODLES_DIR, exist_ok=True)
     with open(os.path.join(DOODLES_DIR, f"{pid}.svg"), "w", encoding="utf-8") as f:
-        f.write(svg)
+        f.write(case["svg"])
+    files = {
+        os.path.join(DATASETS_DIR, f"{pid}.meta.json"): case["meta"],
+        os.path.join(SECRETS_DIR, f"{pid}.json"): case["secret"],
+        # the story file goes last: its presence is what makes the case
+        # show up in the archive, so it must only appear once the rest exists
+        os.path.join(DATASETS_DIR, f"{pid}.story.json"): case["story"],
+    }
     for path, content in files.items():
         with open(path, "w", encoding="utf-8") as f:
             json.dump(content, f, indent=2)
