@@ -53,6 +53,7 @@ def page(title, description, path, body, head_extra="", depth=1):
 <link rel="stylesheet" href="{up}learn/learn.css">
 {head_extra}
 <script defer src="/_vercel/insights/script.js"></script>
+<script src="/utm.js"></script>
 </head>
 <body class="learn">
 <header class="lr-bar">

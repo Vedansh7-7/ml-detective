@@ -18,9 +18,13 @@ form.addEventListener("submit", async (e) => {
 
   button.disabled = true;
   say("Adding you…");
+  // first place this visitor came from (utm.js keeps it for 30 days), else this visit's
+  let remembered = null;
+  try { remembered = JSON.parse(localStorage.getItem("mld.source") || "null"); } catch { /* blocked */ }
   const params = new URLSearchParams(location.search);
-  const source = ["utm_source", "utm_medium", "utm_campaign"].map((k) => params.get(k)).filter(Boolean).join(" / ")
-    || (document.referrer ? new URL(document.referrer).hostname : "landing");
+  const source = (remembered && remembered.source)
+    || ["utm_source", "utm_medium", "utm_campaign"].map((k) => params.get(k)).filter(Boolean).join(" / ")
+    || (document.referrer ? new URL(document.referrer).hostname : "direct");
   try {
     const { connect, sb } = await import("./play/online.js");
     say("Running a quick bot check… if a box appears at the bottom of the screen, tick it.");
