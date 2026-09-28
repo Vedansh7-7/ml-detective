@@ -14,7 +14,30 @@ There are 15 cases across three levels:
 
 Several are modelled on real-world data mistakes, like spreadsheet software renaming genes, a spacecraft lost to mixed units, and a famous admissions paradox. The explanation after you solve a case says which.
 
-## Run it
+## Play in the browser
+
+The web version lives in `web/`: a landing page and the game under `web/play/`. Python runs in the player's browser (Pyodide in a Web Worker), so there is no Python server and nobody's code runs on ours.
+
+Online features use Supabase:
+
+- **Cases** with a shared, ranked board. Verdicts are checked and games timed by the `game` edge function; answers never reach the browser.
+- **Weekly Challenge:** a new case each week with its own board. The admin drops it from the Weekly tab (validated in the browser with the same checks as `story_ingest.py`).
+- **Stakeout:** race friends on the same case with a room code and a live board.
+- **Scout:** after you close a case, read how other detectives cracked it.
+- **Upload:** write your own case with the master prompt, play it privately or share a link.
+
+Without the backend the game still plays, with a per-browser board.
+
+To work on it locally:
+
+```bash
+python tools/build_web.py                  # export cases + Python modules into web/
+python -m http.server 8090 --directory web # then open http://127.0.0.1:8090/
+```
+
+`supabase/` holds the schema (`migrations/`) and the edge functions. `tools/build_web.py` also writes `supabase/seed_core.sql` with the core cases' answers; it's gitignored, load it into the database yourself.
+
+## Run it on your machine
 
 Needs Python 3.11+.
 
@@ -58,8 +81,13 @@ python story_ingest.py
 ## Layout
 
 ```
-app.py              Flask server + notebook kernel + answer checking
+app.py              Flask server (desktop / LAN version)
+kernel.py           the notebook engine, shared by the desktop app and the browser
+scoring.py          leaderboard scoring (docs/SCORING.md)
 story_ingest.py     story-pack validator / generator
+web/                landing page + browser game (web/play), deployed as a static site
+supabase/           database schema and edge functions for the online features
+tools/build_web.py  exports cases and Python modules into web/
 datasets/           <id>.csv, public .meta.json and .story.json per case
 secrets/            answers + hints (read only by the server)
 static/             frontend (single page, no build step) and case doodles
