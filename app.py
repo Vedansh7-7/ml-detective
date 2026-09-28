@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from flask import Flask, jsonify, request, send_from_directory
 
+import scoring
 from story_ingest import ingest_inbox
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -107,6 +108,10 @@ def new_game():
         "steps": 0,
         "attempts": 0,
         "solved": False,
+        # for scoring: distinct cells run, cells that raised, total exec time
+        "cells": set(),
+        "errored_cells": set(),
+        "runtime": 0.0,
     }
 
 
@@ -449,7 +454,13 @@ def api_run():
     code = body.get("code", "")
     with RUN_LOCK:
         GAME["steps"] += 1
+        cell_id = str(body.get("cell_id") or f"run-{GAME['steps']}")[:40]
+        t0 = time.perf_counter()
         output = run_code(code, GAME["exec_globals"], cell_name=f"<cell {GAME['steps']}>")
+        GAME["runtime"] += time.perf_counter() - t0
+    GAME["cells"].add(cell_id)
+    if output["error"]:
+        GAME["errored_cells"].add(cell_id)
     output["steps"] = GAME["steps"]
     return jsonify(output)
 
@@ -482,14 +493,20 @@ def api_submit():
             "elapsed_seconds": elapsed,
             "steps": GAME["steps"],
             "attempts": GAME["attempts"] + 1,
+            "cells": len(GAME["cells"]),
+            "errored_cells": len(GAME["errored_cells"]),
+            "runtime_seconds": round(GAME["runtime"], 3),
             "timestamp": time.time(),
         }
         save_result(entry)
+        solves = [r for r in load_results() if r["dataset_id"] == entry["dataset_id"]]
+        par = case_par(entry["dataset_id"], entry["level"], solves)
         return jsonify({
             "correct": True,
             "elapsed_seconds": elapsed,
             "steps": GAME["steps"],
             "attempts": entry["attempts"],
+            "score": scoring.score(scoring.stats_of(entry), par),
             "explanation": secret["description"],
         })
 
@@ -503,9 +520,24 @@ def api_submit():
     })
 
 
+def case_par(dataset_id, level, solves):
+    """Par for a case: level default, optional "par" in its secret, then
+    learned from real solves (see scoring.py)."""
+    try:
+        override = load_secret(dataset_id).get("par")
+    except OSError:
+        override = None
+    return scoring.par_for(level, solves, override)
+
+
+def ranked_results():
+    """Each player's best score per case, best first."""
+    return scoring.rank(load_results(), case_par)
+
+
 @app.route("/api/leaderboard")
 def api_leaderboard():
-    return jsonify(load_results())
+    return jsonify(ranked_results())
 
 
 ONLINE_WINDOW_SECONDS = 20  # every open tab polls /api/live every few seconds
@@ -518,7 +550,7 @@ def api_live():
     with PLAYERS_LOCK:
         online = sum(1 for p in PLAYERS.values()
                      if now - p.get("last_seen", 0) < ONLINE_WINDOW_SECONDS)
-    return jsonify({"online": online, "results": load_results(), "now": now})
+    return jsonify({"online": online, "results": ranked_results(), "now": now})
 
 
 @app.route("/api/feedback", methods=["POST"])
