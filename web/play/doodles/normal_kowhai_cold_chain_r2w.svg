@@ -1,0 +1,25 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M42 22 q-2 60 1 142 l86 1 q2 -70 -1 -143 z'/>
+  <path d='M44 70 l84 -1' opacity='0.8'/>
+  <path d='M116 36 l1 22' stroke-width='5'/>
+  <path d='M116 82 l1 30' stroke-width='5'/>
+  <path d='M52 102 l68 -1' opacity='0.5'/>
+  <path d='M52 132 l68 1' opacity='0.5'/>
+  <rect x='56' y='84' width='7' height='16' rx='2'/>
+  <rect x='68' y='84' width='7' height='16' rx='2'/>
+  <rect x='80' y='84' width='7' height='16' rx='2'/>
+  <rect x='60' y='114' width='7' height='16' rx='2'/>
+  <rect x='72' y='114' width='7' height='16' rx='2'/>
+  <path d='M62 30 l0 22 m-6 -16 l12 10 m0 -10 l-12 10' opacity='0.7'/>
+  <path d='M160 40 q-4 0 -4 5 l0 70'/>
+  <path d='M168 40 q4 0 4 5 l0 70'/>
+  <circle cx='164' cy='124' r='11'/>
+  <line x1='164' y1='116' x2='164' y2='70' stroke-width='5' opacity='0.7'/>
+  <path d='M198 40 q-4 0 -4 5 l0 70'/>
+  <path d='M206 40 q4 0 4 5 l0 70'/>
+  <circle cx='202' cy='124' r='11'/>
+  <line x1='202' y1='116' x2='202' y2='70' stroke-width='5' opacity='0.7'/>
+  <path d='M172 60 l6 0 m-6 20 l6 0 m-6 20 l6 0' opacity='0.6'/>
+  <path d='M210 60 l6 0 m-6 20 l6 0 m-6 20 l6 0' opacity='0.6'/>
+  <path d='M150 150 q30 10 64 0' stroke-dasharray='3 7' opacity='0.5'/>
+</svg>

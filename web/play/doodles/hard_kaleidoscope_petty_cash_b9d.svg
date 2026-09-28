@@ -1,0 +1,23 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <rect x='22' y='78' width='96' height='66' rx='4'/>
+  <path d='M22 78 L26 56 L120 50 L118 72'/>
+  <path d='M40 55 L34 76 M62 53 L56 75 M84 52 L78 74 M106 51 L100 73'/>
+  <path d='M34 96 L106 96' opacity='0.6'/>
+  <path d='M34 110 L90 110' opacity='0.6'/>
+  <path d='M34 124 L98 124' opacity='0.6'/>
+  <circle cx='26' cy='66' r='3' fill='currentColor'/>
+  <path d='M146 36 L206 32 L210 146 L150 150 Z'/>
+  <path d='M150 150 l6 -5 l6 5 l6 -5 l6 5 l6 -5 l6 5 l6 -5 l6 5 l6 -5 l4 4'/>
+  <path d='M158 50 L196 48'/>
+  <path d='M158 66 L182 65 M188 65 L198 64' opacity='0.7'/>
+  <path d='M158 80 L178 79 M188 79 L199 78' opacity='0.7'/>
+  <path d='M159 94 L181 93 M189 93 L200 92' opacity='0.7'/>
+  <path d='M159 108 L176 107 M188 107 L200 106' opacity='0.7'/>
+  <path d='M160 126 L201 124' stroke-width='4'/>
+  <ellipse cx='214' cy='156' rx='16' ry='6'/>
+  <ellipse cx='214' cy='148' rx='16' ry='6'/>
+  <ellipse cx='214' cy='140' rx='16' ry='6'/>
+  <path d='M208 140 L220 140 M209 137 L218 137 M213 137 Q219 139 212 144 L219 146'/>
+  <path d='M130 26 L136 18 M140 30 L150 26 M126 38 L118 34' opacity='0.5'/>
+  <circle cx='66' cy='36' r='10' stroke-dasharray='4 4' opacity='0.6'/>
+</svg>

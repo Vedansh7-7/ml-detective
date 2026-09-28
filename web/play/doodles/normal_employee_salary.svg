@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- briefcase -->
+  <rect x="22" y="72" width="94" height="66" rx="7"/>
+  <path d="M52 72 V60 q0 -7 7 -7 h22 q7 0 7 7 V72"/>
+  <path d="M22 98 H116"/>
+  <rect x="61" y="91" width="16" height="13" rx="2"/>
+  <!-- bar chart, one bar that seems to know too much -->
+  <path d="M134 150 H226"/>
+  <path d="M146 150 V120" stroke-width="10"/>
+  <path d="M164 150 V108" stroke-width="10"/>
+  <path d="M182 150 V126" stroke-width="10"/>
+  <path d="M204 150 V52" stroke-width="10"/>
+  <!-- watching eye -->
+  <path d="M186 28 q18 -15 36 0 q-18 15 -36 0 Z"/>
+  <circle cx="204" cy="28" r="4.5" fill="currentColor"/>
+  <!-- paper trail -->
+  <path d="M12 158 q60 10 118 0" stroke-dasharray="3 6" opacity=".5"/>
+  <path d="M34 36 l10 -6 l10 6 l-10 6 Z" opacity=".7"/>
+</svg>
