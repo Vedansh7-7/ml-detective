@@ -12,7 +12,7 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
 let user = null;
 
 // a guest session (anonymous auth) that survives reloads in this browser
-export async function connect() {
+export async function connect({ captchaWaitMs = 20_000 } = {}) {
   const { data } = await sb.auth.getSession();
   if (data.session) {
     user = data.session.user;
@@ -20,7 +20,7 @@ export async function connect() {
   }
   // if the bot check can't produce a token, still try: it only matters once
   // CAPTCHA is enforced in Supabase, and then the sign-in fails cleanly
-  const token = await captchaToken(20_000).catch((err) => {
+  const token = await captchaToken(captchaWaitMs).catch((err) => {
     console.warn("ML Detective: bot check --", err.message);
     return undefined;
   });
@@ -168,46 +168,6 @@ export async function sharePack(pack) {
 export async function getPack(code) {
   const { data, error } = await sb.rpc("get_custom_pack", { p_code: code });
   if (error) throw error;
-  return data;
-}
-
-// ---------- admin (weekly drops) ----------
-export function isGuest() {
-  return !user || user.is_anonymous;
-}
-export async function isAdmin() {
-  if (isGuest()) return false;
-  const { data } = await sb.rpc("is_admin");
-  return !!data;
-}
-export async function adminSignIn(email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({
-    email, password, options: { captchaToken: await captchaToken() },
-  });
-  if (error) throw error;
-  user = data.user;
-  return user;
-}
-export async function adminSignUp(email, password) {
-  const { data, error } = await sb.auth.signUp({
-    email, password, options: {
-      emailRedirectTo: location.origin + location.pathname + "#weekly",
-      captchaToken: await captchaToken(),
-    },
-  });
-  if (error) throw error;
-  return data;
-}
-export async function signOutToGuest() {
-  await sb.auth.signOut();
-  user = null;
-  return connect();
-}
-export async function callAdmin(payload) {
-  const { data, error } = await sb.functions.invoke("admin", { body: payload });
-  if (error) {
-    try { return await error.context.json(); } catch { return { error: error.message }; }
-  }
   return data;
 }
 

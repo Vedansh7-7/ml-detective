@@ -406,9 +406,34 @@
       <p class="label label-inv"><span class="num">05</span> For educators &amp; hiring</p>
       <h2 id="edu-title">Teach it. <span class="hl">Test it.</span></h2>
       <p class="edu-lead">Most data courses hand students a clean CSV and a question with a known answer. Real data is messier than that. ML Detective gives people practice at the part that actually matters on the job: noticing when something is off.</p>
-      <!-- TODO: point this at the real waitlist (form or mailto:) once the address is decided. -->
-      <a class="btn btn-tape btn-lg" href="#waitlist" id="waitlist">Join the waitlist <span aria-hidden="true">→</span></a>
-      <p class="edu-note">We're starting with a small group of teachers and teams.</p>
+      <form class="waitlist-form" id="waitlist" autocomplete="on">
+        <h3 class="wl-title">Join the waitlist</h3>
+        <div class="wl-row">
+          <label>Name <input name="name" required maxlength="80" autocomplete="name"></label>
+          <label>Email <input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+        </div>
+        <div class="wl-row">
+          <label>I am
+            <select name="role" required>
+              <option value="">Pick one</option>
+              <option value="educator">An educator</option>
+              <option value="company">Hiring or training a team</option>
+              <option value="student">A student or learner</option>
+              <option value="other">Something else</option>
+            </select>
+          </label>
+          <label>School, college or company <input name="organization" maxlength="120" autocomplete="organization"></label>
+        </div>
+        <label>How would you use ML Detective? <span class="opt">(optional)</span>
+          <textarea name="use_case" maxlength="1000" rows="3"></textarea>
+        </label>
+        <!-- left empty by people; bots fill everything in -->
+        <label class="wl-hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        <label class="wl-consent"><input type="checkbox" name="consent" checked> Email me when early access opens</label>
+        <button class="btn btn-tape btn-lg" type="submit">Join the waitlist <span aria-hidden="true">→</span></button>
+        <p class="wl-status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="edu-note">We're starting with a small group of teachers and teams. We'll only use your email for ML Detective.</p>
     </div>
     <ul class="edu-list">
       <li data-reveal><h3>Classroom leaderboards</h3><p>Run one case with the whole section and put the live board on the projector.</p></li>
@@ -485,5 +510,6 @@
 </footer>
 
 <script src="site.js" defer></script>
+<script type="module" src="waitlist.js"></script>
 </body>
 </html>

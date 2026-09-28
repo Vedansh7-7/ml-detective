@@ -1,0 +1,62 @@
+[hidden] { display: none !important; }
+:root {
+  --paper: #f2efe4; --ink: #0a0a0a; --tape: #ffe600; --confirm: #cdfa5b; --alarm: #ff3b30;
+  --display: "Arial Black", "Arial Bold", Impact, sans-serif;
+  --mono: Consolas, "Cascadia Code", "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: 14px; }
+.bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px clamp(16px, 4vw, 40px); background: var(--ink); color: var(--paper);
+}
+.brand { font-family: var(--display); letter-spacing: 1px; }
+.brand span { color: var(--tape); }
+.bar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+main { padding: 24px clamp(16px, 4vw, 40px) 60px; display: grid; gap: 20px; }
+.card { background: #fff; border: 3px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: 18px; min-width: 0; }
+.card.narrow { max-width: 460px; }
+.card h1, .card h2 { font-family: var(--display); text-transform: uppercase; margin: 0 0 12px; }
+.card h1 { font-size: 26px; }
+.card h2 { font-size: 18px; }
+.card h3 { margin: 18px 0 8px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+#v-board { display: grid; gap: 20px; }
+.btn {
+  font-family: var(--mono); font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 12px;
+  padding: 9px 14px; background: var(--tape); color: var(--ink); border: 2px solid var(--ink); cursor: pointer;
+}
+.btn.ghost { background: transparent; color: inherit; border-color: currentColor; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+input, textarea {
+  font-family: var(--mono); font-size: 14px; padding: 9px; border: 2px solid var(--ink); background: var(--paper); color: var(--ink);
+}
+#signin-form { display: grid; gap: 10px; }
+textarea { width: 100%; min-height: 140px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+.msg { min-height: 1.4em; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.kpi { background: #fff; border: 3px solid var(--ink); padding: 14px; box-shadow: 4px 4px 0 var(--ink); }
+.kpi b { display: block; font-family: var(--display); font-size: 30px; }
+.kpi span { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+.kpi em { font-style: normal; font-size: 12px; color: #2d7a3a; }
+.pill { background: var(--ink); color: var(--tape); padding: 2px 8px; font-size: 12px; vertical-align: middle; }
+.scroll { overflow: auto; max-height: 360px; }
+.scroll.tall { max-height: 520px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #ccc; vertical-align: top; }
+th { position: sticky; top: 0; background: var(--ink); color: var(--tape); font-weight: normal; }
+td.wrap { max-width: 320px; white-space: pre-wrap; word-break: break-word; }
+.empty { color: #666; }
+.daily { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; align-items: end; height: 170px; }
+.day { display: flex; gap: 2px; align-items: flex-end; height: 100%; position: relative; }
+.day i { flex: 1; min-height: 2px; }
+.day small { position: absolute; bottom: -18px; left: 0; font-size: 10px; color: #666; }
+.k-games { background: var(--ink); } .k-solves { background: #2d7a3a; } .k-new { background: var(--alarm); }
+.legend { margin-top: 26px; font-size: 12px; }
+.legend i { display: inline-block; width: 10px; height: 10px; margin: 0 4px 0 12px; vertical-align: middle; }
+.ok { background: var(--confirm); border: 2px solid var(--ink); padding: 8px 10px; margin-top: 10px; }
+.bad { color: var(--alarm); font-weight: bold; margin-top: 10px; }
+.errors { white-space: pre-wrap; }
+.captcha-host { position: fixed; left: 50%; bottom: 16px; z-index: 100; transform: translateX(-50%); }
