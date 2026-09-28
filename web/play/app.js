@@ -124,6 +124,7 @@ async function leaveSplash() {
   // arrived through a Stakeout invite link (play/#stakeout/CODE)
   const [tab, code] = location.hash.slice(1).split("/");
   if (tab === "stakeout" && code) enterRoom(code);
+  if (tab === "upload" && code) openSharedPack(code);
 }
 $("#join-form").addEventListener("submit", (e) => { e.preventDefault(); leaveSplash(); });
 
@@ -500,7 +501,7 @@ async function submitVerdict() {
   if (data.correct) {
     state.solved = true;
     (state.solvedIds ??= new Set()).add(state.story.id);
-    $("#win-scout").hidden = !!state.local;
+    $("#win-scout").hidden = !!state.local || !!data.custom;   // uploaded cases aren't in Scout
     stopTimer();
     $("#win-time").textContent = fmtTime(data.elapsed_seconds);
     $("#win-steps").textContent = data.steps;
@@ -1026,6 +1027,141 @@ async function openRoomCase() {
 }
 
 document.addEventListener("tabchange", (e) => { if (e.detail === "stakeout") renderStakeout(); });
+
+// ---------------------------------------------------------------------------
+// Upload: write your own case with the master prompt, check it here with the
+// same rules as the built-in cases, play it privately or share a link.
+// ---------------------------------------------------------------------------
+let promptText = null;
+async function masterPrompt() {
+  if (!promptText) {
+    const md = await fetch("story-prompt.md").then((r) => r.text());
+    // the real markers sit on their own lines (the usage notes above them mention them inline)
+    const m = md.match(/^=== PROMPT START ===\s*$([\s\S]*?)^=== PROMPT END ===\s*$/m);
+    promptText = (m ? m[1] : md).trim();
+  }
+  return promptText;
+}
+
+function packErrors(box, errors) {
+  box.appendChild(el("p", "admin-bad", "This pack isn't ready yet. Paste this list back to the AI and ask it to fix the pack:"));
+  const ul = el("ul", "admin-errors");
+  errors.forEach((e) => ul.appendChild(el("li", null, e)));
+  box.appendChild(ul);
+}
+
+function playItem(item) {
+  openStory(item);
+}
+
+async function renderUpload() {
+  const body = $("#upload-body");
+  body.innerHTML = "";
+  // fetch now, so the copy button writes to the clipboard straight from the click
+  // (browsers can refuse a clipboard write that happens after a network wait)
+  masterPrompt().catch(() => {});
+
+  const steps = el("ol", "upload-steps");
+  const s1 = el("li");
+  s1.appendChild(el("b", null, "Get the master prompt. "));
+  s1.appendChild(document.createTextNode("Paste it into any AI chat and pick a difficulty and a setting."));
+  const copy = el("button", "fb-btn", "Copy the master prompt");
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(promptText ?? await masterPrompt());
+      copy.textContent = "Copied";
+    } catch {
+      window.open("story-prompt.md", "_blank");   // no clipboard access: show the file instead
+    }
+  });
+  s1.appendChild(copy);
+  const s2 = el("li");
+  s2.appendChild(el("b", null, "Drop the AI's reply here. "));
+  s2.appendChild(document.createTextNode("Don't read it first: it contains the answer. Code fences and chatter around the JSON are fine."));
+  steps.append(s1, s2);
+  body.appendChild(steps);
+
+  const pack = el("textarea", "admin-pack");
+  pack.placeholder = "Paste the story pack here";
+  const file = el("input"); file.type = "file"; file.accept = ".json,.txt,.md";
+  file.addEventListener("change", async () => { if (file.files[0]) pack.value = await file.files[0].text(); });
+  const check = el("button", "brut-btn small", "Check my case");
+  const result = el("div", "admin-result");
+  body.append(pack, file, check, result);
+
+  check.addEventListener("click", async () => {
+    if (!pack.value.trim()) return;
+    check.disabled = true;
+    result.innerHTML = "";
+    const step = el("p", "admin-msg", "Starting…");
+    result.appendChild(step);
+    const r = await api("/api/upload/validate", { text: pack.value }, (s) => { step.textContent = s; });
+    check.disabled = false;
+    result.innerHTML = "";
+    if (r.error || r.errors.length) { packErrors(result, r.errors || [r.error]); return; }
+    const s = r.summary;
+    result.appendChild(el("p", "admin-ok", `Your case is ready: "${s.title}" · ${s.level} · ${s.rows} rows × ${s.columns} columns.`));
+    const actions = el("div", "upload-actions");
+    const play = el("button", "brut-btn small", "Play it now");
+    play.addEventListener("click", async () => {
+      const p = await api("/api/upload/play");
+      if (p.error) { showToast(p.error); return; }
+      playItem(p.item);
+    });
+    const share = el("button", "fb-btn", "Share a link");
+    const shareOut = el("span", "upload-link");
+    share.addEventListener("click", async () => {
+      share.disabled = true;
+      const sh = await api("/api/upload/share");
+      if (sh.error) { shareOut.textContent = sh.error; share.disabled = false; return; }
+      const link = `${location.origin}${location.pathname}#upload/${sh.code}`;
+      shareOut.textContent = link;
+      try { await navigator.clipboard.writeText(link); share.textContent = "Link copied"; } catch { /* shown above */ }
+    });
+    actions.append(play, share, shareOut);
+    result.appendChild(actions);
+    result.appendChild(el("p", "level-blurb",
+      "Uploaded cases are unranked: they don't go on the boards, and whoever opens your link can play them."));
+    renderMyUploads(mine);
+  });
+
+  const mine = el("section", "weekly-past");
+  body.appendChild(mine);
+  renderMyUploads(mine);
+}
+
+async function renderMyUploads(box) {
+  const { uploads } = await api("/api/upload/mine");
+  box.innerHTML = "";
+  if (!uploads.length) return;
+  box.appendChild(el("h3", "weekly-past-head", "MY CASES (THIS BROWSER)"));
+  uploads.forEach((u) => {
+    const row = el("div", "weekly-past-row");
+    row.append(el("b", null, u.title), el("span", null, u.level));
+    const replay = el("button", "fb-btn ghost", "Play");
+    replay.addEventListener("click", async () => {
+      replay.disabled = true;
+      replay.textContent = "Loading…";
+      const r = await api("/api/upload/replay", { id: u.id });
+      replay.disabled = false;
+      replay.textContent = "Play";
+      if (r.error || (r.errors && r.errors.length)) { showToast(r.error || r.errors[0]); return; }
+      playItem(r.item);
+    });
+    row.appendChild(replay);
+    box.appendChild(row);
+  });
+}
+
+async function openSharedPack(code) {
+  selectTab("upload");
+  showToast("Opening the shared case…");
+  const r = await api("/api/upload/open", { code });
+  if (r.error || (r.errors && r.errors.length)) { showToast(r.error || r.errors[0]); return; }
+  playItem(r.item);
+}
+
+document.addEventListener("tabchange", (e) => { if (e.detail === "upload") renderUpload(); });
 
 // ---------------------------------------------------------------------------
 // tabs: Cases · Weekly · Stakeout · Upload (deep-linkable as #weekly etc.)

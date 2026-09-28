@@ -147,6 +147,23 @@ export function watchRoom(code, name, { onRoom, onPeople }) {
   return () => sb.removeChannel(channel);
 }
 
+// ---------- Upload: share a pack by link ----------
+export async function sharePack(pack) {
+  for (let tries = 0; tries < 5; tries++) {
+    const code = Array.from(crypto.getRandomValues(new Uint32Array(8)),
+      (n) => CODE_ALPHABET[n % CODE_ALPHABET.length]).join("");
+    const { error } = await sb.from("custom_packs").insert({ share_code: code, owner_id: user.id, pack });
+    if (!error) return code;
+    if (error.code !== "23505") throw error;
+  }
+  throw new Error("couldn't create a share link, try again");
+}
+export async function getPack(code) {
+  const { data, error } = await sb.rpc("get_custom_pack", { p_code: code });
+  if (error) throw error;
+  return data;
+}
+
 // ---------- admin (weekly drops) ----------
 export function isGuest() {
   return !user || user.is_anonymous;

@@ -1366,6 +1366,15 @@ textarea.code {
 .countdown span.pop { animation: count-pop .9s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes count-pop { from { transform: scale(2.4); opacity: 0; } 40% { opacity: 1; } }
 
+/* ---------- Upload ---------- */
+.upload-steps { display: grid; gap: 12px; margin: 0 0 18px; padding-left: 22px; font-family: var(--mono); font-size: 14px; }
+.upload-steps li { line-height: 1.6; }
+.upload-steps .fb-btn { margin-left: 10px; }
+#upload-body { display: grid; gap: 12px; }
+#upload-body .brut-btn.small { justify-self: start; }
+.upload-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 10px; }
+.upload-link { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+
 /* ---------- admin drop (inside Weekly) ---------- */
 .admin-drop { margin-top: 40px; font-family: var(--mono); font-size: 13px; }
 .admin-drop summary { cursor: pointer; letter-spacing: 2px; text-transform: uppercase; opacity: .7; }
