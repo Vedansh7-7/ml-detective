@@ -30,6 +30,22 @@
     <p id="signin-msg" class="msg" role="status"></p>
   </section>
 
+  <!-- second step: a code from an authenticator app (set up once, on first sign-in) -->
+  <section id="v-mfa" class="card narrow" hidden>
+    <h1 id="mfa-title">Enter your code</h1>
+    <div id="mfa-enrol" hidden>
+      <p>One-time setup. Scan this with an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…), then type the 6-digit code it shows.</p>
+      <img id="mfa-qr" class="qr" alt="Authenticator QR code">
+      <p class="small">Can't scan? Enter this key by hand: <code id="mfa-secret"></code></p>
+    </div>
+    <p id="mfa-ask">Open your authenticator app and type the 6-digit code for ML Detective.</p>
+    <form id="mfa-form">
+      <input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="123456">
+      <button class="btn" type="submit">Verify</button>
+    </form>
+    <p id="mfa-msg" class="msg" role="status"></p>
+  </section>
+
   <section id="v-denied" class="card narrow" hidden>
     <h1>No access</h1>
     <p>This account can't open the case room.</p>

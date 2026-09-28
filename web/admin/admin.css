@@ -60,3 +60,6 @@ td.wrap { max-width: 320px; white-space: pre-wrap; word-break: break-word; }
 .bad { color: var(--alarm); font-weight: bold; margin-top: 10px; }
 .errors { white-space: pre-wrap; }
 .captcha-host { position: fixed; left: 50%; bottom: 16px; z-index: 100; transform: translateX(-50%); }
+.qr { display: block; width: 200px; height: 200px; margin: 12px auto; background: #fff; padding: 8px; }
+.small { font-size: 0.85em; opacity: 0.8; word-break: break-all; }
+#mfa-code { letter-spacing: 0.3em; font-size: 1.3em; }
