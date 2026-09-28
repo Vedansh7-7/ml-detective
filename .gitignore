@@ -19,6 +19,7 @@ stories_inbox/*
 supabase/seed_*.sql
 supabase/.temp/
 .vercel/
+.env*
 
 # editors / OS
 .vscode/
