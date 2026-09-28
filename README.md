@@ -2,7 +2,7 @@
 
 Every dataset is hiding something.
 
-ML Detective is a small data-forensics game. You pick a case, read the story, and get a dataset loaded as `df` in a notebook-style editor in your browser. Somewhere in it is **one planted problem**: an impossible value, a leaky feature, a unit mix-up, a pattern that only shows up across columns. Write whatever pandas / numpy / sklearn / scipy code you like to find it, then type your verdict. Wrong guesses earn sharper hints; right ones go on the leaderboard with your time, steps and tries.
+ML Detective is a small data-forensics game. You pick a case, read the story, and get a dataset loaded as `df` in a notebook-style editor in your browser. Somewhere in it is **one planted problem**: an impossible value, a leaky feature, a unit mix-up, a pattern that only shows up across columns. Write whatever pandas / numpy / sklearn / scipy code you like to find it, then type your verdict. Wrong guesses earn sharper hints; right ones go on the leaderboard with a score built from your time, cell runs, notebook size, compute time, errors and wrong guesses. 1000 is par for the case; see [docs/SCORING.md](docs/SCORING.md).
 
 There are 15 cases across three levels:
 

@@ -195,14 +195,16 @@ let boardPrimed = false;
 function renderBoard(results) {
   const tbody = $("#leaderboard tbody");
   tbody.innerHTML = "";
-  results.slice().reverse().slice(0, 25).forEach((r) => {
+  // the server sends each player's best score per case, best first
+  results.slice(0, 25).forEach((r, i) => {
     const tr = el("tr");
     const fresh = boardPrimed && !seenSolves.has(r.timestamp);
-    [r.player || "—", r.story_title || r.dataset_id, r.level, fmtTime(r.elapsed_seconds), r.steps, r.attempts]
+    [i + 1, r.player || "—", r.story_title || r.dataset_id, r.level, r.score ?? "—",
+     fmtTime(r.elapsed_seconds), r.attempts]
       .forEach((v) => tr.appendChild(el("td", null, String(v))));
     if (fresh) {
       tr.classList.add("fresh");
-      tr.firstChild.appendChild(el("span", "fresh-chip", "JUST SOLVED"));
+      tr.children[1].appendChild(el("span", "fresh-chip", "JUST SOLVED"));
     }
     tbody.appendChild(tr);
   });
@@ -271,6 +273,7 @@ async function beginInvestigation() {
 
   // fresh notebook: only df exists in the kernel -- imports are up to you
   $("#cells").innerHTML = "";
+  cellSeq = 0;
   newCell("import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndf.head()");
 
   $("#win-overlay").classList.remove("show");
@@ -308,8 +311,11 @@ function autosize(textarea) {
   textarea.style.height = textarea.scrollHeight + "px";
 }
 
+// stable per-cell ids, so the server can count distinct cells for scoring
+let cellSeq = 0;
 function newCell(code = "", after = null) {
   const cell = el("div", "cell");
+  cell.dataset.cellId = `c${++cellSeq}`;
   const gutter = el("div", "cell-gutter", "[ ]");
   const box = el("div", "cell-box");
   const tools = el("div", "cell-tools");
@@ -357,7 +363,7 @@ async function runCell(cell) {
   cell.classList.add("running");
   gutter.textContent = "[*]";
   try {
-    const data = await api("/api/run", { code: $("textarea", cell).value });
+    const data = await api("/api/run", { code: $("textarea", cell).value, cell_id: cell.dataset.cellId });
     renderOutput(output, data);
     if (typeof data.steps === "number") {
       gutter.textContent = `[${data.steps}]`;
@@ -464,6 +470,7 @@ async function submitVerdict() {
     $("#win-time").textContent = fmtTime(data.elapsed_seconds);
     $("#win-steps").textContent = data.steps;
     $("#win-tries").textContent = data.attempts;
+    $("#win-score").textContent = data.score;
     $("#win-explain").textContent = data.explanation;
     paintDoodle($(".win-doodle"), state.story.doodle);
     setNotes(false);
@@ -550,7 +557,7 @@ async function pollLive() {
 
   if (!firstPoll) {
     data.results.filter((r) => !seenSolves.has(r.timestamp) && r.player !== state.name)
-      .forEach((r) => showToast(`⚡ ${r.player} just closed "${r.story_title}" in ${fmtTime(r.elapsed_seconds)}`));
+      .forEach((r) => showToast(`⚡ ${r.player} just closed "${r.story_title}" for ${r.score} pts`));
   }
   renderBoard(data.results);
 }
