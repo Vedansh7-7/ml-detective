@@ -19,7 +19,7 @@ function el(tag, text, cls) {
   if (cls) n.className = cls;
   return n;
 }
-const views = ["#v-signin", "#v-denied", "#v-board"];
+const views = ["#v-signin", "#v-mfa", "#v-denied", "#v-board"];
 function show(id) {
   views.forEach((v) => { $(v).hidden = v !== id; });
 }
