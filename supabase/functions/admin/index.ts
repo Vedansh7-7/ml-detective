@@ -5,7 +5,8 @@
 // The pack has already been screened and generated in the admin's browser
 // (the same story_ingest checks the desktop app uses). This stores it:
 // public story/meta -> cases, answers -> case_secrets, dataset -> storage,
-// schedule -> weekly_challenges. Only accounts listed in `admins` may call it.
+// schedule -> weekly_challenges. Only accounts listed in `admins`, signed in with their
+// authenticator code (aal2), may call it.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const CORS = {
@@ -86,6 +87,14 @@ Deno.serve(async (req) => {
   const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   const { data: { user } } = await db.auth.getUser(token);
   if (!user) return json({ error: "sign in first" }, 401);
+  // getUser() has verified the token; its aal claim says whether the
+  // authenticator code was entered after the emailed link
+  let aal = "";
+  try {
+    const b64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    aal = JSON.parse(atob(b64.padEnd(Math.ceil(b64.length / 4) * 4, "="))).aal || "";
+  } catch { /* malformed: treated as aal1 */ }
+  if (aal !== "aal2") return json({ error: "enter your authenticator code first" }, 403);
   const { data: admin } = await db.from("admins").select("user_id").eq("user_id", user.id).maybeSingle();
   if (!admin) return json({ error: "this account isn't an admin" }, 403);
 

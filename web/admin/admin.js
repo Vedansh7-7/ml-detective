@@ -1,8 +1,9 @@
 // The case room: a hidden admin board (not linked anywhere, noindex).
-// Sign-in is a magic link to an existing admin account only; the session is
-// stored separately from the player's guest session. Everything shown here
+// Sign-in is a magic link to an existing admin account only, then a code
+// from an authenticator app; the session is stored separately from the
+// player's guest session. Everything shown here
 // is also enforced server-side: admin_overview() and the waitlist/feedback
-// reads refuse anyone who isn't in `admins`.
+// reads refuse anyone who isn't in `admins` or hasn't entered the code.
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { captchaToken } from "../play/captcha.js";
 import { SUPABASE_KEY, SUPABASE_URL } from "../play/config.js";
@@ -61,15 +62,64 @@ $("#signout").addEventListener("click", async () => {
 });
 $("#refresh").addEventListener("click", () => loadBoard());
 
+// ---------------------------------------------------------------- second factor
+// The emailed link alone gives an aal1 session, which the database and the
+// admin function treat as "not an admin". The authenticator code lifts it to aal2.
+let factorId = null;
+
+async function needSecondFactor() {
+  const { data: level } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (level?.currentLevel === "aal2") return false;
+  const { data: factors, error } = await sb.auth.mfa.listFactors();
+  if (error) throw error;
+  if (factors.totp.length) {                  // set up already: just ask for the code
+    factorId = factors.totp[0].id;
+    $("#mfa-title").textContent = "Enter your code";
+    $("#mfa-enrol").hidden = true;
+  } else {                                    // first sign-in: set up an authenticator
+    for (const f of factors.all.filter((f) => f.status !== "verified")) {
+      await sb.auth.mfa.unenroll({ factorId: f.id });   // leftovers from an unfinished setup
+    }
+    const { data, error: err } = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "ML Detective admin" });
+    if (err) throw err;
+    factorId = data.id;
+    $("#mfa-title").textContent = "Set up your authenticator";
+    $("#mfa-qr").src = data.totp.qr_code;
+    $("#mfa-secret").textContent = data.totp.secret;
+    $("#mfa-enrol").hidden = false;
+  }
+  show("#v-mfa");
+  $("#mfa-code").focus();
+  return true;
+}
+
+$("#mfa-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("#mfa-msg");
+  msg.textContent = "Checking…";
+  const { error } = await sb.auth.mfa.challengeAndVerify({ factorId, code: $("#mfa-code").value.trim() });
+  if (error) { msg.textContent = "That code didn't work. Wait for the next one and try again."; return; }
+  msg.textContent = "";
+  $("#mfa-code").value = "";
+  start();
+});
+
 async function start() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session || session.user.is_anonymous) { show("#v-signin"); return; }
   $("#who").textContent = session.user.email || "";
   $("#signout").hidden = false;
+  if (location.hash.includes("access_token")) history.replaceState(null, "", location.pathname);
+  try {
+    if (await needSecondFactor()) return;
+  } catch (err) {
+    console.warn("mfa:", err);
+    show("#v-denied");
+    return;
+  }
   const { data: admin } = await sb.rpc("is_admin");
   if (!admin) { show("#v-denied"); return; }
   $("#refresh").hidden = false;
-  if (location.hash.includes("access_token")) history.replaceState(null, "", location.pathname);
   show("#v-board");
   loadBoard();
 }
