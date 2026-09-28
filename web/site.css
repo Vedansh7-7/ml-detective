@@ -1037,6 +1037,8 @@ code { font-family: var(--mono); }
 .waitlist-form .btn:disabled { opacity: .5; cursor: wait; }
 .wl-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .wl-status { min-height: 1.4em; margin: 0; font-size: 14px; }
+.wl-privacy { margin: 0; font-size: 13px; opacity: 0.75; }
+.wl-privacy a { color: inherit; text-decoration: underline; }
 .wl-status[data-kind="ok"] { color: var(--confirm); }
 .wl-status[data-kind="bad"] { color: #ff8a80; }
 @media (max-width: 560px) { .wl-row { grid-template-columns: 1fr; } }

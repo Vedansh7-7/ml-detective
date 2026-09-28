@@ -67,7 +67,7 @@ def page(title, description, path, body, head_extra="", depth=1):
 {body}
 </main>
 <footer class="lr-foot">
-  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a> · <a href="mailto:vedansh.shrivastavaa@gmail.com">Contact</a>
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a> · <a href="mailto:vedansh.shrivastavaa@gmail.com">Contact</a> · <a href="/privacy/">Privacy</a>
   <br>© 2026 Vedansh Shrivastava · Free for non-commercial use · <a href="https://github.com/Vedansh7-7/ml-detective/blob/main/COMMERCIAL.md" rel="noopener">Licence</a>
 </footer>
 </body>
@@ -182,7 +182,7 @@ def build(web_dir, levels, doodles_dir):
                      "/learn/", hub, hub_schema))
 
     today = datetime.date.today().isoformat()
-    urls = ["/", "/play/", "/learn/"] + [f"/learn/{c['slug']}/" for c in cases]
+    urls = ["/", "/play/", "/learn/", "/privacy/"] + [f"/learn/{c['slug']}/" for c in cases]
     with open(os.path.join(web_dir, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for u in urls:
