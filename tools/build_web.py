@@ -113,6 +113,8 @@ def main():
 
     for mod in PY_MODULES:
         shutil.copyfile(os.path.join(HERE, mod), os.path.join(WEB, "py", mod))
+    # the Upload tab offers the master prompt for writing new cases
+    shutil.copyfile(os.path.join(HERE, "STORY_PROMPT.md"), os.path.join(WEB, "play", "story-prompt.md"))
     for mod in ("scoring.js", "answers.js"):
         src = os.path.join(WEB, "play", mod)
         if os.path.exists(src):

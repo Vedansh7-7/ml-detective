@@ -5,6 +5,7 @@
 //     solves recorded by the `game` function; boards are shared (online.js)
 //   - LOCAL (fallback when the backend can't be reached): verdicts are checked
 //     against hashed keys and solves stay in this browser
+import { checkAnswer } from "./answers.js";
 import { Engine } from "./engine.js";
 import { parFor, rank, score, statsOf } from "./scoring.js";
 
@@ -12,6 +13,7 @@ const CASES = "../cases";
 const STORE_SOLVES = "mld.solves.v1";
 const STORE_NAME = "mld.name";
 const STORE_FEEDBACK = "mld.feedback.v1";
+const STORE_UPLOADS = "mld.uploads.v1";
 const CONNECT_TIMEOUT_MS = 8000;
 
 const AVAILABLE_PACKAGES = ["pandas", "numpy", "matplotlib", "seaborn", "scikit-learn", "scipy"];
@@ -79,7 +81,8 @@ export function onEngineStatus(fn) {
 
 // ---------- the current game ----------
 let game = null;
-let lastProcessed = null;   // the last pack that passed validation (admin drop / upload)
+let lastProcessed = null;   // the last pack that passed validation for an admin drop
+let lastUpload = null;      // ...and for the Upload tab
 function newGame(item) {
   return {
     item, level: item.level, verdict: null, gameId: null, csv: null,
@@ -135,7 +138,9 @@ const routes = {
     const next = newGame(item);
     next.csv = csv;
     await ready;
-    if (online) {
+    if (item.custom) {
+      next.custom = true;             // an uploaded case: checked here, never ranked
+    } else if (online) {
       const started = await online.callGame({ action: "start", case_id: story_id, room_code });
       if (started.error) return { error: started.error };
       next.gameId = started.game_id;
@@ -180,6 +185,7 @@ const routes = {
     if (!game) return { error: "no active game -- open a case first" };
     if (game.solved) return { error: "already solved -- start a new case" };
     const text = String(answer || "").trim();
+    if (game.custom) return submitCustom(text);
     return online ? submitOnline(text, share) : submitLocal(text);
   },
 
@@ -208,6 +214,46 @@ const routes = {
       title: w.item.story.title, level: w.item.level, ends_at: w.ends_at, top: (await boardFor(w)).slice(0, 3),
     })));
     return { current, upcoming, past: pastBoards };
+  },
+
+  // ---------- Upload: your own cases ----------
+  "/api/upload/validate": async ({ text }, onStep) => {
+    const { processPack } = await import("./packlab.js");
+    const res = await processPack(text, engine, onStep);
+    lastUpload = res.errors.length ? null : { ...res, text };
+    if (res.errors.length) return { errors: res.errors };
+    const { story, meta } = res.case;
+    return { errors: [], summary: { id: story.id, title: story.title, level: story.level,
+                                    rows: meta.n_rows, columns: Object.keys(meta.columns).length } };
+  },
+  "/api/upload/play": async () => {
+    if (!lastUpload) return { error: "validate a pack first" };
+    const item = customItem(lastUpload);
+    const saved = readJSON(STORE_UPLOADS, []).filter((u) => u.id !== item.story.id);
+    saved.unshift({ id: item.story.id, title: item.story.title, level: item.level, text: lastUpload.text });
+    writeJSON(STORE_UPLOADS, saved.slice(0, 20));
+    return { item };
+  },
+  "/api/upload/share": async () => {
+    await ready;
+    if (!online) return { error: "Sharing needs the online archive -- you're playing offline right now." };
+    if (!lastUpload) return { error: "validate a pack first" };
+    return { code: await online.sharePack(lastUpload.pack) };
+  },
+  "/api/upload/mine": async () => ({
+    uploads: readJSON(STORE_UPLOADS, []).map(({ id, title, level }) => ({ id, title, level })),
+  }),
+  "/api/upload/replay": async ({ id }, onStep) => {
+    const saved = readJSON(STORE_UPLOADS, []).find((u) => u.id === id);
+    if (!saved) return { error: "that upload isn't saved in this browser any more" };
+    return openPackText(saved.text, onStep);
+  },
+  "/api/upload/open": async ({ code }, onStep) => {
+    await ready;
+    if (!online) return { error: "Opening a shared case needs the online archive." };
+    const pack = await online.getPack(String(code || "").trim());
+    if (!pack) return { error: "No shared case with that link. Ask your friend to share it again." };
+    return openPackText(JSON.stringify(pack), onStep);
   },
 
   // ---------- Stakeout ----------
@@ -327,6 +373,43 @@ async function submitOnline(text, share) {
   if (res.correct) game.solved = true;
   if (!res.correct && typeof res.attempts === "number") game.attempts = res.attempts;
   return res;
+}
+
+// an uploaded case as an archive item (ids prefixed so they can't shadow a built-in case)
+function customItem({ case: c, csv }) {
+  const story = { ...c.story, id: `upload_${c.story.id}`, doodle: c.svg };
+  const item = { level: c.story.level, story, meta: c.meta, csv, secret: c.secret, custom: true };
+  registerCase(item);
+  return item;
+}
+
+async function openPackText(text, onStep) {
+  const { processPack } = await import("./packlab.js");
+  const res = await processPack(text, engine, onStep);
+  if (res.errors.length) return { errors: res.errors };
+  lastUpload = { ...res, text };
+  return { item: customItem(res) };
+}
+
+// uploaded cases carry their own answers; the score is shown but not ranked
+function submitCustom(text) {
+  const secret = game.item.secret;
+  if (checkAnswer(text, secret)) {
+    game.solved = true;
+    const entry = {
+      elapsed_seconds: Math.round((Date.now() - game.startTime) / 100) / 10,
+      steps: game.steps, attempts: game.attempts + 1, cells: game.cells.size,
+      errored_cells: game.errored.size, runtime_seconds: game.runtime,
+    };
+    return {
+      correct: true, custom: true, elapsed_seconds: entry.elapsed_seconds, steps: entry.steps,
+      attempts: entry.attempts, score: score(statsOf(entry), parFor(game.level)),
+      explanation: secret.description,
+    };
+  }
+  game.attempts += 1;
+  const hints = secret.hints;
+  return { correct: false, attempts: game.attempts, hint: hints[Math.min(game.attempts, hints.length) - 1] };
 }
 
 async function submitLocal(text) {
