@@ -3,7 +3,7 @@
 //
 // Flow:  #splash  --fade-->  #hero  --travel-->  #story-intro  --travel-->  #ide
 //        (brutalist)         (brutalist)         (story palette)           (story palette)
-import { api, onEngineStatus } from "./backend.js";
+import { api, onEngineStatus, watchRoom } from "./backend.js";
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -121,6 +121,9 @@ async function leaveSplash() {
   startLive();
   loadArchive();
   go("hero", "fade");
+  // arrived through a Stakeout invite link (play/#stakeout/CODE)
+  const [tab, code] = location.hash.slice(1).split("/");
+  if (tab === "stakeout" && code) enterRoom(code);
 }
 $("#join-form").addEventListener("submit", (e) => { e.preventDefault(); leaveSplash(); });
 
@@ -252,7 +255,10 @@ async function beginInvestigation() {
   const loader = $("#py-loader");
   loader.hidden = pythonReady;
   $("#begin-btn").disabled = true;
-  const data = await api("/api/start", { story_id: state.story.id });
+  // inside a running Stakeout for this case, the game is timed against the room
+  const room = state.room && state.room.status === "running" && state.room.case_id === state.story.id
+    ? state.room.code : undefined;
+  const data = await api("/api/start", { story_id: state.story.id, room_code: room });
   loader.hidden = true;
   $("#begin-btn").disabled = false;
   if (data.error) { showToast(data.error); return; }
@@ -805,9 +811,227 @@ async function renderAdmin(box) {
 document.addEventListener("tabchange", (e) => { if (e.detail === "weekly") renderWeekly(); });
 
 // ---------------------------------------------------------------------------
+// Stakeout: friends race the same case. The host opens a room (6-letter
+// code + link), everyone joins, the host starts a shared countdown, and the
+// room board fills up live.
+// ---------------------------------------------------------------------------
+let roomUnsub = null;
+let roomPoll = null;
+const roomSeen = new Set();
+
+async function caseItemById(id) {
+  const { levels } = await api("/api/levels");
+  for (const { level, stories } of levels) {
+    const item = stories.find((s) => s.story.id === id);
+    if (item) return { level, ...item };
+  }
+  return null;
+}
+
+async function renderStakeout() {
+  if (state.room) return renderRoom();
+  const body = $("#stakeout-body");
+  body.innerHTML = "";
+
+  const grid = el("div", "stakeout-grid");
+  const host = el("div", "stakeout-box");
+  host.appendChild(el("h3", null, "Start a Stakeout"));
+  host.appendChild(el("p", "level-blurb", "Pick a case. You'll get a code to send your friends."));
+  const pick = el("select", "stakeout-select");
+  const { levels } = await api("/api/levels");
+  levels.forEach(({ level, stories }) => {
+    const group = el("optgroup");
+    group.label = level.toUpperCase();
+    stories.forEach(({ story }) => {
+      const o = el("option", null, story.title);
+      o.value = story.id;
+      group.appendChild(o);
+    });
+    pick.appendChild(group);
+  });
+  const open = el("button", "brut-btn small", "Open a room");
+  const hostMsg = el("p", "admin-msg");
+  open.addEventListener("click", async () => {
+    open.disabled = true;
+    const r = await api("/api/rooms/create", { case_id: pick.value });
+    open.disabled = false;
+    if (r.error) { hostMsg.textContent = r.error; return; }
+    enterRoom(r.code);
+  });
+  host.append(pick, open, hostMsg);
+
+  const join = el("form", "stakeout-box");
+  join.appendChild(el("h3", null, "Join with a code"));
+  join.appendChild(el("p", "level-blurb", "Got a code from a friend? Type it in."));
+  const code = el("input", "stakeout-code-input");
+  code.maxLength = 6; code.placeholder = "K7Q2XM"; code.autocomplete = "off"; code.spellcheck = false;
+  const go = el("button", "brut-btn small", "Join");
+  go.type = "submit";
+  const joinMsg = el("p", "admin-msg");
+  join.addEventListener("submit", (e) => { e.preventDefault(); enterRoom(code.value, joinMsg); });
+  join.append(code, go, joinMsg);
+
+  grid.append(host, join);
+  body.appendChild(grid);
+}
+
+async function enterRoom(rawCode, msgEl) {
+  const code = String(rawCode || "").trim().toUpperCase();
+  const r = await api("/api/rooms/get", { code });
+  if (r.error) {
+    if (msgEl) msgEl.textContent = r.error; else showToast(r.error);
+    return;
+  }
+  leaveRoom(false);
+  const { room, me } = r;
+  state.room = { code, case_id: room.case_id, status: room.status, starts_at: room.starts_at,
+                 host: room.host_id === me, title: room.cases.title, level: room.cases.level, people: [] };
+  selectTab("stakeout");
+  history.replaceState(null, "", `#stakeout/${code}`);
+  renderRoom();
+
+  roomUnsub = await watchRoom(code, state.name || "detective", {
+    onRoom: (row) => {
+      const was = state.room && state.room.status;
+      if (!state.room) return;
+      Object.assign(state.room, { status: row.status, starts_at: row.starts_at });
+      if (was !== "running" && row.status === "running") startCountdown(row.starts_at);
+      renderRoom();
+    },
+    onPeople: (people) => {
+      if (!state.room) return;
+      state.room.people = people;
+      renderRoom();
+    },
+  });
+  pollRoomBoard();
+  roomPoll = setInterval(pollRoomBoard, 3000);
+}
+
+function leaveRoom(rerender = true) {
+  if (roomUnsub) roomUnsub();
+  roomUnsub = null;
+  clearInterval(roomPoll);
+  roomPoll = null;
+  roomSeen.clear();
+  state.room = null;
+  if (rerender) {
+    history.replaceState(null, "", "#stakeout");
+    renderStakeout();
+  }
+}
+
+let roomBoardRows = [];
+async function pollRoomBoard() {
+  if (!state.room) return;
+  const code = state.room.code;
+  const r = await api("/api/rooms/board", { code });
+  if (r.error || !state.room || state.room.code !== code) return;
+  const fresh = r.results.filter((x) => !roomSeen.has(x.timestamp));
+  if (roomSeen.size) {
+    fresh.filter((x) => x.player !== state.name)
+      .forEach((x) => showToast(`⚡ ${x.player} just closed it — ${x.score} pts in ${fmtTime(x.elapsed_seconds)}`));
+  }
+  r.results.forEach((x) => roomSeen.add(x.timestamp));
+  roomSeen.add("primed");
+  roomBoardRows = r.results;
+  const box = $("#room-board");
+  if (box) {
+    box.innerHTML = "";
+    box.appendChild(roomBoardRows.length ? boardTable(roomBoardRows)
+      : el("p", "board-empty", "No one has closed it yet."));
+  }
+}
+
+function renderRoom() {
+  const body = $("#stakeout-body");
+  if (!state.room || !body) return;
+  const room = state.room;
+  body.innerHTML = "";
+
+  const head = el("div", "room-head");
+  const codeBox = el("div", "room-code");
+  codeBox.append(el("span", null, "ROOM"), el("b", null, room.code));
+  const link = `${location.origin}${location.pathname}#stakeout/${room.code}`;
+  const copy = el("button", "fb-btn", "Copy invite link");
+  copy.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(link); copy.textContent = "Copied"; }
+    catch { copy.textContent = link; }
+  });
+  const leave = el("button", "fb-btn ghost", "Leave room");
+  leave.addEventListener("click", () => leaveRoom());
+  const info = el("div", "room-info");
+  info.append(el("div", "weekly-kicker", `${room.level.toUpperCase()} CASE`), el("h3", null, room.title));
+  head.append(codeBox, info, copy, leave);
+  body.appendChild(head);
+
+  const people = el("div", "room-people");
+  people.appendChild(el("span", "weekly-kicker", `${room.people.length || 1} IN THE ROOM`));
+  (room.people.length ? room.people : [{ name: state.name }]).forEach((p) => people.appendChild(el("span", "room-chip", p.name)));
+  body.appendChild(people);
+
+  const action = el("div", "room-action");
+  if (room.status === "lobby") {
+    if (room.host) {
+      const start = el("button", "brut-btn", "Start the Stakeout");
+      start.addEventListener("click", async () => {
+        start.disabled = true;
+        const r = await api("/api/rooms/start", { code: room.code });
+        if (r.error) { start.disabled = false; showToast(r.error); }
+      });
+      action.append(start, el("p", "level-blurb", "Everyone gets a 5-second countdown, then the case opens for all of you."));
+    } else {
+      action.appendChild(el("p", "level-blurb", "Waiting for the host to start. The case opens for everyone at once."));
+    }
+  } else {
+    const openCase = el("button", "brut-btn", state.solvedIds && state.solvedIds.has(room.case_id) ? "Open the case again" : "Open the case");
+    openCase.addEventListener("click", () => openRoomCase());
+    action.append(el("p", "level-blurb", "The Stakeout is on."), openCase);
+  }
+  body.appendChild(action);
+
+  body.appendChild(el("h3", "weekly-past-head", "ROOM BOARD"));
+  const board = el("div", null);
+  board.id = "room-board";
+  board.appendChild(roomBoardRows.length ? boardTable(roomBoardRows) : el("p", "board-empty", "No one has closed it yet."));
+  body.appendChild(board);
+}
+
+function startCountdown(startsAt) {
+  const overlay = $("#countdown");
+  const label = $("span", overlay);
+  overlay.hidden = false;
+  const tick = () => {
+    const left = Math.ceil((Date.parse(startsAt) - Date.now()) / 1000);
+    if (left <= 0 || left > 10) {           // clocks disagree by more than a few seconds: just go
+      label.textContent = "GO";
+      setTimeout(() => { overlay.hidden = true; openRoomCase(); }, 600);
+      return;
+    }
+    label.textContent = String(left);
+    label.classList.remove("pop"); void label.offsetWidth; label.classList.add("pop");
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+async function openRoomCase() {
+  if (!state.room) return;
+  const item = await caseItemById(state.room.case_id);
+  if (!item) { showToast("That case isn't in this version of the site."); return; }
+  state.story = item.story;
+  state.meta = item.meta;
+  applyTheme(item.story.palette);
+  await beginInvestigation();
+}
+
+document.addEventListener("tabchange", (e) => { if (e.detail === "stakeout") renderStakeout(); });
+
+// ---------------------------------------------------------------------------
 // tabs: Cases · Weekly · Stakeout · Upload (deep-linkable as #weekly etc.)
 // ---------------------------------------------------------------------------
 function selectTab(name) {
+  name = String(name || "").split("/")[0];            // "#stakeout/CODE" -> stakeout
   const tabs = document.querySelectorAll(".play-tabs [role=tab]");
   if (![...tabs].some((t) => t.dataset.tab === name)) name = "cases";
   tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));

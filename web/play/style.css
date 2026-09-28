@@ -1301,6 +1301,71 @@ textarea.code {
   font-size: 13px;
 }
 
+/* ---------- Stakeout ---------- */
+.stakeout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.stakeout-box {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding: 20px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: var(--hard);
+}
+.stakeout-box h3 { margin: 0; font-family: var(--display); text-transform: uppercase; font-size: 22px; }
+.stakeout-box .level-blurb { margin: 0; }
+.stakeout-select, .stakeout-code-input {
+  font-family: var(--mono);
+  font-size: 15px;
+  padding: 10px;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+.stakeout-code-input { text-transform: uppercase; letter-spacing: 8px; font-size: 22px; max-width: 260px; }
+.brut-btn.small { font-size: 15px; padding: 10px 18px; box-shadow: 5px 5px 0 var(--alarm); justify-self: start; }
+
+.room-head { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+.room-code {
+  display: grid;
+  padding: 10px 18px;
+  background: var(--tape);
+  border: 3px solid var(--ink);
+  box-shadow: var(--hard);
+  font-family: var(--mono);
+}
+.room-code span { font-size: 11px; letter-spacing: 3px; }
+.room-code b { font-family: var(--display); font-size: clamp(30px, 5vw, 48px); letter-spacing: 6px; }
+.room-info { flex: 1; min-width: 200px; }
+.room-info h3 { margin: 4px 0 0; font-family: var(--display); text-transform: uppercase; font-size: 22px; }
+.room-people { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 22px 0; }
+.room-chip {
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  background: #fff;
+  border: 2px solid var(--ink);
+}
+.room-action { display: grid; gap: 8px; justify-items: start; margin-bottom: 28px; }
+.room-action .level-blurb { margin: 0; }
+
+.countdown {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+}
+.countdown span {
+  font-family: var(--display);
+  font-size: clamp(120px, 30vw, 340px);
+  color: var(--tape);
+  text-shadow: 12px 12px 0 var(--alarm);
+}
+.countdown span.pop { animation: count-pop .9s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes count-pop { from { transform: scale(2.4); opacity: 0; } 40% { opacity: 1; } }
+
 /* ---------- admin drop (inside Weekly) ---------- */
 .admin-drop { margin-top: 40px; font-family: var(--mono); font-size: 13px; }
 .admin-drop summary { cursor: pointer; letter-spacing: 2px; text-transform: uppercase; opacity: .7; }
