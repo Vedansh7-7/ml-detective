@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Tuesday Ledger: Spot impossible values with summary statistics · ML Detective</title>
+<meta name="description" content="Spot impossible values with summary statistics. A yarn shop&#x27;s weekly orders. The accountant says one thing in here can&#x27;t be real.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/the-tuesday-ledger/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="The Tuesday Ledger: Spot impossible values with summary statistics · ML Detective">
+<meta property="og:description" content="Spot impossible values with summary statistics. A yarn shop&#x27;s weekly orders. The accountant says one thing in here can&#x27;t be real.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/the-tuesday-ledger/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Tuesday Ledger", "description": "Spot impossible values with summary statistics. A yarn shop's weekly orders. The accountant says one thing in here can't be real.", "url": "https://ml-detective.vercel.app/learn/the-tuesday-ledger/", "teaches": "Spot impossible values with summary statistics", "learningResourceType": "Interactive exercise", "educationalLevel": "Easy", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, describe() and min/max checks, histograms, sanity-checking ranges", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Easy case</span></nav>
+<article class="lr-case" style="--c-bg:#f7ecdc;--c-ink:#3b2418;--c-accent:#d4622a">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Easy case · data forensics in Python</p>
+      <h1>The Tuesday Ledger</h1>
+      <p class="lr-lead">Spot impossible values with summary statistics.</p>
+      <p class="lr-hookline">A yarn shop&#x27;s weekly orders. The accountant says one thing in here can&#x27;t be real.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/easy_customer_orders">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- receipt with torn zig-zag bottom -->
+  <path d="M52 18 Q90 14 128 17 L131 150 L121 142 L111 151 L101 142 L91 151 L81 142 L71 151 L61 142 L53 150 Z"/>
+  <path d="M66 38 H116"/>
+  <path d="M66 54 H104"/>
+  <path d="M66 70 H112"/>
+  <path d="M66 86 H98"/>
+  <path d="M66 112 H118" stroke-dasharray="2 7"/>
+  <!-- magnifying glass -->
+  <circle cx="150" cy="96" r="30"/>
+  <path d="M136 84 q8 -10 20 -6" opacity=".55"/>
+  <path d="M172 118 L204 152" stroke-width="8"/>
+  <!-- ball of yarn with a loose thread -->
+  <circle cx="196" cy="42" r="20"/>
+  <path d="M180 32 q16 6 32 -2"/>
+  <path d="M178 46 q18 8 36 0"/>
+  <path d="M186 24 q-2 20 8 36"/>
+  <path d="M202 23 q8 18 2 38"/>
+  <path d="M196 62 q-8 22 -36 20" stroke-dasharray="4 6"/>
+  <!-- little stars of doubt -->
+  <path d="M28 44 l6 0 M31 41 l0 6"/>
+  <path d="M34 120 l5 0 M36.5 117.5 l0 5"/>
+</svg>
+</div>
+  </div>
+  <section><h2>The story</h2><p>Marigold &amp; Thread is a two-room shop in a converted bakery that sells hand-dyed yarn online. Every Sunday night Priya exports the week&#x27;s orders and emails them to her accountant, Mr. Okafor.</p><p>This week he replied with a single line: &quot;Something in here can&#x27;t be real.&quot; Then he left for a fishing trip with no signal.</p><p>Priya has 600 orders, a tax filing due Monday, and no idea what he meant. She has asked you to go through the ledger before then. Start where any bookkeeper would: the totals, the ranges, the extremes.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>describe() and min/max checks</li><li>histograms</li><li>sanity-checking ranges</li></ul>
+    <p>The fault lives in one column. Summary statistics, value counts and a histogram will get you there. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>An e-commerce store exported one week of orders. Something in this export looks wrong -- find it. 600 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>customer_id</code></td><td>int, unique id</td></tr><tr><td><code>age</code></td><td>int, customer age in years</td></tr><tr><td><code>region</code></td><td>categorical, North/South/East/West</td></tr><tr><td><code>items_in_cart</code></td><td>int, 1-7</td></tr><tr><td><code>order_value</code></td><td>float, order total in USD</td></tr><tr><td><code>is_returning_customer</code></td><td>int, 0 or 1</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/easy_customer_orders">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-spreadsheet-that-ate-genes/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Spreadsheet That Ate Genes</b>
+    <span class="lr-skill">Catch values corrupted by spreadsheet software</span>
+    <span class="lr-hook">A career-making cancer result, one shared spreadsheet, and 1,400 genes. Something got eaten in transit.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-mangoes-were-perfectly-fine/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Mangoes Were Perfectly Fine</b>
+    <span class="lr-skill">Find a column that carries no information</span>
+    <span class="lr-hook">Every truck of Alphonsos arrived at a perfect temperature. So why is Bengaluru sending half of them back?</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-register-that-read-ahead/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Register That Read Ahead</b>
+    <span class="lr-skill">Find a feature recorded after the outcome</span>
+    <span class="lr-hook">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

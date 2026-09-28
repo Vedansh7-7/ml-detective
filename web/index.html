@@ -3,12 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ML Detective: every dataset is hiding something</title>
-<meta name="description" content="A detective game for people who work with data. Write real Python against real data in your browser, find the one planted fault, and beat the clock.">
+<title>ML Detective: data cleaning and pandas practice as a detective game</title>
+<meta name="description" content="Practise data cleaning, pandas and ML debugging by solving cases. Each dataset hides one planted fault: find it with real Python in your browser, and beat the clock.">
+<link rel="canonical" href="https://ml-detective.vercel.app/">
 <meta name="theme-color" content="#0a0a0a">
-<meta property="og:title" content="ML Detective">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:url" content="https://ml-detective.vercel.app/">
+<meta property="og:title" content="ML Detective: every dataset is hiding something">
 <meta property="og:description" content="Write real Python against real data. Find the one lie. Beat the clock.">
-<meta property="og:image" content="assets/notebook.webp">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@graph": [
+  {"@type": "WebSite", "name": "ML Detective", "url": "https://ml-detective.vercel.app/"},
+  {"@type": "VideoGame", "name": "ML Detective", "url": "https://ml-detective.vercel.app/",
+   "description": "A browser game where you write real Python (pandas, NumPy, scikit-learn) to find the one planted fault hidden in each dataset.",
+   "genre": ["Educational", "Puzzle"], "gamePlatform": "Web browser", "playMode": ["SinglePlayer", "MultiPlayer"],
+   "applicationCategory": "Game", "operatingSystem": "Any",
+   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}},
+  {"@type": "FAQPage", "mainEntity": [
+    {"@type": "Question", "name": "Do I need to install anything?", "acceptedAnswer": {"@type": "Answer", "text": "No. Python runs right in your browser. Open the page, pick a case and start typing."}},
+    {"@type": "Question", "name": "Is it free?", "acceptedAnswer": {"@type": "Answer", "text": "The core cases are free to play."}},
+    {"@type": "Question", "name": "What do I need to know?", "acceptedAnswer": {"@type": "Answer", "text": "Basic pandas. If you can load a dataframe, run describe() and filter some rows, you can close an Easy case. The harder levels will teach you the rest."}},
+    {"@type": "Question", "name": "Can I make my own cases?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Upload lets you write a case with our master prompt, then play it privately or share a link."}},
+    {"@type": "Question", "name": "Is my code private?", "acceptedAnswer": {"@type": "Answer", "text": "Your code runs on your own device. Your notebooks only show up in Scout if you choose to share them."}}
+  ]}
+]}
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="site.css">
 <script>document.documentElement.classList.replace("no-js", "js");</script>
@@ -27,6 +52,7 @@
     </a>
     <nav class="nav-links" id="nav-links" aria-label="Main">
       <a href="#how">How it works</a>
+      <a href="learn/">Cases</a>
       <a href="#modes">Modes</a>
       <a href="#educators">For educators</a>
       <a href="#faq">FAQ</a>
@@ -499,6 +525,7 @@
     </a>
     <nav class="foot-links" aria-label="Footer">
       <a href="play/">Play</a>
+      <a href="learn/">All cases</a>
       <a href="#how">How it works</a>
       <a href="#modes">Modes</a>
       <a href="#educators">For educators</a>

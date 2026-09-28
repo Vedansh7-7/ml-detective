@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Fridge With Two Witnesses: Tell a genuine second sensor from a disguised copy · ML Detective</title>
+<meta name="description" content="Tell a genuine second sensor from a disguised copy. Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/the-fridge-with-two-witnesses/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="The Fridge With Two Witnesses: Tell a genuine second sensor from a disguised copy · ML Detective">
+<meta property="og:description" content="Tell a genuine second sensor from a disguised copy. Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/the-fridge-with-two-witnesses/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Fridge With Two Witnesses", "description": "Tell a genuine second sensor from a disguised copy. Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.", "url": "https://ml-detective.vercel.app/learn/the-fridge-with-two-witnesses/", "teaches": "Tell a genuine second sensor from a disguised copy", "learningResourceType": "Interactive exercise", "educationalLevel": "Normal", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, correlation matrices, unit conversion, row-by-row residuals", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Normal case</span></nav>
+<article class="lr-case" style="--c-bg:#eef5f8;--c-ink:#13303c;--c-accent:#1f7ea5">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Normal case · data forensics in Python</p>
+      <h1>The Fridge With Two Witnesses</h1>
+      <p class="lr-lead">Tell a genuine second sensor from a disguised copy.</p>
+      <p class="lr-hookline">Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/normal_kowhai_cold_chain_r2w">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M42 22 q-2 60 1 142 l86 1 q2 -70 -1 -143 z'/>
+  <path d='M44 70 l84 -1' opacity='0.8'/>
+  <path d='M116 36 l1 22' stroke-width='5'/>
+  <path d='M116 82 l1 30' stroke-width='5'/>
+  <path d='M52 102 l68 -1' opacity='0.5'/>
+  <path d='M52 132 l68 1' opacity='0.5'/>
+  <rect x='56' y='84' width='7' height='16' rx='2'/>
+  <rect x='68' y='84' width='7' height='16' rx='2'/>
+  <rect x='80' y='84' width='7' height='16' rx='2'/>
+  <rect x='60' y='114' width='7' height='16' rx='2'/>
+  <rect x='72' y='114' width='7' height='16' rx='2'/>
+  <path d='M62 30 l0 22 m-6 -16 l12 10 m0 -10 l-12 10' opacity='0.7'/>
+  <path d='M160 40 q-4 0 -4 5 l0 70'/>
+  <path d='M168 40 q4 0 4 5 l0 70'/>
+  <circle cx='164' cy='124' r='11'/>
+  <line x1='164' y1='116' x2='164' y2='70' stroke-width='5' opacity='0.7'/>
+  <path d='M198 40 q-4 0 -4 5 l0 70'/>
+  <path d='M206 40 q4 0 4 5 l0 70'/>
+  <circle cx='202' cy='124' r='11'/>
+  <line x1='202' y1='116' x2='202' y2='70' stroke-width='5' opacity='0.7'/>
+  <path d='M172 60 l6 0 m-6 20 l6 0 m-6 20 l6 0' opacity='0.6'/>
+  <path d='M210 60 l6 0 m-6 20 l6 0 m-6 20 l6 0' opacity='0.6'/>
+  <path d='M150 150 q30 10 64 0' stroke-dasharray='3 7' opacity='0.5'/>
+</svg></div>
+  </div>
+  <section><h2>The story</h2><p>Kowhai Valley Pharmacy is the only chemist for eighty kilometres of Otago sheep country. Every winter it holds the district’s flu vaccines in three medical fridges, and every fridge carries two probes, so that if one thermometer lies, the other can call it out.</p><p>Last month a fridge in the next town failed quietly and a whole clinic had to recall its doses. Now inspector Dr Priya Raman is auditing everyone’s logs, and pharmacist Hemi Walker is quietly proud of his: every hour, both probes agreed the vaccines were safe.</p><p>Priya is less impressed. Her signature decides whether 4,000 doses go into arms at next week’s school clinics or into a hazardous-waste bin. “Two witnesses are only worth something,” she tells Hemi over a lukewarm cup of tea, “if they didn’t rehearse their story together.”</p><p>She has pulled three and a half weeks of the fridge logger’s export, hour by hour for all three cabinets, and handed it to you on a borrowed laptop. One thing in it isn’t what the label on the logger claims it is. Find it before she signs.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>correlation matrices</li><li>unit conversion</li><li>row-by-row residuals</li></ul>
+    <p>The fault is a relationship: a feature against the target, against time, or against another source. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>Hourly readings from three vaccine fridges over 24 days. Each fridge has a main probe and a backup probe placed elsewhere in the cabinet, plus room temperature, door-open time and compressor duty. One thing in this export can’t be trusted. Find it. 1728 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>reading_id</code></td><td>int, unique reading number</td></tr><tr><td><code>timestamp</code></td><td>text, reading time (YYYY-MM-DD HH:MM, hourly)</td></tr><tr><td><code>fridge</code></td><td>text, fridge F1 / F2 / F3</td></tr><tr><td><code>main_probe_c</code></td><td>float, main cabinet probe temperature in °C</td></tr><tr><td><code>backup_probe_f</code></td><td>float, backup probe temperature in °F (a separate sensor in the cabinet)</td></tr><tr><td><code>ambient_c</code></td><td>float, room temperature in °C</td></tr><tr><td><code>door_open_s</code></td><td>int, seconds the door was open during the hour</td></tr><tr><td><code>compressor_duty_pct</code></td><td>float, percent of the hour the compressor ran</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/normal_kowhai_cold_chain_r2w">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/the-register-that-read-ahead/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Register That Read Ahead</b>
+    <span class="lr-skill">Find a feature recorded after the outcome</span>
+    <span class="lr-hook">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/eleven-days-from-mars/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Eleven Days From Mars</b>
+    <span class="lr-skill">Catch mixed units hiding in one column</span>
+    <span class="lr-hook">A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-model-that-knew-too-much/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Model That Knew Too Much</b>
+    <span class="lr-skill">Spot target leakage before you train a model</span>
+    <span class="lr-hook">A salary model scored perfectly on its first try. The CFO doesn&#x27;t trust perfect.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

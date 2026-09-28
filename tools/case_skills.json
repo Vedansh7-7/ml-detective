@@ -1,0 +1,63 @@
+{
+  "_note": "One entry per case: the public skill each case teaches, for the /learn/ pages. Name the skill, never the column or the exact answer.",
+  "easy_customer_orders": {
+    "skill": "Spot impossible values with summary statistics",
+    "practise": ["describe() and min/max checks", "histograms", "sanity-checking ranges"]
+  },
+  "easy_chai_signups_b9m": {
+    "skill": "Clean up inconsistent category labels",
+    "practise": ["value_counts()", "normalising text categories", "grouping before you count"]
+  },
+  "easy_excel_ate_genes_k7q": {
+    "skill": "Catch values corrupted by spreadsheet software",
+    "practise": ["reading a column's real contents", "nunique() against row counts", "sorting to surface oddities"]
+  },
+  "easy_mango_reefer_p2w": {
+    "skill": "Find a column that carries no information",
+    "practise": ["nunique() and variance checks", "value_counts()", "questioning 'perfect' readings"]
+  },
+  "easy_monsoon_gauge_r3x": {
+    "skill": "Detect missing-value codes posing as real data",
+    "practise": ["describe() on every numeric column", "sentinel values like -9999", "cleaning before averaging"]
+  },
+  "easy_saltpan_wristbands_z4t": {
+    "skill": "Check whether IDs are really unique",
+    "practise": ["duplicated()", "nunique() against row counts", "tracing repeated records"]
+  },
+  "normal_employee_salary": {
+    "skill": "Spot target leakage before you train a model",
+    "practise": ["correlation matrices", "groupby against the target", "asking what a model is allowed to know"]
+  },
+  "normal_carrow_belle_register_k7q": {
+    "skill": "Find a feature recorded after the outcome",
+    "practise": ["groupby on missing vs present values", "reasoning about when data was collected", "leakage in classification"]
+  },
+  "normal_cartographer_orbit_drift_m4z": {
+    "skill": "Catch mixed units hiding in one column",
+    "practise": ["physics-style ratio checks", "groupby by data source", "scatter plots"]
+  },
+  "normal_kowhai_cold_chain_r2w": {
+    "skill": "Tell a genuine second sensor from a disguised copy",
+    "practise": ["correlation matrices", "unit conversion", "row-by-row residuals"]
+  },
+  "normal_hollowmere_fungus_survey_p9d": {
+    "skill": "Find the annotator whose labels can't be trusted",
+    "practise": ["crosstabs", "comparing groups of labellers", "label noise in training data"]
+  },
+  "hard_sensor_readings": {
+    "skill": "Detect near-duplicate records across many columns",
+    "practise": ["duplicate detection with tolerance", "per-group counts", "pairwise distances"]
+  },
+  "hard_ashgrove_admissions_s7q": {
+    "skill": "Untangle Simpson's paradox with a confounding variable",
+    "practise": ["two-level groupby", "rates within subgroups", "logistic regression with controls"]
+  },
+  "hard_kaleidoscope_petty_cash_b9d": {
+    "skill": "Use Benford's law to spot invented numbers",
+    "practise": ["leading-digit analysis", "chi-square tests", "comparing groups against an expected distribution"]
+  },
+  "hard_merlion_hall_c_racks_w3t": {
+    "skill": "Find a periodic signal buried in noisy sensor data",
+    "practise": ["np.fft and periodograms", "autocorrelation", "analysing each group over time"]
+  }
+}

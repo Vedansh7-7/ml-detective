@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Year It Rained Backwards: Detect missing-value codes posing as real data · ML Detective</title>
+<meta name="description" content="Detect missing-value codes posing as real data. A tea estate&#x27;s rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/the-year-it-rained-backwards/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="The Year It Rained Backwards: Detect missing-value codes posing as real data · ML Detective">
+<meta property="og:description" content="Detect missing-value codes posing as real data. A tea estate&#x27;s rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/the-year-it-rained-backwards/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Year It Rained Backwards", "description": "Detect missing-value codes posing as real data. A tea estate's rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.", "url": "https://ml-detective.vercel.app/learn/the-year-it-rained-backwards/", "teaches": "Detect missing-value codes posing as real data", "learningResourceType": "Interactive exercise", "educationalLevel": "Easy", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, describe() on every numeric column, sentinel values like -9999, cleaning before averaging", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Easy case</span></nav>
+<article class="lr-case" style="--c-bg:#10231c;--c-ink:#e6f0e9;--c-accent:#5fc39a">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Easy case · data forensics in Python</p>
+      <h1>The Year It Rained Backwards</h1>
+      <p class="lr-lead">Detect missing-value codes posing as real data.</p>
+      <p class="lr-hookline">A tea estate&#x27;s rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/easy_monsoon_gauge_r3x">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M10 150 C40 118, 70 112, 104 126 C140 140, 170 104, 230 116'/>
+  <path d='M10 166 C50 142, 90 144, 130 154 C170 164, 200 140, 230 146' opacity='0.6'/>
+  <path d='M30 140 q6 -8 12 0 q6 -8 12 0' opacity='0.7'/>
+  <path d='M70 128 q6 -8 12 0 q6 -8 12 0' opacity='0.7'/>
+  <path d='M150 128 q6 -8 12 0 q6 -8 12 0' opacity='0.7'/>
+  <path d='M190 118 q6 -8 12 0 q6 -8 12 0' opacity='0.7'/>
+  <path d='M40 44 q6 -20 26 -14 q10 -16 30 -6 q18 -4 20 14 q12 6 2 16 l-74 0 q-14 -4 -4 -10 z'/>
+  <line x1='54' y1='70' x2='50' y2='82'/>
+  <line x1='70' y1='70' x2='66' y2='84'/>
+  <line x1='86' y1='70' x2='82' y2='82'/>
+  <line x1='102' y1='70' x2='98' y2='84'/>
+  <rect x='168' y='40' width='22' height='50' rx='3'/>
+  <path d='M162 40 l34 0 l-6 -12 l-22 0 z'/>
+  <line x1='179' y1='90' x2='179' y2='124'/>
+  <line x1='172' y1='56' x2='178' y2='56' opacity='0.6'/>
+  <line x1='172' y1='66' x2='178' y2='66' opacity='0.6'/>
+  <line x1='172' y1='76' x2='178' y2='76' opacity='0.6'/>
+  <path d='M150 30 l6 -6 M154 38 l8 -2' stroke-dasharray='2 4'/>
+  <circle cx='210' cy='30' r='3' fill='currentColor'/>
+</svg></div>
+  </div>
+  <section><h2>The story</h2><p>Kannimala Tea Estate sits above Munnar in the Kerala hills, where three automatic weather stations record every drop the monsoon brings. The estate carries rainfall-index insurance: if the season comes in far below normal, a payout arrives without anyone having to inspect a single bush.</p><p>This January the estate&#x27;s software totted up the year and flagged a disaster, and manager Joseph Kurian filed a claim. Meera Pillai, the insurer&#x27;s field actuary, drove up to check and found emerald slopes, full check-dams and a very confident manager.</p><p>Joseph swears the loggers were never touched. Meera has written the claim off as neither fraud nor fact until someone reads the raw export. She has given it to you. Before anyone is paid, or accused, work out what these numbers are really saying.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>describe() on every numeric column</li><li>sentinel values like -9999</li><li>cleaning before averaging</li></ul>
+    <p>The fault lives in one column. Summary statistics, value counts and a histogram will get you there. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>Daily observations from three automatic weather stations on a hill tea estate, for every day of 2023. The estate&#x27;s yearly summary built on this export can&#x27;t be trusted. Find out why. 1095 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>reading_id</code></td><td>int, unique id</td></tr><tr><td><code>obs_date</code></td><td>date string, YYYY-MM-DD</td></tr><tr><td><code>station</code></td><td>categorical, one of three estate weather stations</td></tr><tr><td><code>rain_mm</code></td><td>float, rainfall in the 24 hours to 08:30, millimetres</td></tr><tr><td><code>temp_max_c</code></td><td>float, daily maximum air temperature, Celsius</td></tr><tr><td><code>temp_min_c</code></td><td>float, daily minimum air temperature, Celsius</td></tr><tr><td><code>humidity_pct</code></td><td>int, mean relative humidity, percent</td></tr><tr><td><code>wind_kmh</code></td><td>float, mean wind speed, km/h</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/easy_monsoon_gauge_r3x">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-tuesday-ledger/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Tuesday Ledger</b>
+    <span class="lr-skill">Spot impossible values with summary statistics</span>
+    <span class="lr-hook">A yarn shop&#x27;s weekly orders. The accountant says one thing in here can&#x27;t be real.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-spreadsheet-that-ate-genes/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Spreadsheet That Ate Genes</b>
+    <span class="lr-skill">Catch values corrupted by spreadsheet software</span>
+    <span class="lr-hook">A career-making cancer result, one shared spreadsheet, and 1,400 genes. Something got eaten in transit.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-register-that-read-ahead/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Register That Read Ahead</b>
+    <span class="lr-skill">Find a feature recorded after the outcome</span>
+    <span class="lr-hook">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

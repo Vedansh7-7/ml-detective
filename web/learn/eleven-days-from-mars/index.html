@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eleven Days From Mars: Catch mixed units hiding in one column · ML Detective</title>
+<meta name="description" content="Catch mixed units hiding in one column. A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/eleven-days-from-mars/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="Eleven Days From Mars: Catch mixed units hiding in one column · ML Detective">
+<meta property="og:description" content="Catch mixed units hiding in one column. A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/eleven-days-from-mars/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Eleven Days From Mars", "description": "Catch mixed units hiding in one column. A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.", "url": "https://ml-detective.vercel.app/learn/eleven-days-from-mars/", "teaches": "Catch mixed units hiding in one column", "learningResourceType": "Interactive exercise", "educationalLevel": "Normal", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, physics-style ratio checks, groupby by data source, scatter plots", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Normal case</span></nav>
+<article class="lr-case" style="--c-bg:#1d1312;--c-ink:#f4e7dd;--c-accent:#ff7c47">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Normal case · data forensics in Python</p>
+      <h1>Eleven Days From Mars</h1>
+      <p class="lr-lead">Catch mixed units hiding in one column.</p>
+      <p class="lr-hookline">A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/normal_cartographer_orbit_drift_m4z">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <circle cx='176' cy='118' r='44'/>
+  <path d='M140 104 q20 -8 42 2 q18 8 32 0' opacity='0.5'/>
+  <path d='M146 134 q16 6 36 -2 q14 -6 28 4' opacity='0.5'/>
+  <circle cx='160' cy='92' r='5' opacity='0.7'/>
+  <circle cx='194' cy='142' r='7' opacity='0.7'/>
+  <circle cx='186' cy='104' r='3' opacity='0.7'/>
+  <ellipse cx='150' cy='112' rx='98' ry='40' stroke-dasharray='6 8' opacity='0.55' transform='rotate(-12 150 112)'/>
+  <ellipse cx='150' cy='118' rx='92' ry='34' stroke-dasharray='2 9' opacity='0.35' transform='rotate(-12 150 118)'/>
+  <rect x='50' y='44' width='24' height='20' rx='3' transform='rotate(-10 62 54)'/>
+  <path d='M49 50 L20 55 L23 70 L51 64'/>
+  <line x1='34' y1='53' x2='37' y2='67' opacity='0.6'/>
+  <path d='M74 44 L102 38 L105 53 L77 58'/>
+  <line x1='89' y1='41' x2='92' y2='55' opacity='0.6'/>
+  <path d='M60 42 l-3 -12 m-3 0 l8 -2'/>
+  <path d='M66 66 q2 8 -3 14 q-3 5 1 10' opacity='0.7'/>
+  <path d='M58 68 q-2 6 -6 10' opacity='0.5'/>
+  <circle cx='30' cy='120' r='1.6' fill='currentColor'/>
+  <circle cx='112' cy='20' r='1.6' fill='currentColor'/>
+  <circle cx='214' cy='30' r='1.6' fill='currentColor'/>
+  <path d='M130 28 l0 8 m-4 -4 l8 0' opacity='0.7'/>
+  <path d='M26 150 l0 8 m-4 -4 l8 0' opacity='0.7'/>
+</svg></div>
+  </div>
+  <section><h2>The story</h2><p>Cartographer-2 has been coasting toward Mars for ten months. In a windowless operations room in Boulder, Colorado, flight dynamics lead Tamsin Okoro watches the predicted closest approach creep steadily downward, a few kilometres every week, with no single burn to explain it.</p><p>Each small thruster firing is written into the log by one of two sources: the spacecraft itself, or a ground model run by a contractor across town. The navigation filter swallows everything. Every row looks perfectly routine on its own, and still the drift keeps growing.</p><p>Orbit insertion is in eleven days. If the closest pass sinks much further, the spacecraft will skim the thin upper atmosphere and a $400 million mission becomes a very expensive shooting star. Tamsin’s director wants a real answer, not a hunch, by the morning shift.</p><p>You get the full burn log for the cruise, every firing from launch to last Tuesday, and a mug that says WORLD’S OKAYEST NAVIGATOR. Somewhere in this log, the story the numbers tell depends on who is telling it. Find what the navigators are being fed.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>physics-style ratio checks</li><li>groupby by data source</li><li>scatter plots</li></ul>
+    <p>The fault is a relationship: a feature against the target, against time, or against another source. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>Every thruster firing logged during a fictional orbiter’s ten-month cruise to Mars: angular-momentum dumps (AMD), small trims and trajectory correction manoeuvres (TCM). One thing in this log can’t be trusted. Find it. 1150 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>burn_id</code></td><td>int, unique burn number</td></tr><tr><td><code>date</code></td><td>text, ISO date of the burn</td></tr><tr><td><code>burn_type</code></td><td>text, AMD / trim / TCM</td></tr><tr><td><code>thruster_bank</code></td><td>text, thruster bank used (A or B)</td></tr><tr><td><code>reported_by</code></td><td>text, which pipeline logged the burn (onboard_log or ground_model)</td></tr><tr><td><code>burn_seconds</code></td><td>float, total thruster on-time in seconds</td></tr><tr><td><code>propellant_g</code></td><td>float, hydrazine used, in grams</td></tr><tr><td><code>tank_pressure_bar</code></td><td>float, propellant tank pressure at burn time, in bar</td></tr><tr><td><code>impulse_ns</code></td><td>float, total impulse delivered by the burn, in newton-seconds</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/normal_cartographer_orbit_drift_m4z">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/the-register-that-read-ahead/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Register That Read Ahead</b>
+    <span class="lr-skill">Find a feature recorded after the outcome</span>
+    <span class="lr-hook">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-model-that-knew-too-much/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Model That Knew Too Much</b>
+    <span class="lr-skill">Spot target leakage before you train a model</span>
+    <span class="lr-hook">A salary model scored perfectly on its first try. The CFO doesn&#x27;t trust perfect.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/death-cap-dinner-or-doubt/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Death Cap, Dinner, or Doubt</b>
+    <span class="lr-skill">Find the annotator whose labels can&#x27;t be trusted</span>
+    <span class="lr-hook">A foraging app is about to tell hikers which mushrooms are dinner. Its five teachers don’t all agree.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

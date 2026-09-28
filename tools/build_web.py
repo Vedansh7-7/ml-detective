@@ -122,6 +122,10 @@ def main():
 
     write_seed(levels)
 
+    import build_learn   # static /learn/ pages, sitemap.xml, robots.txt (for search engines)
+    n = build_learn.build(WEB, levels, DOODLES)
+    print(f"wrote /learn/ hub + {n} case pages, sitemap.xml, robots.txt")
+
     counts = {lvl: len(v) for lvl, v in levels.items()}
     print(f"exported {sum(counts.values())} cases {counts} + {len(PY_MODULES)} python modules into web/")
 

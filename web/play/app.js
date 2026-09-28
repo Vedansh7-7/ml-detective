@@ -125,6 +125,11 @@ async function leaveSplash() {
   const [tab, code] = location.hash.slice(1).split("/");
   if (tab === "stakeout" && code) enterRoom(code);
   if (tab === "upload" && code) openSharedPack(code);
+  // from a /learn/ page's "Play this case" button
+  if (tab === "case" && code) {
+    caseItemById(code).then((item) => { if (item) openStory(item); });
+    history.replaceState(null, "", location.pathname);
+  }
 }
 $("#join-form").addEventListener("submit", (e) => { e.preventDefault(); leaveSplash(); });
 
