@@ -1,0 +1,23 @@
+{
+  "id": "hard_ashgrove_admissions_s7q",
+  "level": "hard",
+  "title": "Forty-Five Percent Versus Thirty-One",
+  "hook": "Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its scandal. The spreadsheet disagrees.",
+  "narrative": [
+    "Ashgrove University sits on a wet green hill above the river, and for sixty years its graduate school has been quietly proud of itself. Then, on Monday morning, the student paper, The Ashgrove Lantern, ran a front page in red ink: 45% of men who applied for postgraduate places this year were admitted, against just 31% of women. By lunchtime the story was trending nationally.",
+    "Provost Dr. Miriam Okafor has a board meeting on Friday and a solicitor's letter on her desk. The Lantern's editor, Callum Reid, a third-year who has never lost an argument, says the numbers speak for themselves. Miriam is not so sure. Every admissions committee she has ever sat on fought about budgets and lab benches, never about whether an applicant was a man or a woman.",
+    "She has sent you the full applicant file for the cycle: 2,930 applications, every decision recorded. She has already checked the Lantern's arithmetic, and it is correct. What she needs before Friday is the truth behind it. Find the one thing the headline left out, and name it."
+  ],
+  "palette": {
+    "bg": "#1b1d2a",
+    "surface": "#24273a",
+    "ink": "#ece6d6",
+    "muted": "#a8a293",
+    "accent": "#e3b34c",
+    "accent2": "#e0655f",
+    "note": "#fff1c1",
+    "note_ink": "#2a2410",
+    "dark": true
+  },
+  "doodle": "hard_ashgrove_admissions_s7q.svg"
+}

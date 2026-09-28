@@ -1,0 +1,23 @@
+{
+  "id": "hard_merlion_hall_c_racks_w3t",
+  "level": "hard",
+  "title": "Hall C Has a Heartbeat",
+  "hook": "Six server racks. Ten days of readings. Every average is textbook, yet disks keep dying in Hall C. Something in there keeps time.",
+  "narrative": [
+    "Merlion Colo occupies four humming floors of a windowless block in Singapore's Jurong East. Hall C is its pride: six racks of servers holding the imaging archive of Tanjong Medical Group, eleven years of X-rays and scans that doctors pull up hundreds of times an hour. For the past month, disks in Hall C have been failing three times faster than anywhere else in the building.",
+    "Facility manager Tan Mei Ling has swapped drives, re-seated cables and had the chillers serviced twice. Every dashboard says the hall is fine. Tanjong's CIO has now sent a polite, deadly email: explain the failures by the end of the month, or the four-million-dollar contract moves across the causeway. Mei Ling's night technician, Arjun Pillai, insists the hall sounds different at 3 a.m., as if it were breathing.",
+    "Mei Ling has exported ten days of half-hourly telemetry from all six racks. The averages are clean. The histograms are clean. Arjun is sure something isn't. Find what the dashboards are smoothing over, and tell Mei Ling where it lives."
+  ],
+  "palette": {
+    "bg": "#0f1419",
+    "surface": "#18212b",
+    "ink": "#dbe7f0",
+    "muted": "#8aa0b2",
+    "accent": "#7c9cff",
+    "accent2": "#ff7a59",
+    "note": "#fdf3c4",
+    "note_ink": "#1c1a10",
+    "dark": true
+  },
+  "doodle": "hard_merlion_hall_c_racks_w3t.svg"
+}

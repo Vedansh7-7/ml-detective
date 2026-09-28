@@ -1,0 +1,24 @@
+{
+  "id": "normal_cartographer_orbit_drift_m4z",
+  "level": "normal",
+  "title": "Eleven Days From Mars",
+  "hook": "A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out \u2014 on paper.",
+  "narrative": [
+    "Cartographer-2 has been coasting toward Mars for ten months. In a windowless operations room in Boulder, Colorado, flight dynamics lead Tamsin Okoro watches the predicted closest approach creep steadily downward, a few kilometres every week, with no single burn to explain it.",
+    "Each small thruster firing is written into the log by one of two sources: the spacecraft itself, or a ground model run by a contractor across town. The navigation filter swallows everything. Every row looks perfectly routine on its own, and still the drift keeps growing.",
+    "Orbit insertion is in eleven days. If the closest pass sinks much further, the spacecraft will skim the thin upper atmosphere and a $400 million mission becomes a very expensive shooting star. Tamsin\u2019s director wants a real answer, not a hunch, by the morning shift.",
+    "You get the full burn log for the cruise, every firing from launch to last Tuesday, and a mug that says WORLD\u2019S OKAYEST NAVIGATOR. Somewhere in this log, the story the numbers tell depends on who is telling it. Find what the navigators are being fed."
+  ],
+  "palette": {
+    "bg": "#1d1312",
+    "surface": "#2a1c1a",
+    "ink": "#f4e7dd",
+    "muted": "#b89c8c",
+    "accent": "#ff7c47",
+    "accent2": "#6fc3d9",
+    "note": "#ffe7c2",
+    "note_ink": "#3a1d10",
+    "dark": true
+  },
+  "doodle": "normal_cartographer_orbit_drift_m4z.svg"
+}

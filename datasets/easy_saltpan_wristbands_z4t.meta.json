@@ -1,0 +1,16 @@
+{
+  "id": "easy_saltpan_wristbands_z4t",
+  "category": "easy",
+  "title": "Saltpan Sound 2024 Entry Scans",
+  "description": "The gate scanner log from a three-night beach festival: one row per wristband admitted, joined to its ticket sale. One thing in this log explains the crowd nobody paid for. Find it.",
+  "n_rows": 2399,
+  "columns": {
+    "ticket_id": "string, barcode printed on the wristband",
+    "purchase_date": "date string, YYYY-MM-DD, when the ticket was sold",
+    "tier": "categorical, Day Pass, Weekend or VIP",
+    "price_inr": "int, price paid in rupees (early-bird prices are lower)",
+    "buyer_state": "categorical, Indian state of the buyer",
+    "gate": "categorical, entry gate where the wristband was scanned",
+    "scan_time": "datetime string, YYYY-MM-DD HH:MM of the entry scan"
+  }
+}

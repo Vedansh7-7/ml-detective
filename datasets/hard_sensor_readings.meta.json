@@ -1,0 +1,15 @@
+{
+  "id": "hard_sensor_readings",
+  "category": "hard",
+  "title": "IoT Sensor Readings",
+  "description": "A fleet of IoT devices reports temperature/humidity/pressure/vibration. Nothing looks wrong column-by-column -- but a small group of rows shouldn't be there. Find what's off.",
+  "n_rows": 1500,
+  "columns": {
+    "reading_id": "int, unique id",
+    "device_id": "int, sensor device id (100-998)",
+    "temperature": "float, Celsius",
+    "humidity": "float, percent",
+    "pressure": "float, hPa",
+    "vibration": "float, arbitrary units, non-negative"
+  }
+}

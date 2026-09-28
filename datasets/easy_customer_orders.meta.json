@@ -1,0 +1,15 @@
+{
+  "id": "easy_customer_orders",
+  "category": "easy",
+  "title": "Customer Orders",
+  "description": "An e-commerce store exported one week of orders. Something in this export looks wrong -- find it.",
+  "n_rows": 600,
+  "columns": {
+    "customer_id": "int, unique id",
+    "age": "int, customer age in years",
+    "region": "categorical, North/South/East/West",
+    "items_in_cart": "int, 1-7",
+    "order_value": "float, order total in USD",
+    "is_returning_customer": "int, 0 or 1"
+  }
+}

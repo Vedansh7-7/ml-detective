@@ -1,0 +1,20 @@
+{
+  "id": "normal_hollowmere_fungus_survey_p9d",
+  "category": "normal",
+  "title": "Hollowmere Autumn Fungus Survey",
+  "description": "Specimens collected by five volunteers over one autumn, with field characteristics and a toxic / edible verdict, exported to train a mushroom-identification app. One thing in this survey can\u2019t be trusted. Find it.",
+  "n_rows": 1480,
+  "columns": {
+    "specimen_id": "int, unique specimen number",
+    "found_on": "text, ISO date the specimen was collected",
+    "identified_by": "text, volunteer who examined the specimen and recorded the verdict",
+    "cap_diameter_cm": "float, cap diameter in cm",
+    "stem_height_cm": "float, stem height in cm",
+    "gill_spacing": "text, close / crowded / distant",
+    "spore_print": "text, spore print colour",
+    "smell": "text, dominant smell (none, anise, almond, earthy, foul, fishy)",
+    "bruises": "text, yes if the flesh bruises when handled",
+    "ring": "text, yes if the stem has a ring",
+    "toxic": "int, 1 = toxic, 0 = edible (the target)"
+  }
+}

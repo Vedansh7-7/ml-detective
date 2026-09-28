@@ -1,0 +1,22 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M34 30 C58 48, 58 70, 34 90 C12 110, 14 130, 36 150'/>
+  <path d='M70 30 C46 48, 46 70, 70 90 C92 110, 90 130, 68 150'/>
+  <line x1='40' y1='40' x2='64' y2='40' opacity='0.6'/>
+  <line x1='46' y1='56' x2='58' y2='56' opacity='0.6'/>
+  <line x1='44' y1='76' x2='60' y2='76' opacity='0.6'/>
+  <line x1='38' y1='100' x2='66' y2='100' opacity='0.6'/>
+  <line x1='46' y1='120' x2='58' y2='120' opacity='0.6'/>
+  <line x1='40' y1='140' x2='64' y2='140' opacity='0.6'/>
+  <rect x='104' y='34' width='112' height='96' rx='4'/>
+  <line x1='104' y1='56' x2='216' y2='57'/>
+  <line x1='104' y1='80' x2='216' y2='79'/>
+  <line x1='104' y1='104' x2='216' y2='105'/>
+  <line x1='140' y1='34' x2='141' y2='130'/>
+  <line x1='180' y1='34' x2='179' y2='130'/>
+  <path d='M112 68 l18 0 M150 68 l20 0 M188 68 l18 0' stroke-dasharray='3 5'/>
+  <path d='M112 92 l16 0 M150 92 l22 0 M188 92 l14 0' stroke-dasharray='3 5'/>
+  <path d='M112 116 l20 0 M150 116 l16 0 M188 116 l20 0' stroke-dasharray='3 5'/>
+  <path d='M150 150 q10 -14 22 -4 q10 8 22 -2'/>
+  <circle cx='196' cy='144' r='3' fill='currentColor'/>
+  <path d='M120 160 l8 -10 l8 10 z' opacity='0.5'/>
+</svg>

@@ -1,0 +1,24 @@
+{
+  "id": "normal_kowhai_cold_chain_r2w",
+  "level": "normal",
+  "title": "The Fridge With Two Witnesses",
+  "hook": "Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.",
+  "narrative": [
+    "Kowhai Valley Pharmacy is the only chemist for eighty kilometres of Otago sheep country. Every winter it holds the district\u2019s flu vaccines in three medical fridges, and every fridge carries two probes, so that if one thermometer lies, the other can call it out.",
+    "Last month a fridge in the next town failed quietly and a whole clinic had to recall its doses. Now inspector Dr Priya Raman is auditing everyone\u2019s logs, and pharmacist Hemi Walker is quietly proud of his: every hour, both probes agreed the vaccines were safe.",
+    "Priya is less impressed. Her signature decides whether 4,000 doses go into arms at next week\u2019s school clinics or into a hazardous-waste bin. \u201cTwo witnesses are only worth something,\u201d she tells Hemi over a lukewarm cup of tea, \u201cif they didn\u2019t rehearse their story together.\u201d",
+    "She has pulled three and a half weeks of the fridge logger\u2019s export, hour by hour for all three cabinets, and handed it to you on a borrowed laptop. One thing in it isn\u2019t what the label on the logger claims it is. Find it before she signs."
+  ],
+  "palette": {
+    "bg": "#eef5f8",
+    "surface": "#ffffff",
+    "ink": "#13303c",
+    "muted": "#56707c",
+    "accent": "#1f7ea5",
+    "accent2": "#c8483f",
+    "note": "#e2f6ea",
+    "note_ink": "#13303c",
+    "dark": false
+  },
+  "doodle": "normal_kowhai_cold_chain_r2w.svg"
+}

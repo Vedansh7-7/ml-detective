@@ -1,0 +1,23 @@
+{
+  "id": "easy_excel_ate_genes_k7q",
+  "level": "easy",
+  "title": "The Spreadsheet That Ate Genes",
+  "hook": "A career-making cancer result, one shared spreadsheet, and 1,400 genes. Something got eaten in transit.",
+  "narrative": [
+    "At the Rao Lab in Bengaluru, postdoc Kavya Menon spent eighteen months growing tumour organoids and sequencing them before and after a new drug. The analysis pipeline spat out a clean table of 1,400 genes, and her collaborator in Leeds, Dr. Tom Hartley, opened it, tidied it up and sent it back for the paper's supplement.",
+    "The journal's data editor has now put the submission on hold. Her email is short: 'Several entries in your supplementary table do not correspond to anything in the human genome. Please explain before we proceed.' The editor has not said which entries.",
+    "Kavya cannot face telling Professor Rao that a year and a half of work is stuck. She has handed you the exact file Tom sent back. Work out what the editor saw, and whether it can be fixed, before the lab meeting on Friday morning."
+  ],
+  "palette": {
+    "bg": "#eef4f1",
+    "surface": "#f8fbf9",
+    "ink": "#1c2b27",
+    "muted": "#5c7069",
+    "accent": "#1f7a6b",
+    "accent2": "#b0413e",
+    "note": "#fff1a8",
+    "note_ink": "#2a2410",
+    "dark": false
+  },
+  "doodle": "easy_excel_ate_genes_k7q.svg"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "normal_employee_salary",
+  "category": "normal",
+  "title": "Employee Salary",
+  "description": "HR wants to predict 'salary' from the other columns for a compensation model. One of the feature columns is suspicious -- it wouldn't actually be available before you know the answer. Find it.",
+  "n_rows": 800,
+  "columns": {
+    "employee_id": "int, unique id",
+    "years_experience": "int, 0-29",
+    "education": "categorical",
+    "department": "categorical",
+    "performance_score": "int, 1-5",
+    "bonus_eligible_flag": "int, 0 or 1, HR-set flag",
+    "salary": "float, USD -- the prediction target"
+  }
+}

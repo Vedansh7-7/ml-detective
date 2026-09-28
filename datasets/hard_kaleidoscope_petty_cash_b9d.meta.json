@@ -1,0 +1,16 @@
+{
+  "id": "hard_kaleidoscope_petty_cash_b9d",
+  "category": "hard",
+  "title": "Suryavansh Petty-Cash Ledger",
+  "description": "Every petty-cash claim filed by the nine location crews during the first five months of the Suryavansh shoot, one row per claim. The totals look fine and every claim has a reference. Some of these amounts were never really spent. Find out where they come from.",
+  "n_rows": 2160,
+  "columns": {
+    "claim_id": "string, unique claim reference",
+    "claim_date": "date (YYYY-MM-DD) the claim was filed",
+    "shoot_unit": "categorical, the location crew that filed the claim",
+    "category": "categorical, expense category (catering, transport, lodging, props, costume, equipment_hire, local_permits, misc)",
+    "payment_mode": "categorical, how the money was paid out (cash, upi, card, bank_transfer)",
+    "receipt_attached": "categorical, yes/no, whether a scanned receipt is on file",
+    "amount_inr": "int, claimed amount in Indian rupees"
+  }
+}

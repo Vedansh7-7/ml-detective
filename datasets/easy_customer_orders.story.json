@@ -1,0 +1,23 @@
+{
+  "id": "easy_customer_orders",
+  "level": "easy",
+  "title": "The Tuesday Ledger",
+  "hook": "A yarn shop's weekly orders. The accountant says one thing in here can't be real.",
+  "narrative": [
+    "Marigold & Thread is a two-room shop in a converted bakery that sells hand-dyed yarn online. Every Sunday night Priya exports the week's orders and emails them to her accountant, Mr. Okafor.",
+    "This week he replied with a single line: \"Something in here can't be real.\" Then he left for a fishing trip with no signal.",
+    "Priya has 600 orders, a tax filing due Monday, and no idea what he meant. She has asked you to go through the ledger before then. Start where any bookkeeper would: the totals, the ranges, the extremes."
+  ],
+  "palette": {
+    "bg": "#f7ecdc",
+    "surface": "#fffaf2",
+    "ink": "#3b2418",
+    "muted": "#8a6a55",
+    "accent": "#d4622a",
+    "accent2": "#6f8f4e",
+    "note": "#ffe7a3",
+    "note_ink": "#3b2418",
+    "dark": false
+  },
+  "doodle": "easy_customer_orders.svg"
+}

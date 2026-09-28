@@ -1,0 +1,23 @@
+{
+  "id": "hard_sensor_readings",
+  "level": "hard",
+  "title": "Echoes in the Static",
+  "hook": "An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.",
+  "narrative": [
+    "Station Kestrel is an unmanned weather outpost bolted to a decommissioned rig 90 km off the Scottish coast. A mesh of small devices reports temperature, humidity, pressure and vibration back to shore.",
+    "Every dashboard is green. Every histogram is textbook. The data team has signed it off twice.",
+    "Only Tomasz, the night-shift engineer, disagrees. He says the station sounds wrong after midnight, \"like a record that has started to skip.\" Nobody believes him. Pull the 1,500 readings and prove him right."
+  ],
+  "palette": {
+    "bg": "#0d1a1b",
+    "surface": "#132628",
+    "ink": "#d6ebe8",
+    "muted": "#7fa5a1",
+    "accent": "#35e0c2",
+    "accent2": "#ff5f5f",
+    "note": "#e9f5c9",
+    "note_ink": "#14201f",
+    "dark": true
+  },
+  "doodle": "hard_sensor_readings.svg"
+}

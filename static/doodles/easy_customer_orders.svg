@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- receipt with torn zig-zag bottom -->
+  <path d="M52 18 Q90 14 128 17 L131 150 L121 142 L111 151 L101 142 L91 151 L81 142 L71 151 L61 142 L53 150 Z"/>
+  <path d="M66 38 H116"/>
+  <path d="M66 54 H104"/>
+  <path d="M66 70 H112"/>
+  <path d="M66 86 H98"/>
+  <path d="M66 112 H118" stroke-dasharray="2 7"/>
+  <!-- magnifying glass -->
+  <circle cx="150" cy="96" r="30"/>
+  <path d="M136 84 q8 -10 20 -6" opacity=".55"/>
+  <path d="M172 118 L204 152" stroke-width="8"/>
+  <!-- ball of yarn with a loose thread -->
+  <circle cx="196" cy="42" r="20"/>
+  <path d="M180 32 q16 6 32 -2"/>
+  <path d="M178 46 q18 8 36 0"/>
+  <path d="M186 24 q-2 20 8 36"/>
+  <path d="M202 23 q8 18 2 38"/>
+  <path d="M196 62 q-8 22 -36 20" stroke-dasharray="4 6"/>
+  <!-- little stars of doubt -->
+  <path d="M28 44 l6 0 M31 41 l0 6"/>
+  <path d="M34 120 l5 0 M36.5 117.5 l0 5"/>
+</svg>

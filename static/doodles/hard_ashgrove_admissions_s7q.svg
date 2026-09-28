@@ -1,0 +1,25 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <rect x='18' y='30' width='92' height='120' rx='3' transform='rotate(-4 64 90)'/>
+  <path d='M28 48 L98 43' stroke-width='5'/>
+  <path d='M29 60 L97 55' stroke-width='5'/>
+  <path d='M31 76 L66 74'/>
+  <path d='M31 86 L64 84' opacity='0.6'/>
+  <path d='M32 96 L66 94' opacity='0.6'/>
+  <path d='M33 106 L63 104' opacity='0.6'/>
+  <rect x='72' y='76' width='24' height='30' rx='2' transform='rotate(-4 84 91)' stroke-dasharray='3 4'/>
+  <path d='M34 120 L99 116' opacity='0.5'/>
+  <path d='M35 130 L100 126' opacity='0.5'/>
+  <path d='M36 140 L80 137' opacity='0.5'/>
+  <path d='M128 150 L228 150'/>
+  <rect x='140' y='88' width='22' height='62'/>
+  <rect x='174' y='110' width='22' height='40'/>
+  <path d='M143 100 L158 100 M143 112 L158 112' opacity='0.4'/>
+  <path d='M204 78 Q212 60 220 78 L220 150 L204 150 Z'/>
+  <path d='M212 66 L212 48'/>
+  <path d='M212 48 L224 52 L212 56'/>
+  <path d='M208 96 Q212 90 216 96 L216 104 L208 104 Z' opacity='0.7'/>
+  <path d='M208 118 Q212 112 216 118 L216 126 L208 126 Z' opacity='0.7'/>
+  <circle cx='151' cy='78' r='4' fill='currentColor'/>
+  <circle cx='185' cy='100' r='4' fill='currentColor'/>
+  <path d='M120 28 q6 -8 12 0 q6 8 12 0' opacity='0.5'/>
+</svg>

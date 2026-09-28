@@ -1,0 +1,17 @@
+{
+  "id": "hard_ashgrove_admissions_s7q",
+  "category": "hard",
+  "title": "Ashgrove Graduate Admissions, 2025-26 Cycle",
+  "description": "One row per application to Ashgrove's graduate school for the 2025-26 cycle, with the final decision. The pooled figures are being quoted as proof of something. One thing about this file changes what they mean. Find it.",
+  "n_rows": 2930,
+  "columns": {
+    "applicant_id": "string, unique application reference",
+    "submitted_on": "date (YYYY-MM-DD) the application was submitted",
+    "gender": "categorical, applicant's self-reported gender (F/M)",
+    "age": "int, applicant's age in years at submission",
+    "residency": "categorical, domestic or international fee status",
+    "undergrad_gpa": "float, undergraduate GPA on a 4.0 scale",
+    "department": "categorical, the department the applicant applied to",
+    "admitted": "int, 1 if offered a place, 0 if rejected"
+  }
+}

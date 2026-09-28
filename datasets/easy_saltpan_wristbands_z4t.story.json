@@ -1,0 +1,23 @@
+{
+  "id": "easy_saltpan_wristbands_z4t",
+  "level": "easy",
+  "title": "Too Many People on the Beach",
+  "hook": "A sold-out beach festival let in more people than it sold tickets to. The gate log knows how.",
+  "narrative": [
+    "Saltpan Sound is three nights of music on Morjim beach in North Goa, capped by the police at a strict headcount. Every wristband carries a barcode, and every barcode is scanned once at the gate. Gate lead Rhea Fernandes ran the scanners herself, and they never stopped beeping green.",
+    "On the final night a police inspector counted heads, then counted again, and the numbers did not match what the promoter, Kabir Sethi, had sold. Kabir now faces a hearing and a fine that could end the festival for good.",
+    "Rhea has exported the entry scan log: one line per wristband that walked through a gate. She believes the answer is sitting in there in plain sight, and the hearing is on Thursday. Find what let the extra people onto the sand."
+  ],
+  "palette": {
+    "bg": "#140f2b",
+    "surface": "#1d1740",
+    "ink": "#f1ecff",
+    "muted": "#a79fd0",
+    "accent": "#ff5fa2",
+    "accent2": "#37d6c4",
+    "note": "#fff3a0",
+    "note_ink": "#221a3a",
+    "dark": true
+  },
+  "doodle": "easy_saltpan_wristbands_z4t.svg"
+}

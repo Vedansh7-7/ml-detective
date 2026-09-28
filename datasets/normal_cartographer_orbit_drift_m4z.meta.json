@@ -1,0 +1,18 @@
+{
+  "id": "normal_cartographer_orbit_drift_m4z",
+  "category": "normal",
+  "title": "Cartographer-2 Cruise Burn Log",
+  "description": "Every thruster firing logged during a fictional orbiter\u2019s ten-month cruise to Mars: angular-momentum dumps (AMD), small trims and trajectory correction manoeuvres (TCM). One thing in this log can\u2019t be trusted. Find it.",
+  "n_rows": 1150,
+  "columns": {
+    "burn_id": "int, unique burn number",
+    "date": "text, ISO date of the burn",
+    "burn_type": "text, AMD / trim / TCM",
+    "thruster_bank": "text, thruster bank used (A or B)",
+    "reported_by": "text, which pipeline logged the burn (onboard_log or ground_model)",
+    "burn_seconds": "float, total thruster on-time in seconds",
+    "propellant_g": "float, hydrazine used, in grams",
+    "tank_pressure_bar": "float, propellant tank pressure at burn time, in bar",
+    "impulse_ns": "float, total impulse delivered by the burn, in newton-seconds"
+  }
+}

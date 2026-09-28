@@ -1,0 +1,23 @@
+{
+  "id": "easy_mango_reefer_p2w",
+  "level": "easy",
+  "title": "The Mangoes Were Perfectly Fine",
+  "hook": "Every truck of Alphonsos arrived at a perfect temperature. So why is Bengaluru sending half of them back?",
+  "narrative": [
+    "Every spring, Deshpande Fruit Co. trucks Alphonso mangoes from the orchards of Ratnagiri and Devgad to wholesalers across India in refrigerated lorries. Sahil Deshpande is the third generation to run it, and this season he paid for new data loggers so no buyer could ever argue about the cold chain again.",
+    "Then Mr. Nagaraj, his biggest buyer in Bengaluru, began rejecting crates for bruised, blackened skin. The logger company's glossy report says every single trip was flawless, the insurer will not pay a claim against a flawless record, and Mr. Nagaraj is starting to talk to other growers.",
+    "Sahil has sent you the full season's trip log from the new system. He thinks the shiny new dashboard is lying to him but cannot say how, and the season's last trucks leave next week. Find what in this log should never have been believed."
+  ],
+  "palette": {
+    "bg": "#fff6e0",
+    "surface": "#fffbef",
+    "ink": "#2f2410",
+    "muted": "#7d6a3e",
+    "accent": "#b3560a",
+    "accent2": "#3c7a3a",
+    "note": "#dcf2d2",
+    "note_ink": "#1f2e1a",
+    "dark": false
+  },
+  "doodle": "easy_mango_reefer_p2w.svg"
+}

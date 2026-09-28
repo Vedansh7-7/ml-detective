@@ -1,0 +1,23 @@
+{
+  "id": "normal_employee_salary",
+  "level": "normal",
+  "title": "The Model That Knew Too Much",
+  "hook": "A salary model scored perfectly on its first try. The CFO doesn't trust perfect.",
+  "narrative": [
+    "Halvorsen Freight hired a consultant to build a model that predicts what each of its 800 employees should earn. On the first run it was flawless. Every prediction landed on the right side of the line.",
+    "The consultant sent a celebratory email. CFO Ingrid Halvorsen did not reply to it. She has sat through enough board meetings to know that a perfect model usually means someone let it see the answers.",
+    "She has handed you the training table. Somewhere in these columns is a source that knows more than it should. Find it before the model goes live."
+  ],
+  "palette": {
+    "bg": "#eaeef4",
+    "surface": "#ffffff",
+    "ink": "#18263a",
+    "muted": "#5d6b80",
+    "accent": "#2f5fd0",
+    "accent2": "#d9a521",
+    "note": "#fff1b8",
+    "note_ink": "#18263a",
+    "dark": false
+  },
+  "doodle": "normal_employee_salary.svg"
+}

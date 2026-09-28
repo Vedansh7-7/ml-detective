@@ -1,0 +1,17 @@
+{
+  "id": "easy_monsoon_gauge_r3x",
+  "category": "easy",
+  "title": "Kannimala Estate Weather Log 2023",
+  "description": "Daily observations from three automatic weather stations on a hill tea estate, for every day of 2023. The estate's yearly summary built on this export can't be trusted. Find out why.",
+  "n_rows": 1095,
+  "columns": {
+    "reading_id": "int, unique id",
+    "obs_date": "date string, YYYY-MM-DD",
+    "station": "categorical, one of three estate weather stations",
+    "rain_mm": "float, rainfall in the 24 hours to 08:30, millimetres",
+    "temp_max_c": "float, daily maximum air temperature, Celsius",
+    "temp_min_c": "float, daily minimum air temperature, Celsius",
+    "humidity_pct": "int, mean relative humidity, percent",
+    "wind_kmh": "float, mean wind speed, km/h"
+  }
+}

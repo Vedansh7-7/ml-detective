@@ -1,0 +1,23 @@
+{
+  "id": "hard_kaleidoscope_petty_cash_b9d",
+  "level": "hard",
+  "title": "Nine Crews, One Storyteller",
+  "hook": "Nine film crews. 2,160 cash claims. Forty lakh rupees over budget. Every receipt adds up, and that is what worries the accountant.",
+  "narrative": [
+    "Kaleidoscope Pictures is shooting Suryavansh, the most expensive period epic Mumbai has attempted in a decade. To finish on time, producer Farah Mistry split the film across nine location crews, from the dunes of Jaisalmer to the monasteries of Leh. Each crew runs its own petty cash: chai for two hundred extras, a borrowed elephant, a permit to close a ghat at dawn.",
+    "Five months in, the film is forty lakh rupees over budget, and the completion-bond insurer has threatened to take control of the production. Every claim has a receipt. Every category total looks sensible. Farah's finance controller, Ramesh Iyer, has done the books for thirty years, and he keeps muttering the same sentence: \"Honest money has a shape.\"",
+    "Ramesh has given you every claim filed this schedule, all 2,160 of them, from nine crews in nine corners of the country. Somewhere in this ledger, money was not spent but written. Find out whose pen it came from before the insurer's auditors land in Mumbai on Monday morning."
+  ],
+  "palette": {
+    "bg": "#1a1512",
+    "surface": "#251e18",
+    "ink": "#f3e7d3",
+    "muted": "#b39d82",
+    "accent": "#f0a33a",
+    "accent2": "#e2574c",
+    "note": "#fde9b8",
+    "note_ink": "#2b1f12",
+    "dark": true
+  },
+  "doodle": "hard_kaleidoscope_petty_cash_b9d.svg"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "normal_hollowmere_fungus_survey_p9d",
+  "level": "normal",
+  "title": "Death Cap, Dinner, or Doubt",
+  "hook": "A foraging app is about to tell hikers which mushrooms are dinner. Its five teachers don\u2019t all agree.",
+  "narrative": [
+    "Every autumn the Hollowmere Mycological Society sends volunteers into the damp beechwoods of the Lake District with baskets, knives and clipboards. This year they logged nearly fifteen hundred specimens, each one examined, sniffed, spore-printed and given a verdict at the village hall on Thursday nights.",
+    "Society chair Winifred Oakes has struck a deal with a small startup: the survey will train SafeCap, a phone app that looks at a mushroom and tells a walker whether it belongs in the pan. Twenty thousand people have already pre-registered.",
+    "The developer, Rafi Castellano, says the model is mostly fine but \u201cstrangely confident about exactly the wrong things.\u201d Winifred knows what that means in her hobby. A mistake here is not a one-star review. It is a hospital bed, a liver transplant list, or worse.",
+    "She has sent you the full survey export along with a jar of her chanterelle chutney, which she promises is perfectly safe. Five volunteers built this table together over one wet autumn. Something in how it was recorded will poison the app if nobody catches it. Find it before launch."
+  ],
+  "palette": {
+    "bg": "#f1ecdf",
+    "surface": "#fbf8f0",
+    "ink": "#2b2a1f",
+    "muted": "#6b644e",
+    "accent": "#8a4a2c",
+    "accent2": "#4c7a3a",
+    "note": "#fde3df",
+    "note_ink": "#3a1f1a",
+    "dark": false
+  },
+  "doodle": "normal_hollowmere_fungus_survey_p9d.svg"
+}

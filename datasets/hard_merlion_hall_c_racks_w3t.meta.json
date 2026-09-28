@@ -1,0 +1,17 @@
+{
+  "id": "hard_merlion_hall_c_racks_w3t",
+  "category": "hard",
+  "title": "Hall C Rack Telemetry",
+  "description": "Half-hourly telemetry from the six server racks in Merlion Colo's Hall C over ten days in July 2025, one row per rack per reading. Every summary on the dashboard looks healthy. One thing in this log isn't. Find it.",
+  "n_rows": 2880,
+  "columns": {
+    "reading_id": "int, unique reading id",
+    "timestamp": "string, reading time (YYYY-MM-DD HH:MM), every 30 minutes",
+    "rack_id": "categorical, rack label R01-R06",
+    "inlet_temp_c": "float, cold-aisle air temperature at the rack inlet, Celsius",
+    "outlet_temp_c": "float, hot-aisle air temperature at the rack outlet, Celsius",
+    "power_kw": "float, rack power draw in kilowatts",
+    "fan_rpm": "int, average server fan speed in the rack",
+    "load_pct": "float, average CPU load across the rack's servers, percent"
+  }
+}

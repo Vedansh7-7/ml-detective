@@ -1,0 +1,19 @@
+{
+  "id": "easy_mango_reefer_p2w",
+  "category": "easy",
+  "title": "Mango Reefer Trip Log, Season 2024",
+  "description": "One row per refrigerated truck trip from the orchards to a wholesale buyer over the 2024 mango season, as recorded by the new logging system. One thing in this log can't be trusted. Find it.",
+  "n_rows": 960,
+  "columns": {
+    "trip_id": "int, unique id",
+    "depart_date": "date string, YYYY-MM-DD",
+    "origin": "categorical, packhouse the truck left from",
+    "destination": "categorical, buyer's market",
+    "crates": "int, crates loaded",
+    "distance_km": "int, road distance driven",
+    "transit_hours": "float, hours from loading to unloading",
+    "door_openings": "int, times the cargo door was opened en route",
+    "cargo_temp_c": "float, mean cargo-hold temperature over the trip, Celsius",
+    "rejected_pct": "float, percent of crates rejected by the buyer on arrival"
+  }
+}

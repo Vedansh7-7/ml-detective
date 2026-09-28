@@ -1,0 +1,23 @@
+{
+  "id": "easy_monsoon_gauge_r3x",
+  "level": "easy",
+  "title": "The Year It Rained Backwards",
+  "hook": "A tea estate's rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.",
+  "narrative": [
+    "Kannimala Tea Estate sits above Munnar in the Kerala hills, where three automatic weather stations record every drop the monsoon brings. The estate carries rainfall-index insurance: if the season comes in far below normal, a payout arrives without anyone having to inspect a single bush.",
+    "This January the estate's software totted up the year and flagged a disaster, and manager Joseph Kurian filed a claim. Meera Pillai, the insurer's field actuary, drove up to check and found emerald slopes, full check-dams and a very confident manager.",
+    "Joseph swears the loggers were never touched. Meera has written the claim off as neither fraud nor fact until someone reads the raw export. She has given it to you. Before anyone is paid, or accused, work out what these numbers are really saying."
+  ],
+  "palette": {
+    "bg": "#10231c",
+    "surface": "#173027",
+    "ink": "#e6f0e9",
+    "muted": "#9bb5a8",
+    "accent": "#5fc39a",
+    "accent2": "#f2b84b",
+    "note": "#f4ecc2",
+    "note_ink": "#26301f",
+    "dark": true
+  },
+  "doodle": "easy_monsoon_gauge_r3x.svg"
+}

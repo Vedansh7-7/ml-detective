@@ -1,0 +1,16 @@
+{
+  "id": "easy_excel_ate_genes_k7q",
+  "category": "easy",
+  "title": "Organoid Drug Response: Differential Expression",
+  "description": "A differential-expression table from an RNA-seq experiment: one row per gene, treated vs untreated tumour organoids. It went through a collaborator's hands before submission, and something in it no longer holds up. Find it.",
+  "n_rows": 1400,
+  "columns": {
+    "gene_id": "string, stable Ensembl-style gene identifier",
+    "gene_symbol": "string, human gene symbol",
+    "base_mean": "float, mean normalised read count across samples",
+    "log2_fold_change": "float, log2 of treated / untreated expression",
+    "lfc_se": "float, standard error of the log2 fold change",
+    "p_value": "float, Wald test p-value",
+    "padj": "float, Benjamini-Hochberg adjusted p-value"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "normal_carrow_belle_register_k7q",
+  "category": "normal",
+  "title": "Carrow Belle Passenger Register (synthetic)",
+  "description": "A synthetic reconstruction of a fictional 1913 steamer\u2019s passenger register, one row per passenger, prepared for a survival-prediction exhibit. One thing in this table can\u2019t be trusted as a predictor. Find it.",
+  "n_rows": 1310,
+  "columns": {
+    "passenger_id": "int, unique register number",
+    "pclass": "int, ticket class (1 = first, 2 = second, 3 = third)",
+    "sex": "text, female / male",
+    "age": "float, age in years (blank where the clerk left it empty)",
+    "sibsp": "int, siblings or spouses travelling with the passenger",
+    "parch": "int, parents or children travelling with the passenger",
+    "fare": "float, ticket price in pounds sterling",
+    "embarked": "text, port of embarkation (S = Southampton, C = Cherbourg, Q = Queenstown)",
+    "boat": "text, boat code noted in the company register (blank if none)",
+    "survived": "int, 1 if the passenger survived the sinking, 0 if not (the target)"
+  }
+}

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ML Detective</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- =====================================================================
+     1. APP SPLASH (brutalist)
+     ===================================================================== -->
+<section id="splash" class="screen active">
+  <div class="stamp">CASE FILE :: EYES ONLY</div>
+  <h1 class="wordmark"><span>ML</span><span>DETECTIVE</span></h1>
+  <div class="tagline">Find the fault. Trust the data. Beat the clock.</div>
+  <div class="case-files">
+    <div><b>EASY</b> one bad value</div>
+    <div><b>NORMAL</b> one bad feature</div>
+    <div><b>HARD</b> one bad pattern</div>
+  </div>
+  <form id="join-form" class="join-form" autocomplete="off">
+    <label>Detective name <input id="join-name" maxlength="24" placeholder="e.g. Sherlock" required></label>
+    <label id="join-code-row" hidden>Join code <input id="join-code" maxlength="6" placeholder="from the host" spellcheck="false"></label>
+    <div id="join-error" class="join-error" hidden></div>
+    <button id="enter-btn" class="brut-btn" type="submit">Open the archive →</button>
+  </form>
+  <div class="footnote" id="splash-footnote">local · offline · nothing leaves this machine</div>
+</section>
+
+<!-- =====================================================================
+     2. HERO / CASE ARCHIVE (brutalist, scrollable)
+     ===================================================================== -->
+<section id="hero" class="screen">
+  <header class="hero-head">
+    <div class="hero-kicker">THE ARCHIVE / VOL. 01</div>
+    <h1 class="hero-title">EVERY DATASET<br>IS HIDING<br><mark>SOMETHING.</mark></h1>
+    <p class="hero-sub">Pick a difficulty. Pick a case. Write real Python against real data until you find the thing that doesn't belong.</p>
+    <div class="scroll-cue">SCROLL ↓</div>
+  </header>
+
+  <div class="tape-strip" aria-hidden="true">
+    <div>EASY ✦ NORMAL ✦ HARD ✦ EASY ✦ NORMAL ✦ HARD ✦ EASY ✦ NORMAL ✦ HARD ✦ EASY ✦ NORMAL ✦ HARD ✦ EASY ✦ NORMAL ✦ HARD ✦</div>
+  </div>
+
+  <div id="inbox-notice" hidden></div>
+  <div id="level-sections"></div>
+
+  <section class="hero-board">
+    <h2 class="level-head"><span class="num">##</span> SOLVED CASES <span class="live-pill"><i></i>LIVE</span></h2>
+    <p class="online-line"><span id="online-count">— DETECTIVES ONLINE</span></p>
+    <table id="leaderboard">
+      <thead><tr><th>Player</th><th>Case</th><th>Level</th><th>Time</th><th>Steps</th><th>Tries</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p id="board-empty" class="board-empty">No cases closed yet. The archive is waiting.</p>
+  </section>
+
+  <footer class="hero-foot">ML DETECTIVE — runs entirely on this machine.</footer>
+</section>
+
+<!-- =====================================================================
+     3. STORY INTRO (themed by the story's palette)
+     ===================================================================== -->
+<section id="story-intro" class="screen themed">
+  <div class="intro-wrap">
+    <div class="intro-doodle doodle"></div>
+    <div class="intro-text">
+      <div class="intro-level"></div>
+      <h1 class="intro-title"></h1>
+      <div class="intro-narrative narrative"></div>
+      <div class="intro-actions">
+        <button id="begin-btn" class="soft-btn primary">Begin the investigation</button>
+        <button id="intro-back" class="soft-btn ghost">← Back to the archive</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     4. STORY IDE (minimalist, themed)
+     ===================================================================== -->
+<section id="ide" class="screen themed">
+
+  <!-- bookmark ribbon + pull-down storyline -->
+  <div id="story-drawer">
+    <div class="drawer-inner" aria-hidden="true">
+      <div class="drawer-doodle doodle"></div>
+      <div>
+        <div class="intro-level drawer-level"></div>
+        <h2 class="drawer-title"></h2>
+        <div class="drawer-narrative narrative"></div>
+      </div>
+    </div>
+    <button id="ribbon" title="Pull down for the story (drag or click)"><span>STORY</span></button>
+  </div>
+
+  <div class="ide-bar">
+    <button id="ide-back" class="text-btn">← Cases</button>
+    <div class="ide-title"></div>
+    <div class="ide-stats">
+      <span>time <b id="timer">0s</b></span>
+      <span>steps <b id="steps">0</b></span>
+      <span>tries <b id="attempts">0</b></span>
+    </div>
+  </div>
+
+  <main class="ide-main">
+    <div id="cells"></div>
+    <button id="add-cell" class="add-cell">+ cell</button>
+    <p class="ide-keys">Ctrl+Enter runs a cell · Shift+Enter runs and moves to the next</p>
+  </main>
+
+  <!-- sticky-note case notes, slides in from the right -->
+  <aside id="notes">
+    <button id="notes-tab"><span>CASE NOTES</span></button>
+    <div class="notes-paper">
+      <div class="notes-tape"></div>
+      <h3 class="notes-heading">Case notes</h3>
+      <p id="notes-desc"></p>
+      <p class="notes-shape" id="notes-shape"></p>
+
+      <h4>Columns</h4>
+      <ul id="notes-cols"></ul>
+
+      <h4>Importable here</h4>
+      <div id="notes-pkgs"></div>
+
+      <h4>Your verdict</h4>
+      <input id="answer-box" placeholder="What's hiding in this data?" autocomplete="off">
+      <button id="submit-btn" class="soft-btn primary full">Submit verdict</button>
+      <ol id="hint-list"></ol>
+    </div>
+  </aside>
+
+  <div id="win-overlay">
+    <div id="win-card">
+      <div class="win-doodle doodle"></div>
+      <h2>Case closed.</h2>
+      <div class="win-stats">
+        <div><b id="win-time"></b><span>time</span></div>
+        <div><b id="win-steps"></b><span>steps</span></div>
+        <div><b id="win-tries"></b><span>tries</span></div>
+      </div>
+      <p id="win-explain"></p>
+      <div class="win-actions">
+        <button id="win-stay" class="soft-btn ghost">Keep exploring</button>
+        <button id="win-home" class="soft-btn primary">Back to the archive</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- feedback: floating button on every screen after the splash -->
+<button id="fb-open" class="fb-open" hidden>✎ Feedback</button>
+<div id="fb-overlay" class="fb-overlay">
+  <form id="fb-card" class="fb-card">
+    <h2>Tell the host what you think</h2>
+    <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Rating">
+      <button type="button" data-v="1">★</button><button type="button" data-v="2">★</button><button type="button" data-v="3">★</button><button type="button" data-v="4">★</button><button type="button" data-v="5">★</button>
+    </div>
+    <textarea id="fb-text" maxlength="4000" placeholder="What was fun? What was confusing? Bugs? Ideas?"></textarea>
+    <div id="fb-status" class="fb-status"></div>
+    <div class="fb-actions">
+      <button type="button" id="fb-cancel" class="fb-btn ghost">Close</button>
+      <button type="submit" class="fb-btn">Send</button>
+    </div>
+  </form>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

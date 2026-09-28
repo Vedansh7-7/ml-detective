@@ -1,0 +1,24 @@
+{
+  "id": "normal_carrow_belle_register_k7q",
+  "level": "normal",
+  "title": "The Register That Read Ahead",
+  "hook": "A lost steamer\u2019s passenger list guesses who came home with spooky precision. Paper isn\u2019t supposed to see the future.",
+  "narrative": [
+    "In April 1913 the steamer Carrow Belle went down in fog off Cape Race with 1,310 souls aboard. A century later the Halifax Harbourfront Maritime Museum is building an exhibit around her, and curator Maeve Lindqvist wants one wall to answer a hard question honestly: what actually decided who lived?",
+    "Her volunteer analyst, Jonah Achebe, digitised the shipping company\u2019s register and trained a kiosk model on it. Visitors type in a class, an age, a port, and the screen tells them whether they would have made it home. In testing, it has almost never been wrong.",
+    "Maeve is not celebrating. Descendants of the passengers are flying in for opening night on Friday, and she refuses to show them a machine that is right for the wrong reasons. \u201cThat register was kept by clerks,\u201d she says, \u201cnot by fortune tellers.\u201d",
+    "She has handed you Jonah\u2019s table, all 1,310 rows of it, with a pot of museum coffee and a polite warning about the Friday deadline. One thing in it is carrying information that no clerk could have written down on the morning she sailed. Find it before the doors open."
+  ],
+  "palette": {
+    "bg": "#0f1a2b",
+    "surface": "#17253b",
+    "ink": "#e9eef5",
+    "muted": "#9fb0c6",
+    "accent": "#e8b04a",
+    "accent2": "#e0726c",
+    "note": "#f7ecc8",
+    "note_ink": "#2a2014",
+    "dark": true
+  },
+  "doodle": "normal_carrow_belle_register_k7q.svg"
+}

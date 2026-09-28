@@ -1,0 +1,17 @@
+{
+  "id": "normal_kowhai_cold_chain_r2w",
+  "category": "normal",
+  "title": "Vaccine Fridge Logger Export",
+  "description": "Hourly readings from three vaccine fridges over 24 days. Each fridge has a main probe and a backup probe placed elsewhere in the cabinet, plus room temperature, door-open time and compressor duty. One thing in this export can\u2019t be trusted. Find it.",
+  "n_rows": 1728,
+  "columns": {
+    "reading_id": "int, unique reading number",
+    "timestamp": "text, reading time (YYYY-MM-DD HH:MM, hourly)",
+    "fridge": "text, fridge F1 / F2 / F3",
+    "main_probe_c": "float, main cabinet probe temperature in \u00b0C",
+    "backup_probe_f": "float, backup probe temperature in \u00b0F (a separate sensor in the cabinet)",
+    "ambient_c": "float, room temperature in \u00b0C",
+    "door_open_s": "int, seconds the door was open during the hour",
+    "compressor_duty_pct": "float, percent of the hour the compressor ran"
+  }
+}

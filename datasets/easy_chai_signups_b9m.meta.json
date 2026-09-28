@@ -1,0 +1,17 @@
+{
+  "id": "easy_chai_signups_b9m",
+  "category": "easy",
+  "title": "Kulhad & Co. App Sign-ups, Jan-Sep 2024",
+  "description": "Every customer who signed up on the chai app in its first nine months, with where they are and what their first month looked like. One thing in this export would lead a decision badly astray. Find it.",
+  "n_rows": 1800,
+  "columns": {
+    "signup_id": "int, unique id",
+    "signup_date": "date string, YYYY-MM-DD",
+    "city": "string, city the customer entered at sign-up",
+    "age_band": "categorical, self-reported age range",
+    "referral_source": "categorical, how they heard about the app",
+    "app_platform": "categorical, Android or iOS",
+    "first_order_inr": "int, value of the first order in rupees (the app has a 90-rupee minimum order)",
+    "orders_first_month": "int, number of orders in the first 30 days"
+  }
+}

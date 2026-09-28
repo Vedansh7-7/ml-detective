@@ -1,0 +1,23 @@
+{
+  "id": "easy_chai_signups_b9m",
+  "level": "easy",
+  "title": "Where Should the Chai Go?",
+  "hook": "A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.",
+  "narrative": [
+    "Kulhad & Co. sells clay-cup chai through an app, and after nine months of sign-ups the founders are ready to open their first real flagship kiosk. Co-founder Tanvi Hegde has a lease draft on her desk in Pune. Her partner, Arjun Nair, keeps muttering that half their regulars seem to live somewhere else.",
+    "The investor, a retired banker named Mrs. Lobo, has one rule: the kiosk goes wherever the most customers already are. The board deck's bar chart points firmly at Pune, the tallest bar by a clear margin, and she plans to sign the cheque on Monday.",
+    "Arjun has slipped you the raw sign-up export behind that chart. Nobody has checked it since the app went live. Before anyone signs a five-year lease, find the thing in this file that could send the kiosk to the wrong place."
+  ],
+  "palette": {
+    "bg": "#fbefe3",
+    "surface": "#fff8f0",
+    "ink": "#3a1f14",
+    "muted": "#8a5a44",
+    "accent": "#b4471f",
+    "accent2": "#2f6f73",
+    "note": "#fde2c4",
+    "note_ink": "#3a1f14",
+    "dark": false
+  },
+  "doodle": "easy_chai_signups_b9m.svg"
+}
