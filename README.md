@@ -95,3 +95,19 @@ stories_inbox/      drop new story packs here
 ```
 
 **Spoiler warning:** `secrets/` holds the answers. Don't open it if you want to play.
+
+## Licence
+
+ML Detective is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You're free to read it, run it, learn from it, change it, and use it in teaching or research. Selling it, hosting it as a paid service, or using it in a company or paid course needs a commercial licence. [COMMERCIAL.md](COMMERCIAL.md) spells out what's allowed. The name and brand are not licensed.
+
+## Contributing
+
+Pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first: every contribution needs the [contributor agreement](CLA.md). Report security problems privately, as described in [SECURITY.md](SECURITY.md).
+
+## Contact
+
+Vedansh Shrivastava
+
+- Email: vedansh.shrivastavaa@gmail.com
+- LinkedIn: [linkedin.com/in/explorerr](https://www.linkedin.com/in/explorerr/)
+- GitHub: [@Vedansh7-7](https://github.com/Vedansh7-7)
