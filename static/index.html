@@ -134,6 +134,37 @@
     </div>
   </aside>
 
+  <!-- "case closed" splash: the briefcase snaps shut, tilts, comic emanata
+       burst off its edges, and the words rise from behind it. Plays once
+       before the win card; click or any key skips it. -->
+  <div id="closed-splash" aria-hidden="true">
+    <div class="cs-words">CASE<br>CLOSED</div>
+    <svg class="cs-case" viewBox="0 0 320 260" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g class="cs-emanata">
+        <path d="M58 78 L22 50"/><path d="M48 118 L2 112"/><path d="M80 50 L62 10"/>
+        <path d="M262 78 L298 50"/><path d="M272 118 L318 112"/><path d="M240 50 L258 10"/>
+        <path d="M72 240 L44 266"/><path d="M248 240 L276 266"/><path d="M160 38 L160 -4"/>
+      </g>
+      <g class="cs-tilt">
+        <g class="cs-papers">
+          <rect x="86" y="70" width="78" height="52" rx="3" transform="rotate(-8 125 96)"/>
+          <rect x="152" y="66" width="76" height="54" rx="3" transform="rotate(7 190 93)"/>
+          <path d="M100 84 h42 M100 96 h34 M166 82 h44 M166 94 h36"/>
+        </g>
+        <g class="cs-body">
+          <rect x="64" y="112" width="192" height="116" rx="12" class="cs-fill"/>
+          <path d="M64 150 H256" class="cs-seam"/>
+          <rect x="94" y="104" width="22" height="18" rx="3" class="cs-latch"/>
+          <rect x="204" y="104" width="22" height="18" rx="3" class="cs-latch"/>
+        </g>
+        <g class="cs-lid">
+          <rect x="64" y="86" width="192" height="30" rx="10" class="cs-fill"/>
+          <path d="M132 86 V72 a8 8 0 0 1 8 -8 h40 a8 8 0 0 1 8 8 V86"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+
   <div id="win-overlay">
     <div id="win-card">
       <div class="win-doodle doodle"></div>
