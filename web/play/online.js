@@ -12,7 +12,7 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
 let user = null;
 
 // a guest session (anonymous auth) that survives reloads in this browser
-export async function connect() {
+export async function connect({ captchaWaitMs = 20_000 } = {}) {
   const { data } = await sb.auth.getSession();
   if (data.session) {
     user = data.session.user;
@@ -20,7 +20,7 @@ export async function connect() {
   }
   // if the bot check can't produce a token, still try: it only matters once
   // CAPTCHA is enforced in Supabase, and then the sign-in fails cleanly
-  const token = await captchaToken(20_000).catch((err) => {
+  const token = await captchaToken(captchaWaitMs).catch((err) => {
     console.warn("ML Detective: bot check --", err.message);
     return undefined;
   });

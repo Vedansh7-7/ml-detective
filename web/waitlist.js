@@ -23,7 +23,10 @@ form.addEventListener("submit", async (e) => {
     || (document.referrer ? new URL(document.referrer).hostname : "landing");
   try {
     const { connect, sb } = await import("./play/online.js");
-    await connect();
+    say("Running a quick bot check… if a box appears at the bottom of the screen, tick it.");
+    // first visits can take a while (or need a click); give it time, and one retry
+    await connect({ captchaWaitMs: 45_000 }).catch(() => connect({ captchaWaitMs: 45_000 }));
+    say("Adding you…");
     const { error } = await sb.from("waitlist").insert({
       name: String(f.get("name")).trim(),
       email: String(f.get("email")).trim(),
