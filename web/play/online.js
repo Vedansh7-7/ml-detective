@@ -171,46 +171,6 @@ export async function getPack(code) {
   return data;
 }
 
-// ---------- admin (weekly drops) ----------
-export function isGuest() {
-  return !user || user.is_anonymous;
-}
-export async function isAdmin() {
-  if (isGuest()) return false;
-  const { data } = await sb.rpc("is_admin");
-  return !!data;
-}
-export async function adminSignIn(email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({
-    email, password, options: { captchaToken: await captchaToken() },
-  });
-  if (error) throw error;
-  user = data.user;
-  return user;
-}
-export async function adminSignUp(email, password) {
-  const { data, error } = await sb.auth.signUp({
-    email, password, options: {
-      emailRedirectTo: location.origin + location.pathname + "#weekly",
-      captchaToken: await captchaToken(),
-    },
-  });
-  if (error) throw error;
-  return data;
-}
-export async function signOutToGuest() {
-  await sb.auth.signOut();
-  user = null;
-  return connect();
-}
-export async function callAdmin(payload) {
-  const { data, error } = await sb.functions.invoke("admin", { body: payload });
-  if (error) {
-    try { return await error.context.json(); } catch { return { error: error.message }; }
-  }
-  return data;
-}
-
 // "N detectives online": everyone on the site shares one presence channel
 let lobby = null;
 let onlineCount = 1;

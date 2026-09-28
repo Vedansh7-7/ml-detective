@@ -81,8 +81,7 @@ export function onEngineStatus(fn) {
 
 // ---------- the current game ----------
 let game = null;
-let lastProcessed = null;   // the last pack that passed validation for an admin drop
-let lastUpload = null;      // ...and for the Upload tab
+let lastUpload = null;      // the last pack that passed validation in the Upload tab
 function newGame(item) {
   return {
     item, level: item.level, verdict: null, gameId: null, csv: null,
@@ -280,46 +279,6 @@ const routes = {
     const all = await online.boardRows({ caseIds: [rows[0].dataset_id] });
     const par = parFor(rows[0].level, all, rows[0].par);
     return { results: rank(rows, () => par) };
-  },
-
-  // ---------- admin: weekly drops ----------
-  "/api/admin/status": async () => {
-    await ready;
-    if (!online) return { online: false };
-    return { online: true, guest: online.isGuest(), admin: await online.isAdmin(),
-             email: online.currentUser()?.email || null };
-  },
-  "/api/admin/signin": async ({ email, password }) => {
-    await online.adminSignIn(email, password);
-    const name = readJSON(STORE_NAME, null);
-    if (name) await online.setName(name);
-    return { ok: true, admin: await online.isAdmin() };
-  },
-  "/api/admin/signup": async ({ email, password }) => {
-    await online.adminSignUp(email, password);
-    return { ok: true };
-  },
-  "/api/admin/signout": async () => {
-    await online.signOutToGuest();
-    const name = readJSON(STORE_NAME, null);
-    if (name) await online.setName(name);
-    return { ok: true };
-  },
-  "/api/admin/validate": async ({ text }, onStep) => {
-    const { processPack } = await import("./packlab.js");
-    const res = await processPack(text, engine, onStep);
-    lastProcessed = res.errors.length ? null : res;
-    if (res.errors.length) return { errors: res.errors };
-    const { story, meta } = res.case;
-    return { errors: [], summary: { id: story.id, title: story.title, level: story.level,
-                                    rows: meta.n_rows, columns: Object.keys(meta.columns).length } };
-  },
-  "/api/admin/publish": async ({ starts_at, ends_at }) => {
-    if (!lastProcessed) return { error: "validate a pack first" };
-    const res = await online.callAdmin({ action: "drop_weekly", case: lastProcessed.case,
-                                         csv: lastProcessed.csv, starts_at, ends_at });
-    if (res.ok) lastProcessed = null;
-    return res;
   },
 
   // the cases *this* player has closed (for SOLVED stamps and Scout access)

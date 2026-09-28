@@ -1017,6 +1017,33 @@ code { font-family: var(--mono); }
 .edu-list p { font-size: 15px; color: #e4e0d3; }
 @media (max-width: 860px) { .edu-grid { grid-template-columns: 1fr; } }
 
+/* waitlist form (dark educators section) */
+.waitlist-form { display: grid; gap: 14px; max-width: 620px; font-family: var(--mono); }
+.wl-title { font-family: var(--display); text-transform: uppercase; font-size: 22px; color: var(--tape); margin: 0; }
+.wl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.waitlist-form label { display: grid; gap: 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #e4e0d3; }
+.waitlist-form .opt { text-transform: none; letter-spacing: 0; color: #b9b5a8; }
+.waitlist-form input, .waitlist-form select, .waitlist-form textarea {
+  font-family: var(--mono); font-size: 15px; letter-spacing: 0; text-transform: none;
+  padding: 10px 12px; background: var(--paper); color: var(--ink);
+  border: 3px solid var(--paper); border-radius: 0; width: 100%;
+}
+.waitlist-form input:focus, .waitlist-form select:focus, .waitlist-form textarea:focus {
+  outline: none; border-color: var(--tape);
+}
+.waitlist-form .wl-consent { display: flex; align-items: center; gap: 10px; text-transform: none; letter-spacing: 0; font-size: 14px; }
+.waitlist-form .wl-consent input { width: 18px; height: 18px; accent-color: var(--tape); }
+.waitlist-form .btn { justify-self: start; }
+.waitlist-form .btn:disabled { opacity: .5; cursor: wait; }
+.wl-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.wl-status { min-height: 1.4em; margin: 0; font-size: 14px; }
+.wl-status[data-kind="ok"] { color: var(--confirm); }
+.wl-status[data-kind="bad"] { color: #ff8a80; }
+@media (max-width: 560px) { .wl-row { grid-template-columns: 1fr; } }
+
+/* Cloudflare Turnstile, when it needs a click */
+.captcha-host { position: fixed; left: 50%; bottom: 16px; z-index: 100; transform: translateX(-50%); }
+
 /* ==========================================================================
    9. FAQ
    ========================================================================== */

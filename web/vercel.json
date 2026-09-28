@@ -9,6 +9,13 @@
       ]
     },
     {
+      "source": "/admin/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
       "source": "/cases/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
     },

@@ -629,8 +629,8 @@ $("#win-scout").addEventListener("click", () => openScout(state.story.id));
 $("#intro-scout").addEventListener("click", () => openScout(state.story.id));
 
 // ---------------------------------------------------------------------------
-// Weekly Challenge: one case a week, its own board, past winners, and the
-// admin's drop form (validated in the browser with the ingester's checks)
+// Weekly Challenge: one case a week, its own board and past winners.
+// Weekly cases are dropped from the hidden admin page (web/admin/).
 // ---------------------------------------------------------------------------
 function countdown(toIso) {
   const ms = Date.parse(toIso) - Date.now();
@@ -700,113 +700,6 @@ async function renderWeekly() {
     });
     body.appendChild(past);
   }
-
-  const admin = el("details", "admin-drop");
-  admin.appendChild(el("summary", null, "Case drop (admin)"));
-  const adminBody = el("div", "admin-body");
-  admin.appendChild(adminBody);
-  admin.addEventListener("toggle", () => { if (admin.open) renderAdmin(adminBody); });
-  body.appendChild(admin);
-}
-
-async function renderAdmin(box) {
-  box.innerHTML = "";
-  const status = await api("/api/admin/status");
-  if (!status.online) {
-    box.appendChild(el("p", "board-empty", "The admin tools need the online archive."));
-    return;
-  }
-  const msg = el("p", "admin-msg");
-
-  if (status.guest) {
-    box.appendChild(el("p", "level-blurb",
-      "Sign in with the admin account to schedule a weekly case. This switches this browser from your guest detective to that account."));
-    const form = el("form", "admin-form");
-    const email = el("input"); email.type = "email"; email.placeholder = "email"; email.required = true; email.autocomplete = "username";
-    const pass = el("input"); pass.type = "password"; pass.placeholder = "password (8+ characters)"; pass.required = true; pass.minLength = 8; pass.autocomplete = "current-password";
-    const signIn = el("button", "fb-btn", "Sign in"); signIn.type = "submit";
-    const signUp = el("button", "fb-btn ghost", "Create the account"); signUp.type = "button";
-    form.append(email, pass, signIn, signUp);
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      msg.textContent = "Signing in…";
-      const r = await api("/api/admin/signin", { email: email.value, password: pass.value });
-      if (r.error) { msg.textContent = r.error; return; }
-      renderAdmin(box);
-    });
-    signUp.addEventListener("click", async () => {
-      if (!form.reportValidity()) return;
-      msg.textContent = "Creating the account…";
-      const r = await api("/api/admin/signup", { email: email.value, password: pass.value });
-      msg.textContent = r.error ? r.error
-        : "Check your inbox and confirm the email, then come back here and sign in.";
-    });
-    box.append(form, msg);
-    return;
-  }
-
-  const who = el("p", "level-blurb", `Signed in as ${status.email}.`);
-  const out = el("button", "fb-btn ghost", "Sign out");
-  out.addEventListener("click", async () => { await api("/api/admin/signout"); renderAdmin(box); loadArchive(); });
-  who.appendChild(document.createTextNode(" "));
-  who.appendChild(out);
-  box.appendChild(who);
-  if (!status.admin) {
-    box.appendChild(el("p", "board-empty", "This account isn't an admin."));
-    return;
-  }
-
-  const pack = el("textarea", "admin-pack");
-  pack.placeholder = "Paste the story pack JSON here (or pick a file below)";
-  const file = el("input"); file.type = "file"; file.accept = ".json,.txt,.md";
-  file.addEventListener("change", async () => { if (file.files[0]) pack.value = await file.files[0].text(); });
-  const validate = el("button", "fb-btn", "Validate pack");
-  const result = el("div", "admin-result");
-
-  const dates = el("div", "admin-dates");
-  const start = el("input"); start.type = "datetime-local";
-  const end = el("input"); end.type = "datetime-local";
-  const toLocal = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
-  start.value = toLocal(new Date());
-  end.value = toLocal(new Date(Date.now() + 7 * 86_400_000));
-  const sLab = el("label", null, "Opens "); sLab.appendChild(start);
-  const eLab = el("label", null, "Closes "); eLab.appendChild(end);
-  dates.append(sLab, eLab);
-  const publish = el("button", "fb-btn", "Publish this week");
-  publish.disabled = true;
-
-  validate.addEventListener("click", async () => {
-    validate.disabled = true;
-    publish.disabled = true;
-    result.innerHTML = "";
-    const step = el("p", "admin-msg", "Starting…");
-    result.appendChild(step);
-    const r = await api("/api/admin/validate", { text: pack.value }, (s) => { step.textContent = s; });
-    validate.disabled = false;
-    result.innerHTML = "";
-    if (r.error || (r.errors && r.errors.length)) {
-      result.appendChild(el("p", "admin-bad", "This pack isn't ready:"));
-      const ul = el("ul", "admin-errors");
-      (r.errors || [r.error]).forEach((e) => ul.appendChild(el("li", null, e)));
-      result.appendChild(ul);
-      return;
-    }
-    const s = r.summary;
-    result.appendChild(el("p", "admin-ok",
-      `Ready: "${s.title}" · ${s.level} · ${s.rows} rows × ${s.columns} columns · id ${s.id}`));
-    publish.disabled = false;
-  });
-
-  publish.addEventListener("click", async () => {
-    publish.disabled = true;
-    const r = await api("/api/admin/publish", {
-      starts_at: new Date(start.value).toISOString(), ends_at: new Date(end.value).toISOString() });
-    if (r.error) { result.appendChild(el("p", "admin-bad", r.error)); publish.disabled = false; return; }
-    result.appendChild(el("p", "admin-ok", `Published. It opens ${fmtDate(r.starts_at)} and closes ${fmtDate(r.ends_at)}.`));
-    renderWeekly();
-  });
-
-  box.append(pack, file, validate, result, dates, publish);
 }
 
 document.addEventListener("tabchange", (e) => { if (e.detail === "weekly") renderWeekly(); });

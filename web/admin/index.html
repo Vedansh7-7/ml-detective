@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Case room · ML Detective</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0a'/%3E%3Ctext x='16' y='23' font-family='Arial Black,Arial' font-weight='900' font-size='17' text-anchor='middle' fill='%23ffe600'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header class="bar">
+  <b class="brand">ML DETECTIVE <span>· CASE ROOM</span></b>
+  <div class="bar-right">
+    <span id="who"></span>
+    <button id="refresh" class="btn ghost" hidden>Refresh</button>
+    <button id="signout" class="btn ghost" hidden>Sign out</button>
+  </div>
+</header>
+
+<main>
+  <!-- sign in: magic link to an existing admin account only -->
+  <section id="v-signin" class="card narrow" hidden>
+    <h1>Sign in</h1>
+    <p>We'll email you a one-time sign-in link.</p>
+    <form id="signin-form">
+      <input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+      <button class="btn" type="submit">Email me a link</button>
+    </form>
+    <p id="signin-msg" class="msg" role="status"></p>
+  </section>
+
+  <section id="v-denied" class="card narrow" hidden>
+    <h1>No access</h1>
+    <p>This account can't open the case room.</p>
+  </section>
+
+  <section id="v-board" hidden>
+    <div id="kpis" class="kpis"></div>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>Last 14 days</h2>
+        <div id="daily" class="daily"></div>
+        <p class="legend"><i class="k-games"></i> games started <i class="k-solves"></i> solves <i class="k-new"></i> new players</p>
+      </section>
+      <section class="card">
+        <h2>Cases</h2>
+        <div id="top-cases" class="scroll"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Waitlist <span id="wl-count" class="pill"></span></h2>
+        <button id="wl-csv" class="btn ghost">Download CSV</button>
+      </div>
+      <div id="waitlist" class="scroll tall"></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>Recent solves</h2>
+        <div id="recent" class="scroll"></div>
+      </section>
+      <section class="card">
+        <h2>Feedback</h2>
+        <div id="feedback" class="scroll"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Weekly Challenge</h2>
+      <div id="weeks" class="scroll"></div>
+      <h3>Drop a new week</h3>
+      <textarea id="pack" placeholder="Paste the story pack JSON here (or pick a file)"></textarea>
+      <div class="row">
+        <input id="pack-file" type="file" accept=".json,.txt,.md">
+        <button id="validate" class="btn">Validate pack</button>
+      </div>
+      <div id="pack-result"></div>
+      <div class="row">
+        <label>Opens <input id="opens" type="datetime-local"></label>
+        <label>Closes <input id="closes" type="datetime-local"></label>
+        <button id="publish" class="btn" disabled>Publish this week</button>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
