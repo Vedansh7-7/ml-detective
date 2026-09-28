@@ -49,7 +49,13 @@ function caseIndex() {
   indexPromise ??= fetch(`${CASES}/index.json`).then((r) => r.json());
   return indexPromise;
 }
+// cases that aren't in the site bundle (weekly, uploaded): id -> { level, story, meta, csvUrl | csv }
+const extraCases = new Map();
+export function registerCase(item) {
+  extraCases.set(item.story.id, item);
+}
 async function findCase(id) {
+  if (extraCases.has(id)) return extraCases.get(id);
   const { levels } = await caseIndex();
   for (const { level, stories } of levels) {
     const item = stories.find((s) => s.story.id === id);
@@ -73,6 +79,7 @@ export function onEngineStatus(fn) {
 
 // ---------- the current game ----------
 let game = null;
+let lastProcessed = null;   // the last pack that passed validation (admin drop / upload)
 function newGame(item) {
   return {
     item, level: item.level, verdict: null, gameId: null, csv: null,
@@ -121,7 +128,10 @@ const routes = {
   "/api/start": async ({ story_id, room_code }) => {
     const item = await findCase(story_id);
     if (!item) return { error: `unknown story '${story_id}'` };
-    const csv = await fetch(`${CASES}/${story_id}/data.csv`).then((r) => r.text());
+    const csv = item.csv ?? await fetch(item.csvUrl ?? `${CASES}/${story_id}/data.csv`).then((r) => {
+      if (!r.ok) throw new Error(`couldn't load the dataset (${r.status})`);
+      return r.text();
+    });
     const next = newGame(item);
     next.csv = csv;
     await ready;
@@ -171,6 +181,73 @@ const routes = {
     if (game.solved) return { error: "already solved -- start a new case" };
     const text = String(answer || "").trim();
     return online ? submitOnline(text, share) : submitLocal(text);
+  },
+
+  // ---------- Weekly Challenge ----------
+  "/api/weekly": async () => {
+    await ready;
+    if (!online) return { error: "The Weekly Challenge needs the online archive -- you're playing offline right now." };
+    const now = Date.now();
+    const all = await online.weeks();
+    const week = (w) => {
+      const story = { ...w.cases.story, id: w.case_id, level: w.cases.level, doodle: w.cases.story.doodle_svg };
+      const item = { level: w.cases.level, story, meta: w.cases.meta, csvUrl: online.weeklyCsvUrl(w.case_id), weekly: true };
+      registerCase(item);
+      return { item, starts_at: w.starts_at, ends_at: w.ends_at };
+    };
+    const boardFor = async (w) => {
+      const rows = await online.boardRows({ caseIds: [w.item.story.id], since: w.starts_at, until: w.ends_at });
+      return rank(rows, (id, level, forCase) => parFor(level, forCase, forCase[0].par));
+    };
+    const live = all.filter((w) => Date.parse(w.starts_at) <= now && now <= Date.parse(w.ends_at)).map(week);
+    const upcoming = all.filter((w) => Date.parse(w.starts_at) > now)
+      .map((w) => ({ starts_at: w.starts_at, ends_at: w.ends_at }));
+    const past = all.filter((w) => Date.parse(w.ends_at) < now).slice(0, 5).map(week);
+    const current = live[0] ? { ...live[0], board: await boardFor(live[0]) } : null;
+    const pastBoards = await Promise.all(past.map(async (w) => ({
+      title: w.item.story.title, level: w.item.level, ends_at: w.ends_at, top: (await boardFor(w)).slice(0, 3),
+    })));
+    return { current, upcoming, past: pastBoards };
+  },
+
+  // ---------- admin: weekly drops ----------
+  "/api/admin/status": async () => {
+    await ready;
+    if (!online) return { online: false };
+    return { online: true, guest: online.isGuest(), admin: await online.isAdmin(),
+             email: online.currentUser()?.email || null };
+  },
+  "/api/admin/signin": async ({ email, password }) => {
+    await online.adminSignIn(email, password);
+    const name = readJSON(STORE_NAME, null);
+    if (name) await online.setName(name);
+    return { ok: true, admin: await online.isAdmin() };
+  },
+  "/api/admin/signup": async ({ email, password }) => {
+    await online.adminSignUp(email, password);
+    return { ok: true };
+  },
+  "/api/admin/signout": async () => {
+    await online.signOutToGuest();
+    const name = readJSON(STORE_NAME, null);
+    if (name) await online.setName(name);
+    return { ok: true };
+  },
+  "/api/admin/validate": async ({ text }, onStep) => {
+    const { processPack } = await import("./packlab.js");
+    const res = await processPack(text, engine, onStep);
+    lastProcessed = res.errors.length ? null : res;
+    if (res.errors.length) return { errors: res.errors };
+    const { story, meta } = res.case;
+    return { errors: [], summary: { id: story.id, title: story.title, level: story.level,
+                                    rows: meta.n_rows, columns: Object.keys(meta.columns).length } };
+  },
+  "/api/admin/publish": async ({ starts_at, ends_at }) => {
+    if (!lastProcessed) return { error: "validate a pack first" };
+    const res = await online.callAdmin({ action: "drop_weekly", case: lastProcessed.case,
+                                         csv: lastProcessed.csv, starts_at, ends_at });
+    if (res.ok) lastProcessed = null;
+    return res;
   },
 
   // the cases *this* player has closed (for SOLVED stamps and Scout access)
@@ -262,11 +339,11 @@ async function submitLocal(text) {
   return { correct: false, attempts: game.attempts, hint: hints[Math.min(game.attempts, hints.length) - 1] };
 }
 
-export async function api(path, body) {
+export async function api(path, body, onStep) {
   const route = routes[path];
   if (!route) return { error: `unknown endpoint ${path}` };
   try {
-    return await route(body || {});
+    return await route(body || {}, onStep);
   } catch (err) {
     return { error: String(err && err.message || err) };
   }

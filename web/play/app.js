@@ -68,6 +68,8 @@ function applyTheme(p) {
 
 const doodleCache = {};
 function loadDoodle(file) {
+  // weekly/uploaded cases carry their (validated) SVG inline instead of a file name
+  if (file && file.trimStart().startsWith("<svg")) return Promise.resolve(file);
   if (!doodleCache[file]) {
     doodleCache[file] = fetch(`doodles/${file}`).then((r) => r.text());
   }
@@ -315,6 +317,7 @@ function backToArchive() {
   setDrawer(false);
   $("#win-overlay").classList.remove("show");
   loadArchive();
+  if (!$('[data-panel="weekly"]').hidden) renderWeekly();
   go("hero", "fade");
 }
 $("#ide-back").addEventListener("click", backToArchive);
@@ -617,6 +620,189 @@ $("#scout-close").addEventListener("click", () => setScout(false));
 $("#scout").addEventListener("click", (e) => { if (e.target.id === "scout") setScout(false); });
 $("#win-scout").addEventListener("click", () => openScout(state.story.id));
 $("#intro-scout").addEventListener("click", () => openScout(state.story.id));
+
+// ---------------------------------------------------------------------------
+// Weekly Challenge: one case a week, its own board, past winners, and the
+// admin's drop form (validated in the browser with the ingester's checks)
+// ---------------------------------------------------------------------------
+function countdown(toIso) {
+  const ms = Date.parse(toIso) - Date.now();
+  if (ms <= 0) return "ended";
+  const d = Math.floor(ms / 86_400_000), h = Math.floor(ms / 3_600_000) % 24, m = Math.floor(ms / 60_000) % 60;
+  return d ? `${d}d ${h}h left` : h ? `${h}h ${m}m left` : `${m}m left`;
+}
+const fmtDate = (iso) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function boardTable(rows) {
+  const table = el("table", "mini-board-table");
+  const head = el("tr");
+  ["#", "Player", "Score", "Time", "Tries"].forEach((h) => head.appendChild(el("th", null, h)));
+  table.appendChild(el("thead")).appendChild(head);
+  const tbody = table.appendChild(el("tbody"));
+  rows.slice(0, 20).forEach((r, i) => {
+    const tr = el("tr");
+    [i + 1, r.player, r.score, fmtTime(r.elapsed_seconds), r.attempts].forEach((v) => tr.appendChild(el("td", null, String(v))));
+    tbody.appendChild(tr);
+  });
+  return table;
+}
+
+let weeklyTimer = null;
+async function renderWeekly() {
+  const body = $("#weekly-body");
+  body.innerHTML = "";
+  body.appendChild(el("p", "board-empty", "Loading this week's case…"));
+  const data = await api("/api/weekly");
+  body.innerHTML = "";
+  clearInterval(weeklyTimer);
+  if (data.error) {
+    body.appendChild(el("p", "board-empty", data.error));
+    return;
+  }
+
+  if (data.current) {
+    const { item, ends_at, board } = data.current;
+    const wrap = el("div", "weekly-now");
+    const card = storyCard(item, state.solvedIds && state.solvedIds.has(item.story.id));
+    const side = el("div", "weekly-side");
+    const clock = el("div", "weekly-clock", countdown(ends_at));
+    weeklyTimer = setInterval(() => { clock.textContent = countdown(ends_at); }, 30_000);
+    side.append(el("div", "weekly-kicker", `THIS WEEK · ${item.level.toUpperCase()}`), clock,
+                el("p", "level-blurb", `Closes ${fmtDate(ends_at)}. Only solves from this week count here.`));
+    if (board.length) side.appendChild(boardTable(board));
+    else side.appendChild(el("p", "board-empty", "Nobody has cracked it yet. First name on the board is still up for grabs."));
+    wrap.append(card, side);
+    body.appendChild(wrap);
+  } else {
+    const next = data.upcoming.length ? data.upcoming[data.upcoming.length - 1] : null;
+    body.appendChild(el("p", "board-empty", next
+      ? `No case this week yet. The next one opens ${fmtDate(next.starts_at)}.`
+      : "No case this week yet. Check back soon."));
+  }
+
+  if (data.past.length) {
+    const past = el("section", "weekly-past");
+    past.appendChild(el("h3", "weekly-past-head", "PAST WEEKS"));
+    data.past.forEach((w) => {
+      const row = el("div", "weekly-past-row");
+      row.appendChild(el("b", null, w.title));
+      row.appendChild(el("span", null, w.top.length
+        ? w.top.map((r, i) => `${["1st", "2nd", "3rd"][i]} ${r.player} (${r.score})`).join(" · ")
+        : "no solves"));
+      past.appendChild(row);
+    });
+    body.appendChild(past);
+  }
+
+  const admin = el("details", "admin-drop");
+  admin.appendChild(el("summary", null, "Case drop (admin)"));
+  const adminBody = el("div", "admin-body");
+  admin.appendChild(adminBody);
+  admin.addEventListener("toggle", () => { if (admin.open) renderAdmin(adminBody); });
+  body.appendChild(admin);
+}
+
+async function renderAdmin(box) {
+  box.innerHTML = "";
+  const status = await api("/api/admin/status");
+  if (!status.online) {
+    box.appendChild(el("p", "board-empty", "The admin tools need the online archive."));
+    return;
+  }
+  const msg = el("p", "admin-msg");
+
+  if (status.guest) {
+    box.appendChild(el("p", "level-blurb",
+      "Sign in with the admin account to schedule a weekly case. This switches this browser from your guest detective to that account."));
+    const form = el("form", "admin-form");
+    const email = el("input"); email.type = "email"; email.placeholder = "email"; email.required = true; email.autocomplete = "username";
+    const pass = el("input"); pass.type = "password"; pass.placeholder = "password (8+ characters)"; pass.required = true; pass.minLength = 8; pass.autocomplete = "current-password";
+    const signIn = el("button", "fb-btn", "Sign in"); signIn.type = "submit";
+    const signUp = el("button", "fb-btn ghost", "Create the account"); signUp.type = "button";
+    form.append(email, pass, signIn, signUp);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "Signing in…";
+      const r = await api("/api/admin/signin", { email: email.value, password: pass.value });
+      if (r.error) { msg.textContent = r.error; return; }
+      renderAdmin(box);
+    });
+    signUp.addEventListener("click", async () => {
+      if (!form.reportValidity()) return;
+      msg.textContent = "Creating the account…";
+      const r = await api("/api/admin/signup", { email: email.value, password: pass.value });
+      msg.textContent = r.error ? r.error
+        : "Check your inbox and confirm the email, then come back here and sign in.";
+    });
+    box.append(form, msg);
+    return;
+  }
+
+  const who = el("p", "level-blurb", `Signed in as ${status.email}.`);
+  const out = el("button", "fb-btn ghost", "Sign out");
+  out.addEventListener("click", async () => { await api("/api/admin/signout"); renderAdmin(box); loadArchive(); });
+  who.appendChild(document.createTextNode(" "));
+  who.appendChild(out);
+  box.appendChild(who);
+  if (!status.admin) {
+    box.appendChild(el("p", "board-empty", "This account isn't an admin."));
+    return;
+  }
+
+  const pack = el("textarea", "admin-pack");
+  pack.placeholder = "Paste the story pack JSON here (or pick a file below)";
+  const file = el("input"); file.type = "file"; file.accept = ".json,.txt,.md";
+  file.addEventListener("change", async () => { if (file.files[0]) pack.value = await file.files[0].text(); });
+  const validate = el("button", "fb-btn", "Validate pack");
+  const result = el("div", "admin-result");
+
+  const dates = el("div", "admin-dates");
+  const start = el("input"); start.type = "datetime-local";
+  const end = el("input"); end.type = "datetime-local";
+  const toLocal = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+  start.value = toLocal(new Date());
+  end.value = toLocal(new Date(Date.now() + 7 * 86_400_000));
+  const sLab = el("label", null, "Opens "); sLab.appendChild(start);
+  const eLab = el("label", null, "Closes "); eLab.appendChild(end);
+  dates.append(sLab, eLab);
+  const publish = el("button", "fb-btn", "Publish this week");
+  publish.disabled = true;
+
+  validate.addEventListener("click", async () => {
+    validate.disabled = true;
+    publish.disabled = true;
+    result.innerHTML = "";
+    const step = el("p", "admin-msg", "Starting…");
+    result.appendChild(step);
+    const r = await api("/api/admin/validate", { text: pack.value }, (s) => { step.textContent = s; });
+    validate.disabled = false;
+    result.innerHTML = "";
+    if (r.error || (r.errors && r.errors.length)) {
+      result.appendChild(el("p", "admin-bad", "This pack isn't ready:"));
+      const ul = el("ul", "admin-errors");
+      (r.errors || [r.error]).forEach((e) => ul.appendChild(el("li", null, e)));
+      result.appendChild(ul);
+      return;
+    }
+    const s = r.summary;
+    result.appendChild(el("p", "admin-ok",
+      `Ready: "${s.title}" · ${s.level} · ${s.rows} rows × ${s.columns} columns · id ${s.id}`));
+    publish.disabled = false;
+  });
+
+  publish.addEventListener("click", async () => {
+    publish.disabled = true;
+    const r = await api("/api/admin/publish", {
+      starts_at: new Date(start.value).toISOString(), ends_at: new Date(end.value).toISOString() });
+    if (r.error) { result.appendChild(el("p", "admin-bad", r.error)); publish.disabled = false; return; }
+    result.appendChild(el("p", "admin-ok", `Published. It opens ${fmtDate(r.starts_at)} and closes ${fmtDate(r.ends_at)}.`));
+    renderWeekly();
+  });
+
+  box.append(pack, file, validate, result, dates, publish);
+}
+
+document.addEventListener("tabchange", (e) => { if (e.detail === "weekly") renderWeekly(); });
 
 // ---------------------------------------------------------------------------
 // tabs: Cases · Weekly · Stakeout · Upload (deep-linkable as #weekly etc.)
