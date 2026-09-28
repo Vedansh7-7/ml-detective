@@ -969,3 +969,105 @@ textarea.code {
   transition: transform .35s cubic-bezier(.3, 1.4, .5, 1);
 }
 .toast.show { transform: none; }
+
+/* ===================================================================
+   "Case closed" splash (plays before the win card)
+   Timeline: lid swings shut 0.25s -> latches click 0.72s -> case hops
+   and tilts 0.8s -> emanata burst 1.0s -> words rise from behind 1.25s
+   =================================================================== */
+#closed-splash {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: none;
+  place-items: center;
+  overflow: hidden;
+  background: var(--s-bg);
+  cursor: pointer;
+}
+#closed-splash.play { display: grid; animation: cs-in .2s ease-out both; }
+#closed-splash.out { animation: cs-out .25s ease-in both; }
+@keyframes cs-in { from { opacity: 0; } }
+@keyframes cs-out { to { opacity: 0; transform: scale(1.04); } }
+
+#closed-splash > * { grid-area: 1 / 1; }
+.cs-words {
+  z-index: 0;
+  font-family: var(--display);
+  font-size: clamp(84px, 18vw, 340px);
+  translate: 0 -16%;
+  line-height: .82;
+  letter-spacing: -.03em;
+  text-align: center;
+  color: var(--s-accent2);
+  -webkit-text-stroke: clamp(2px, .35vw, 6px) var(--s-ink);
+  paint-order: stroke fill;
+  opacity: 0;
+}
+.cs-case {
+  z-index: 1;
+  width: min(40vw, 540px);
+  translate: 0 32%;
+  overflow: visible;
+}
+.cs-case * { stroke: var(--s-ink); stroke-width: 6; }
+.cs-case .cs-fill { fill: var(--s-accent); }
+.cs-case .cs-latch { fill: var(--s-note); }
+.cs-case .cs-papers rect { fill: var(--s-surface); }
+.cs-case .cs-papers path { stroke-width: 4; opacity: .6; }
+.cs-case .cs-seam { stroke-width: 4; opacity: .45; }
+.cs-case .cs-emanata path { stroke-width: 9; }
+
+.cs-lid, .cs-papers, .cs-tilt, .cs-emanata, .cs-latch { transform-box: view-box; }
+.cs-lid { transform-origin: 64px 116px; transform: rotate(-72deg); }
+.cs-papers { transform-origin: 160px 124px; }
+.cs-tilt { transform-origin: 160px 228px; }
+.cs-emanata { transform-origin: 160px 140px; opacity: 0; }
+.cs-emanata path { stroke-dasharray: 64; stroke-dashoffset: 64; }
+.cs-latch { transform-box: fill-box; transform-origin: center; }
+
+#closed-splash.play .cs-lid { animation: cs-shut .5s cubic-bezier(.55, 0, .8, .2) .25s forwards; }
+#closed-splash.play .cs-papers { animation: cs-tuck .32s ease-in .38s forwards; }
+#closed-splash.play .cs-latch { animation: cs-click .3s ease-out .72s both; }
+#closed-splash.play .cs-tilt { animation: cs-tilt .6s cubic-bezier(.3, 1.5, .5, 1) .8s forwards; }
+#closed-splash.play .cs-emanata {
+  animation: cs-ema-in .15s linear 1s forwards, cs-ema-pulse .5s ease-in-out 1.45s infinite alternate;
+}
+#closed-splash.play .cs-emanata path { animation: cs-draw .35s ease-out 1s forwards; }
+#closed-splash.play .cs-words { animation: cs-rise .65s cubic-bezier(.2, 1.5, .4, 1) 1.25s forwards; }
+#closed-splash.play .cs-case { animation: cs-thud .3s linear .74s; }
+
+@keyframes cs-shut {
+  0%   { transform: rotate(-72deg); }
+  72%  { transform: rotate(4deg); }
+  86%  { transform: rotate(-2deg); }
+  100% { transform: rotate(0); }
+}
+@keyframes cs-tuck { to { transform: translateY(40px) scaleY(.3); opacity: 0; } }
+@keyframes cs-click {
+  40% { transform: scale(1.45); fill: var(--s-accent2); }
+  100% { transform: scale(1); }
+}
+@keyframes cs-thud {
+  25% { transform: translate(-6px, 4px); }
+  50% { transform: translate(5px, -3px); }
+  75% { transform: translate(-3px, 2px); }
+}
+@keyframes cs-tilt {
+  0%   { transform: none; }
+  40%  { transform: translateY(-18px) rotate(-4deg); }
+  100% { transform: rotate(-9deg); }
+}
+@keyframes cs-ema-in { to { opacity: 1; } }
+@keyframes cs-ema-pulse {
+  from { transform: rotate(-9deg) scale(1); }
+  to   { transform: rotate(-9deg) scale(1.07); }
+}
+@keyframes cs-draw { to { stroke-dashoffset: 0; } }
+@keyframes cs-rise {
+  from { opacity: 0; transform: translateY(22%) scale(.62); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #closed-splash { display: none !important; }
+}

@@ -467,6 +467,7 @@ async function submitVerdict() {
     $("#win-explain").textContent = data.explanation;
     paintDoodle($(".win-doodle"), state.story.doodle);
     setNotes(false);
+    await playCaseClosed();
     $("#win-overlay").classList.add("show");
     return;
   }
@@ -477,6 +478,32 @@ async function submitVerdict() {
   $("#hint-list").appendChild(li);
   $("#answer-box").select();
 }
+// briefcase splash before the win card; resolves when it's done or skipped
+const SPLASH_MS = 3000;
+function playCaseClosed() {
+  const splash = $("#closed-splash");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      splash.removeEventListener("click", finish);
+      document.removeEventListener("keydown", finish);
+      splash.classList.add("out");
+      setTimeout(() => { splash.classList.remove("play", "out"); resolve(); }, 250);
+    };
+    splash.classList.remove("play", "out");
+    void splash.offsetWidth;  // restart the CSS animations
+    splash.classList.add("play");
+    const timer = setTimeout(finish, SPLASH_MS);
+    splash.addEventListener("click", finish);
+    // let the Enter that submitted the verdict settle before keys can skip
+    setTimeout(() => { if (!done) document.addEventListener("keydown", finish); }, 400);
+  });
+}
+
 $("#submit-btn").addEventListener("click", submitVerdict);
 $("#answer-box").addEventListener("keydown", (e) => { if (e.key === "Enter") submitVerdict(); });
 
