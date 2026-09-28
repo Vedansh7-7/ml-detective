@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M28 92 q34 -58 78 -4 q-38 10 -78 4 z'/>
+  <path d='M58 94 q-4 30 -2 52 q12 4 22 0 q-2 -24 -4 -54'/>
+  <path d='M56 108 q10 4 20 0' opacity='0.7'/>
+  <circle cx='52' cy='72' r='3' fill='currentColor'/>
+  <circle cx='70' cy='62' r='3.5' fill='currentColor'/>
+  <circle cx='86' cy='74' r='2.5' fill='currentColor'/>
+  <circle cx='64' cy='80' r='2' fill='currentColor'/>
+  <path d='M118 118 q20 -30 46 -2 q-22 6 -46 2 z'/>
+  <path d='M136 120 q-2 16 0 28 q8 3 14 0 q-1 -14 -2 -28'/>
+  <path d='M126 116 l4 -6 m8 5 l3 -7 m9 7 l2 -6' opacity='0.6'/>
+  <path d='M16 150 q40 -6 80 0 q40 6 80 -2 q30 -4 48 2'/>
+  <path d='M24 150 l2 -10 m8 10 l-2 -12 m70 12 l3 -9 m60 7 l-2 -11 m30 11 l2 -8' opacity='0.6'/>
+  <path d='M170 88 q24 -2 44 0 l-6 32 q-16 5 -32 0 z'/>
+  <path d='M172 90 q20 -40 40 0'/>
+  <path d='M176 100 l32 2 m-30 10 l28 1' opacity='0.5'/>
+  <circle cx='200' cy='40' r='16'/>
+  <line x1='188' y1='52' x2='172' y2='70' stroke-width='5'/>
+  <path d='M192 36 q6 -6 12 -2' opacity='0.6'/>
+  <path d='M116 60 q4 -10 12 -8' stroke-dasharray='3 5' opacity='0.5'/>
+</svg>

@@ -1,0 +1,88 @@
+"""
+Export the game's content into web/ for the browser version.
+
+    python tools/build_web.py
+
+Writes (all generated, safe to delete and rebuild):
+  web/cases/index.json            levels -> public story + meta per case
+  web/cases/<id>/data.csv         the dataset
+  web/cases/<id>/verdict.json     hashed answer keys + hints for offline practice play
+  web/play/doodles/<file>.svg     case doodles
+  web/py/{kernel,scoring,story_ingest}.py   the Python the browser runs in Pyodide
+
+Answers never go into web/ in readable form: verdict.json holds salted
+hashes of the accepted token sets (see kernel.answer_keys). Weekly cases
+are never exported here at all -- they live only in the backend.
+"""
+import base64
+import json
+import os
+import shutil
+import sys
+
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, HERE)
+import kernel  # noqa: E402
+
+DATASETS = os.path.join(HERE, "datasets")
+SECRETS = os.path.join(HERE, "secrets")
+DOODLES = os.path.join(HERE, "static", "doodles")
+WEB = os.path.join(HERE, "web")
+LEVEL_ORDER = ["easy", "normal", "hard"]
+PY_MODULES = ["kernel.py", "scoring.py", "story_ingest.py"]
+
+
+def load(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def b64(obj):
+    return base64.b64encode(json.dumps(obj).encode()).decode()
+
+
+def main():
+    cases_dir = os.path.join(WEB, "cases")
+    shutil.rmtree(cases_dir, ignore_errors=True)
+    os.makedirs(os.path.join(WEB, "play", "doodles"), exist_ok=True)
+    os.makedirs(os.path.join(WEB, "py"), exist_ok=True)
+
+    levels = {lvl: [] for lvl in LEVEL_ORDER}
+    for name in sorted(os.listdir(DATASETS)):
+        if not name.endswith(".story.json"):
+            continue
+        cid = name[: -len(".story.json")]
+        paths = {k: os.path.join(DATASETS, f"{cid}.{k}") for k in ("csv", "meta.json", "story.json")}
+        secret_path = os.path.join(SECRETS, f"{cid}.json")
+        if not all(os.path.exists(p) for p in [*paths.values(), secret_path]):
+            continue
+        story, meta, secret = load(paths["story.json"]), load(paths["meta.json"]), load(secret_path)
+        if story.get("level") not in levels:
+            continue
+
+        out = os.path.join(cases_dir, cid)
+        os.makedirs(out)
+        shutil.copyfile(paths["csv"], os.path.join(out, "data.csv"))
+        with open(os.path.join(out, "verdict.json"), "w", encoding="utf-8") as f:
+            json.dump({
+                "keys": kernel.answer_keys(secret, salt=cid),
+                "hints": b64(secret["hints"]),
+                "explanation": b64(secret["description"]),
+                "par": secret.get("par"),
+            }, f)
+        shutil.copyfile(os.path.join(DOODLES, story["doodle"]),
+                        os.path.join(WEB, "play", "doodles", story["doodle"]))
+        levels[story["level"]].append({"story": story, "meta": meta})
+
+    with open(os.path.join(cases_dir, "index.json"), "w", encoding="utf-8") as f:
+        json.dump({"levels": [{"level": lvl, "stories": levels[lvl]} for lvl in LEVEL_ORDER]}, f)
+
+    for mod in PY_MODULES:
+        shutil.copyfile(os.path.join(HERE, mod), os.path.join(WEB, "py", mod))
+
+    counts = {lvl: len(v) for lvl, v in levels.items()}
+    print(f"exported {sum(counts.values())} cases {counts} + {len(PY_MODULES)} python modules into web/")
+
+
+if __name__ == "__main__":
+    main()

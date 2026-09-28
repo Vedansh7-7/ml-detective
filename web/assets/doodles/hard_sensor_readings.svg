@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- lattice radio tower -->
+  <path d="M58 160 L80 42 L102 160"/>
+  <path d="M65 124 H95"/>
+  <path d="M70 96 H90"/>
+  <path d="M74 70 H86"/>
+  <path d="M65 124 L90 96 M95 124 L70 96"/>
+  <path d="M70 96 L86 70 M90 96 L74 70"/>
+  <circle cx="80" cy="35" r="5"/>
+  <!-- broadcast arcs -->
+  <path d="M64 22 q16 -14 32 0"/>
+  <path d="M54 12 q26 -22 52 0" opacity=".6"/>
+  <!-- sea -->
+  <path d="M8 166 q15 -8 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0"/>
+  <!-- oscilloscope with a skipping signal -->
+  <rect x="124" y="54" width="104" height="72" rx="9"/>
+  <path d="M132 92 q6 -18 12 0 t12 0 l8 -12 h6 l3 12 l3 -12 h6 l3 12 l3 -12 h6 l3 12 q6 -18 12 0 t10 0"/>
+  <path d="M152 126 V140 M200 126 V140 M140 140 H212"/>
+  <!-- gulls -->
+  <path d="M150 28 q5 -6 10 0 q5 -6 10 0"/>
+  <path d="M188 38 q4 -5 8 0 q4 -5 8 0" opacity=".7"/>
+</svg>

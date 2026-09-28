@@ -1074,3 +1074,93 @@ textarea.code {
 @media (prefers-reduced-motion: reduce) {
   #closed-splash { display: none !important; }
 }
+
+/* ===================================================================
+   browser version: top bar, Python status, mode tabs, loaders
+   =================================================================== */
+.play-topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px clamp(16px, 6vw, 80px);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.back-home { color: var(--ink); text-decoration: none; font-weight: bold; }
+.back-home:hover { text-decoration: underline; }
+.py-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+.py-pill::before {
+  content: "";
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #999;
+}
+.py-pill[data-state="loading"]::before { background: var(--tape); animation: live-pulse 1s ease-in-out infinite; }
+.py-pill[data-state="ready"]::before { background: #22b14c; }
+.py-pill[data-state="error"] { background: var(--alarm); color: var(--paper); }
+.py-pill.small {
+  padding: 2px 8px; font-size: 10px; border-width: 1px;
+  border-color: var(--s-line); background: transparent; color: var(--s-muted);
+}
+
+.play-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 28px clamp(16px, 6vw, 80px) 0;
+}
+.play-tabs [role=tab] {
+  font-family: var(--display);
+  font-size: clamp(14px, 2vw, 20px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 18px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  box-shadow: var(--hard-sm);
+  cursor: pointer;
+}
+.play-tabs [role=tab] em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  background: var(--alarm);
+  color: var(--paper);
+  padding: 1px 5px;
+  margin-left: 6px;
+  vertical-align: 3px;
+}
+.play-tabs [role=tab][aria-selected="true"] { background: var(--tape); box-shadow: 5px 5px 0 var(--alarm); }
+.play-tabs [role=tab]:focus-visible { outline: 3px solid var(--alarm); outline-offset: 3px; }
+
+.mode-panel { padding: 40px clamp(16px, 6vw, 80px) 64px; min-height: 40vh; }
+.mode-body { margin-top: 20px; max-width: 980px; }
+
+[data-board="local"] .online-line { display: none; }
+[data-board="local"] .live-pill { background: var(--ink); }
+[data-board="local"] .live-pill i { animation: none; }
+
+.py-loader {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--s-muted);
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+.stop-btn { color: var(--s-accent2) !important; font-weight: bold; }

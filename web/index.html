@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ML Detective: every dataset is hiding something</title>
+<meta name="description" content="A detective game for people who work with data. Write real Python against real data in your browser, find the one planted fault, and beat the clock.">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:title" content="ML Detective">
+<meta property="og:description" content="Write real Python against real data. Find the one lie. Beat the clock.">
+<meta property="og:image" content="assets/notebook.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="site.css">
+<script>document.documentElement.classList.replace("no-js", "js");</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- =====================================================================
+     1. NAV
+     ===================================================================== -->
+<header class="nav" id="top">
+  <div class="nav-in wrap">
+    <a class="brand" href="#top" aria-label="ML Detective, back to top">
+      <span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span>
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#modes">Modes</a>
+      <a href="#educators">For educators</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-ghost btn-sm nav-dl" href="https://github.com/Vedansh7-7/ml-detective" rel="noopener">
+        Download <span class="soon">Soon</span>
+      </a>
+      <a class="btn btn-tape btn-sm" href="play/">Play</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">
+        <span class="sr">Menu</span><i></i><i></i><i></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- =====================================================================
+     2. HERO
+     ===================================================================== -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="ghost-num" data-speed="0.25">999</span>
+    <span class="doodle hero-doodle d1" data-speed="-0.18" style="--d:url(assets/doodles/easy_customer_orders.svg)"></span>
+    <span class="doodle hero-doodle d2" data-speed="0.32" style="--d:url(assets/doodles/hard_sensor_readings.svg)"></span>
+  </div>
+
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="kicker" data-reveal>Case file 001 · Plays in your browser</p>
+      <h1 class="hero-title" id="hero-title" data-reveal>
+        Every dataset is hiding <mark class="swipe">something.</mark>
+      </h1>
+      <p class="hero-sub" data-reveal>Write real Python against real data. Find the one lie. Beat the clock.</p>
+      <div class="hero-ctas" data-reveal>
+        <a class="btn btn-tape btn-lg" href="play/">Play now <span aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="https://github.com/Vedansh7-7/ml-detective" rel="noopener">
+          Download <span class="soon">Coming soon</span>
+        </a>
+      </div>
+      <ul class="hero-facts" data-reveal>
+        <li><b>15</b> cases</li>
+        <li><b>3</b> levels</li>
+        <li><b>0</b> setup · runs in your browser</li>
+      </ul>
+    </div>
+
+    <div class="hero-photo" data-speed="-0.12">
+      <figure class="evidence">
+        <span class="tape-bit tb1" aria-hidden="true"></span>
+        <span class="tape-bit tb2" aria-hidden="true"></span>
+        <img src="assets/notebook.webp" width="1100" height="982"
+             alt="The ML Detective notebook: df.describe() shows a maximum customer age of 999, and a histogram of ages has a lonely bar far to the right.">
+        <figcaption>Exhibit A · <code>df['age'].max()</code> → 999</figcaption>
+        <span class="stamp" aria-hidden="true">Suspicious</span>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Easy ✦ Normal ✦ Hard ✦ 15 cases ✦ pandas ✦ numpy ✦ scikit-learn ✦ one planted fault ✦ </span>
+    <span>Easy ✦ Normal ✦ Hard ✦ 15 cases ✦ pandas ✦ numpy ✦ scikit-learn ✦ one planted fault ✦ </span>
+  </div>
+</div>
+
+<!-- =====================================================================
+     3. HOW IT WORKS
+     ===================================================================== -->
+<section class="sec how" id="how" aria-labelledby="how-title">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>
+      <p class="label"><span class="num">01</span> How a case goes</p>
+      <h2 id="how-title">Three steps. One liar.</h2>
+    </header>
+
+    <ol class="steps">
+      <li class="step" data-reveal>
+        <span class="step-n" aria-hidden="true">01</span>
+        <h3>Pick a case</h3>
+        <p>Every case is a short story with a dataset attached. A yarn shop's weekly orders. A Mars orbiter that keeps arriving low. Somewhere in the data, one thing has been planted.</p>
+        <div class="step-art art-pick" aria-hidden="true">
+          <span class="chip chip-easy">Easy</span>
+          <span class="chip chip-normal">Normal</span>
+          <span class="chip chip-hard">Hard</span>
+        </div>
+      </li>
+      <li class="step" data-reveal>
+        <span class="step-n" aria-hidden="true">02</span>
+        <h3>Interrogate the data</h3>
+        <p>A live Python notebook opens right in the tab, with pandas, numpy, matplotlib and scikit-learn ready to go. Describe it, plot it, group it. The clock is running.</p>
+        <pre class="step-art art-code" aria-hidden="true"><code><span class="c">[1]</span> df.describe()
+<span class="c">[2]</span> df.groupby('device_id').size()
+<span class="c">[3]</span> df[df.device_id == 501]<span class="caret"></span></code></pre>
+      </li>
+      <li class="step" data-reveal>
+        <span class="step-n" aria-hidden="true">03</span>
+        <h3>Name the lie</h3>
+        <p>Type your verdict. A wrong guess doesn't end the case, it gets you a sharper hint. Fewer tries and a faster time mean a better score.</p>
+        <div class="step-art art-verdict" aria-hidden="true">
+          <s>region</s>
+          <s>order_value</s>
+          <span class="verdict-ok">age <b>✓ Case closed</b></span>
+        </div>
+      </li>
+    </ol>
+
+    <div class="how-shots" data-reveal>
+      <figure class="shot shot-dark" data-speed="-0.06">
+        <img src="assets/notebook-dark.webp" width="1000" height="764" loading="lazy"
+             alt="A dark-themed notebook on a Hard case. Grouping by device shows device 501 has 32 readings when every other device has 6 to 8.">
+        <figcaption>Hard case, three cells in: device 501 is talking too much.</figcaption>
+      </figure>
+      <figure class="shot shot-notes" data-speed="0.08">
+        <img src="assets/hints.webp" width="600" height="1202" loading="lazy"
+             alt="The case notes sticky note, with two crossed-out wrong guesses and a sharper hint under each one.">
+        <figcaption>Two wrong guesses, two better hints.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     4. LEVELS + CASE WALL
+     ===================================================================== -->
+<section class="sec levels" id="levels" aria-labelledby="levels-title">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>
+      <p class="label"><span class="num">02</span> The archive</p>
+      <h2 id="levels-title">Three levels. <span class="hl">15 cases.</span></h2>
+      <p class="sec-sub">Each case hides exactly one thing. How hard it is to see depends on the level.</p>
+    </header>
+
+    <div class="level-row">
+      <article class="level-card lv-easy" data-reveal>
+        <span class="chip chip-easy">Easy</span>
+        <h3>One bad value</h3>
+        <p>One value that can't be true. Summary statistics will get you far.</p>
+      </article>
+      <article class="level-card lv-normal" data-reveal>
+        <span class="chip chip-normal">Normal</span>
+        <h3>One bad feature</h3>
+        <p>One feature that shouldn't exist. Think about what a model is allowed to know.</p>
+      </article>
+      <article class="level-card lv-hard" data-reveal>
+        <span class="chip chip-hard">Hard</span>
+        <h3>One bad pattern</h3>
+        <p>One pattern spread across columns. Looking at one column at a time won't be enough.</p>
+      </article>
+    </div>
+
+    <ul class="wall" aria-label="All 15 cases">
+      <li class="case" style="--bg:#f7ecdc;--ac:#d4622a;--a2:#6f8f4e;--nt:#ffe7a3">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_customer_orders.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>The Tuesday Ledger</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#1b1d2a;--ac:#e3b34c;--a2:#e0655f;--nt:#fff1c1">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/hard_ashgrove_admissions_s7q.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-hard">Hard</span><h3>Forty-Five Percent Versus Thirty-One</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#1d1312;--ac:#ff7c47;--a2:#6fc3d9;--nt:#ffe7c2">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/normal_cartographer_orbit_drift_m4z.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-normal">Normal</span><h3>Eleven Days From Mars</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#eef4f1;--ac:#1f7a6b;--a2:#b0413e;--nt:#fff1a8">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_excel_ate_genes_k7q.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>The Spreadsheet That Ate Genes</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#0f1419;--ac:#7c9cff;--a2:#ff7a59;--nt:#fdf3c4">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/hard_merlion_hall_c_racks_w3t.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-hard">Hard</span><h3>Hall C Has a Heartbeat</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#eaeef4;--ac:#2f5fd0;--a2:#d9a521;--nt:#fff1b8">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/normal_employee_salary.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-normal">Normal</span><h3>The Model That Knew Too Much</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#10231c;--ac:#5fc39a;--a2:#f2b84b;--nt:#f4ecc2">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_monsoon_gauge_r3x.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>The Year It Rained Backwards</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#f1ecdf;--ac:#8a4a2c;--a2:#4c7a3a;--nt:#fde3df">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/normal_hollowmere_fungus_survey_p9d.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-normal">Normal</span><h3>Death Cap, Dinner, or Doubt</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#1a1512;--ac:#f0a33a;--a2:#e2574c;--nt:#fde9b8">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/hard_kaleidoscope_petty_cash_b9d.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-hard">Hard</span><h3>Nine Crews, One Storyteller</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#fff6e0;--ac:#b3560a;--a2:#3c7a3a;--nt:#dcf2d2">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_mango_reefer_p2w.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>The Mangoes Were Perfectly Fine</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#0f1a2b;--ac:#e8b04a;--a2:#e0726c;--nt:#f7ecc8">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/normal_carrow_belle_register_k7q.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-normal">Normal</span><h3>The Register That Read Ahead</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#140f2b;--ac:#ff5fa2;--a2:#37d6c4;--nt:#fff3a0">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_saltpan_wristbands_z4t.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>Too Many People on the Beach</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#0d1a1b;--ac:#35e0c2;--a2:#ff5f5f;--nt:#e9f5c9">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/hard_sensor_readings.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-hard">Hard</span><h3>Echoes in the Static</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#eef5f8;--ac:#1f7ea5;--a2:#c8483f;--nt:#e2f6ea">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/normal_kowhai_cold_chain_r2w.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-normal">Normal</span><h3>The Fridge With Two Witnesses</h3></div></div>
+      </li>
+      <li class="case" style="--bg:#fbefe3;--ac:#b4471f;--a2:#2f6f73;--nt:#fde2c4">
+        <div class="case-in"><div class="case-art"><span class="doodle" style="--d:url(assets/doodles/easy_chai_signups_b9m.svg)"></span><span class="sw"><i></i><i></i><i></i></span></div>
+        <div class="case-body"><span class="chip chip-easy">Easy</span><h3>Where Should the Chai Go?</h3></div></div>
+      </li>
+    </ul>
+
+    <p class="wall-cta" data-reveal><a class="btn btn-ink" href="play/">Open the archive <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<!-- =====================================================================
+     5. REAL DISASTERS
+     ===================================================================== -->
+<section class="sec disasters" id="disasters" aria-labelledby="dis-title">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>
+      <p class="label"><span class="num">03</span> Based on true stories</p>
+      <h2 id="dis-title">Real disasters, now playable.</h2>
+      <p class="sec-sub">Some of our cases are built on data mistakes that really happened. We changed the names and kept the mistakes.</p>
+    </header>
+  </div>
+
+  <div class="strips">
+    <article class="strip s1" data-reveal>
+      <div class="wrap strip-in">
+        <span class="strip-year" aria-hidden="true">2016</span>
+        <div class="strip-copy">
+          <h3>Excel mangled gene names in about 1 in 5 papers.</h3>
+          <p>Gene symbols like SEPT2 got auto-converted into dates, and the damage slipped into published supplementary files. <cite>Ziemann et al., 2016</cite></p>
+        </div>
+        <span class="strip-case"><span class="chip chip-easy">Easy</span> The Spreadsheet That Ate Genes</span>
+      </div>
+    </article>
+    <article class="strip s2" data-reveal>
+      <div class="wrap strip-in">
+        <span class="strip-year" aria-hidden="true">1999</span>
+        <div class="strip-copy">
+          <h3>A $125M Mars orbiter lost to mixed units.</h3>
+          <p>One team's software worked in pound-force seconds. The other expected newton-seconds. Nobody caught it until the spacecraft was gone. <cite>Mars Climate Orbiter, 1999</cite></p>
+        </div>
+        <span class="strip-case"><span class="chip chip-normal">Normal</span> Eleven Days From Mars</span>
+      </div>
+    </article>
+    <article class="strip s3" data-reveal>
+      <div class="wrap strip-in">
+        <span class="strip-year" aria-hidden="true">1973</span>
+        <div class="strip-copy">
+          <h3>Berkeley's 1973 admissions paradox.</h3>
+          <p>The overall numbers looked biased against women. Split by department, the picture flipped. A textbook case of Simpson's paradox. <cite>UC Berkeley, 1973</cite></p>
+        </div>
+        <span class="strip-case"><span class="chip chip-hard">Hard</span> Forty-Five Percent Versus Thirty-One</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- =====================================================================
+     6. MODES
+     ===================================================================== -->
+<section class="sec modes" id="modes" aria-labelledby="modes-title">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>
+      <p class="label"><span class="num">04</span> Modes</p>
+      <h2 id="modes-title">Solo is just the start.</h2>
+    </header>
+
+    <div class="mode-grid">
+      <article class="mode m-weekly" data-reveal>
+        <div class="mode-head"><span class="tag-tape">Weekly Challenge</span></div>
+        <div class="mode-art weekly-art" aria-hidden="true">
+          <div class="week-card">
+            <span class="week-no">Example week</span>
+            <span class="doodle" style="--d:url(assets/doodles/hard_merlion_hall_c_racks_w3t.svg)"></span>
+            <b>Hall C Has a Heartbeat</b>
+            <ol class="mini-board">
+              <li><span>Sherlock_27</span><span>3m 14s</span></li>
+              <li><span>PandasPro</span><span>4m 02s</span></li>
+              <li><span>NullHunter</span><span>5m 47s</span></li>
+            </ol>
+          </div>
+        </div>
+        <h3>A new case every week</h3>
+        <p>Same data and same clock for everyone, with a leaderboard that belongs to that week alone. Come back Monday and it resets.</p>
+      </article>
+
+      <article class="mode m-stakeout" data-reveal>
+        <div class="mode-head"><span class="tag-tape">Stakeout</span><span class="join-code" aria-label="Example join code">Code <b>K7Q2XM</b></span></div>
+        <div class="mode-art stakeout-art">
+          <img src="assets/live-board.webp" width="1000" height="358" loading="lazy"
+               alt="The live Solved Cases board: five detectives online, Vedansh just solved The Tuesday Ledger in 3 minutes 34 seconds.">
+          <div class="toast" role="presentation" aria-hidden="true"><span class="bolt">⚡</span> <span class="toast-msg">OutlierQueen just closed "The Model That Knew Too Much" in 1m 49s</span></div>
+        </div>
+        <h3>Race your friends on the same case</h3>
+        <p>Share a join code and everyone gets the same case. The live board fills in as people crack it, and you'll get a heads-up every time a rival beats you to it.</p>
+      </article>
+
+      <article class="mode m-scout" data-reveal>
+        <div class="mode-head"><span class="tag-tape">Scout</span></div>
+        <div class="mode-art">
+          <img src="assets/multiplayer-grid.webp" width="1400" height="795" loading="lazy"
+               alt="Four detectives' notebooks side by side, each working the case a different way.">
+        </div>
+        <h3>See how other detectives cracked it</h3>
+        <p>Once you close a case, you can open other players' notebooks. The dead ends, the clever one-liners, the plot that gave it away.</p>
+      </article>
+
+      <article class="mode m-upload" data-reveal>
+        <div class="mode-head"><span class="tag-tape">Upload</span></div>
+        <div class="mode-art upload-art" aria-hidden="true">
+          <div class="file-card">
+            <div class="file-bar"><span>master_prompt.md</span><span class="dots"><i></i><i></i><i></i></span></div>
+<pre><code><span class="k">level:</span> normal
+<span class="k">story:</span> A bakery's loyalty app says
+  Tuesdays are dead. The ovens
+  disagree.
+<span class="k">plant:</span> one leaky feature
+<span class="k">share:</span> <span class="ok">private link ✓</span></code></pre>
+          </div>
+        </div>
+        <h3>Write your own case</h3>
+        <p>Use our master prompt to turn your own story and dataset into a case. Keep it to yourself, or send the link to a friend and watch them squirm.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     7. CASE CLOSED DIVIDER (briefcase slam)
+     ===================================================================== -->
+<section class="closed" id="closed" aria-label="Case closed">
+  <div class="closed-stage" aria-hidden="true">
+    <div class="cs-words">CASE<br>CLOSED</div>
+    <svg class="cs-case" viewBox="0 0 320 260" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g class="cs-emanata">
+        <path d="M58 78 L22 50"/><path d="M48 118 L2 112"/><path d="M80 50 L62 10"/>
+        <path d="M262 78 L298 50"/><path d="M272 118 L318 112"/><path d="M240 50 L258 10"/>
+        <path d="M72 240 L44 266"/><path d="M248 240 L276 266"/><path d="M160 38 L160 -4"/>
+      </g>
+      <g class="cs-tilt">
+        <g class="cs-papers">
+          <rect x="86" y="70" width="78" height="52" rx="3" transform="rotate(-8 125 96)"/>
+          <rect x="152" y="66" width="76" height="54" rx="3" transform="rotate(7 190 93)"/>
+          <path d="M100 84 h42 M100 96 h34 M166 82 h44 M166 94 h36"/>
+        </g>
+        <g class="cs-body">
+          <rect x="64" y="112" width="192" height="116" rx="12" class="cs-fill"/>
+          <path d="M64 150 H256" class="cs-seam"/>
+          <rect x="94" y="104" width="22" height="18" rx="3" class="cs-latch"/>
+          <rect x="204" y="104" width="22" height="18" rx="3" class="cs-latch"/>
+        </g>
+        <g class="cs-lid">
+          <rect x="64" y="86" width="192" height="30" rx="10" class="cs-fill"/>
+          <path d="M132 86 V72 a8 8 0 0 1 8 -8 h40 a8 8 0 0 1 8 8 V86"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <p class="closed-cap">This is what a right answer feels like. <button type="button" class="replay" id="replay">Play it again</button></p>
+</section>
+
+<!-- =====================================================================
+     8. EDUCATORS + HIRING
+     ===================================================================== -->
+<section class="sec edu" id="educators" aria-labelledby="edu-title">
+  <div class="wrap edu-grid">
+    <div class="edu-copy" data-reveal>
+      <p class="label label-inv"><span class="num">05</span> For educators &amp; hiring</p>
+      <h2 id="edu-title">Teach it. <span class="hl">Test it.</span></h2>
+      <p class="edu-lead">Most data courses hand students a clean CSV and a question with a known answer. Real data is messier than that. ML Detective gives people practice at the part that actually matters on the job: noticing when something is off.</p>
+      <!-- TODO: point this at the real waitlist (form or mailto:) once the address is decided. -->
+      <a class="btn btn-tape btn-lg" href="#waitlist" id="waitlist">Join the waitlist <span aria-hidden="true">→</span></a>
+      <p class="edu-note">We're starting with a small group of teachers and teams.</p>
+    </div>
+    <ul class="edu-list">
+      <li data-reveal><h3>Classroom leaderboards</h3><p>Run one case with the whole section and put the live board on the projector.</p></li>
+      <li data-reveal><h3>Assign cases</h3><p>Pick the case and the level that fit this week's lecture. Students see their own score, you see everyone's.</p></li>
+      <li data-reveal><h3>Hiring screens</h3><p>Watch how a candidate works through messy data in a real notebook, against a clock. Much harder to fake than a quiz.</p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- =====================================================================
+     9. FAQ
+     ===================================================================== -->
+<section class="sec faq" id="faq" aria-labelledby="faq-title">
+  <div class="wrap faq-wrap">
+    <header class="sec-head" data-reveal>
+      <p class="label"><span class="num">06</span> FAQ</p>
+      <h2 id="faq-title">Questions, answered.</h2>
+    </header>
+    <div class="faq-list">
+      <details data-reveal open>
+        <summary>Do I need to install anything?</summary>
+        <p>No. Python runs right in your browser. Open the page, pick a case and start typing.</p>
+      </details>
+      <details data-reveal>
+        <summary>Is it free?</summary>
+        <p>The core cases are free to play.</p>
+      </details>
+      <details data-reveal>
+        <summary>What do I need to know?</summary>
+        <p>Basic pandas. If you can load a dataframe, run <code>describe()</code> and filter some rows, you can close an Easy case. The harder levels will teach you the rest.</p>
+      </details>
+      <details data-reveal>
+        <summary>Can I make my own cases?</summary>
+        <p>Yes. Upload lets you write a case with our master prompt, then play it privately or share a link.</p>
+      </details>
+      <details data-reveal>
+        <summary>Is my code private?</summary>
+        <p>Your code runs on your own device. Your notebooks only show up in Scout if you choose to share them.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     10. CLOSING
+     ===================================================================== -->
+<section class="end" aria-labelledby="end-title">
+  <h2 class="end-words" id="end-title">
+    <span class="w s1">Suspect.</span>
+    <span class="w s2">Solve.</span>
+    <span class="w s3 repeat" id="repeat"><span class="l">R</span><span class="l">e</span><span class="l">p</span><span class="l">e</span><span class="l">a</span><span class="l">t</span><span class="dot">.</span></span>
+  </h2>
+  <a class="btn btn-tape btn-lg end-btn" href="play/">Play now <span aria-hidden="true">→</span></a>
+  <p class="end-note">Free to start. Runs in your browser.</p>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a class="brand brand-sm" href="#top" aria-label="ML Detective, back to top">
+      <span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span>
+    </a>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="play/">Play</a>
+      <a href="#how">How it works</a>
+      <a href="#modes">Modes</a>
+      <a href="#educators">For educators</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/Vedansh7-7/ml-detective" rel="noopener">GitHub</a>
+    </nav>
+    <p class="foot-copy">© 2026 ML Detective</p>
+  </div>
+</footer>
+
+<script src="site.js" defer></script>
+</body>
+</html>

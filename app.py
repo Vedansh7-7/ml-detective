@@ -21,26 +21,20 @@ Each browser gets its own game; a join code printed at startup gates
 the API. Their code still runs on THIS machine as YOU, so only hand the
 code to people you'd let sit at your keyboard.
 """
-import ast
-import base64
-import io
 import json
-import linecache
 import os
 import re
 import secrets
 import threading
 import time
-import traceback
-from contextlib import redirect_stderr, redirect_stdout
 
 import matplotlib
 matplotlib.use("Agg")  # headless backend, must be set before pyplot import
-import matplotlib.pyplot as plt
 import pandas as pd
 from flask import Flask, jsonify, request, send_from_directory
 
 import scoring
+from kernel import check_answer, fresh_exec_globals, run_code
 from story_ingest import ingest_inbox
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -131,128 +125,6 @@ def load_story(dataset_id):
 def load_secret(dataset_id):
     with open(os.path.join(SECRETS_DIR, f"{dataset_id}.json")) as f:
         return json.load(f)
-
-
-def fresh_exec_globals(df):
-    """A blank kernel namespace, like a fresh Jupyter/Kaggle notebook: only
-    the dataset itself is preloaded as `df`. The player imports whatever
-    they want (pandas, numpy, matplotlib, sklearn, scipy, seaborn... are
-    all installed) under whatever alias they like -- nothing is forced on
-    them. Persists across /api/run calls for the current level, so an
-    import in one cell is still available in the next, same as a real
-    kernel.
-    """
-    return {
-        "__builtins__": __builtins__,
-        "df": df,
-    }
-
-
-def format_value(val):
-    """Render a cell's trailing expression roughly like Jupyter would."""
-    if val is None:
-        return None
-    if isinstance(val, (pd.DataFrame, pd.Series)):
-        try:
-            return {"html": val.to_frame().to_html(max_rows=60)
-                     if isinstance(val, pd.Series) else val.to_html(max_rows=60)}
-        except Exception:
-            return {"text": repr(val)}
-    return {"text": repr(val)}
-
-
-def run_code(code, glbls, cell_name="<cell>"):
-    """Exec a notebook cell, auto-printing a trailing bare expression,
-    and capturing stdout + any matplotlib figures it produced."""
-    stdout = io.StringIO()
-    result = None
-    error = None
-    images = []
-    # register the source so tracebacks can quote the offending line,
-    # like Jupyter does (linecache is where traceback looks for source)
-    linecache.cache[cell_name] = (len(code), None, code.splitlines(True), cell_name)
-    try:
-        tree = ast.parse(code, filename=cell_name, mode="exec")
-        last_expr = None
-        if tree.body and isinstance(tree.body[-1], ast.Expr):
-            last_expr = tree.body.pop()
-        exec_code = compile(tree, cell_name, "exec")
-        eval_code = (compile(ast.Expression(last_expr.value), cell_name, "eval")
-                     if last_expr is not None else None)
-
-        with redirect_stdout(stdout), redirect_stderr(stdout):
-            exec(exec_code, glbls)
-            if eval_code is not None:
-                val = eval(eval_code, glbls)
-                result = format_value(val)
-
-        for num in plt.get_fignums():
-            fig = plt.figure(num)
-            buf = io.BytesIO()
-            fig.savefig(buf, format="png", bbox_inches="tight")
-            images.append(base64.b64encode(buf.getvalue()).decode("ascii"))
-        plt.close("all")
-    except Exception as exc:
-        # drop the frames that belong to this server, keep the player's
-        tb = exc.__traceback__
-        while tb is not None and tb.tb_frame.f_code.co_filename != cell_name:
-            tb = tb.tb_next
-        error = "".join(traceback.format_exception(type(exc), exc, tb))
-        plt.close("all")
-
-    return {
-        "stdout": stdout.getvalue(),
-        "result": result,
-        "images": images,
-        "error": error,
-    }
-
-
-_STOPWORDS = {
-    "the", "a", "an", "column", "columns", "field", "value", "values",
-    "is", "are", "in", "of", "there", "has", "have", "problem", "issue",
-    "hidden", "fault", "feature", "data", "row", "rows",
-}
-
-
-def _normalize_tokens(text):
-    """lowercase, treat '_' like a space, strip punctuation, drop filler
-    words -- so 'the Age column' and 'age_outliers' both reduce to a
-    comparable bag of meaningful tokens."""
-    text = text.lower().replace("_", " ")
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
-    return {t for t in text.split() if t and t not in _STOPWORDS}
-
-
-def check_answer(user_text, secret):
-    """
-    Decide whether the player's free-text guess correctly names the
-    hidden fault for this dataset.
-
-    Strategy: normalize both sides into a bag of meaningful tokens (case
-    folded, punctuation/underscores stripped, filler words like "the"/
-    "column" removed), then accept if the guess contains EVERY token of
-    at least one accepted answer (or of the target column name). So
-    "age" and "the age column has outliers" both match "age", but a
-    lone generic word like "outliers" doesn't match "age outliers" --
-    the guess has to name the thing, not just the kind of problem.
-    """
-    user_tokens = _normalize_tokens(user_text)
-    if not user_tokens:
-        return False
-
-    candidates = list(secret.get("accepted_answers", []))
-    target_column = secret.get("target_column")
-    if target_column:
-        candidates.append(target_column)
-
-    for candidate in candidates:
-        cand_tokens = _normalize_tokens(candidate)
-        if not cand_tokens:
-            continue
-        if cand_tokens.issubset(user_tokens):
-            return True
-    return False
 
 
 def _load_list(path):
