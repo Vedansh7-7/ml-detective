@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forty-Five Percent Versus Thirty-One: Untangle Simpson&#x27;s paradox with a confounding variable · ML Detective</title>
+<meta name="description" content="Untangle Simpson&#x27;s paradox with a confounding variable. Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its…">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/forty-five-percent-versus-thirty-one/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="Forty-Five Percent Versus Thirty-One: Untangle Simpson&#x27;s paradox with a confounding variable · ML Detective">
+<meta property="og:description" content="Untangle Simpson&#x27;s paradox with a confounding variable. Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its…">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/forty-five-percent-versus-thirty-one/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Forty-Five Percent Versus Thirty-One", "description": "Untangle Simpson's paradox with a confounding variable. Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its scandal. The spreadsheet disagrees.", "url": "https://ml-detective.vercel.app/learn/forty-five-percent-versus-thirty-one/", "teaches": "Untangle Simpson's paradox with a confounding variable", "learningResourceType": "Interactive exercise", "educationalLevel": "Hard", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, two-level groupby, rates within subgroups, logistic regression with controls", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Hard case</span></nav>
+<article class="lr-case" style="--c-bg:#1b1d2a;--c-ink:#ece6d6;--c-accent:#e3b34c">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Hard case · data forensics in Python</p>
+      <h1>Forty-Five Percent Versus Thirty-One</h1>
+      <p class="lr-lead">Untangle Simpson&#x27;s paradox with a confounding variable.</p>
+      <p class="lr-hookline">Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its scandal. The spreadsheet disagrees.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/hard_ashgrove_admissions_s7q">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <rect x='18' y='30' width='92' height='120' rx='3' transform='rotate(-4 64 90)'/>
+  <path d='M28 48 L98 43' stroke-width='5'/>
+  <path d='M29 60 L97 55' stroke-width='5'/>
+  <path d='M31 76 L66 74'/>
+  <path d='M31 86 L64 84' opacity='0.6'/>
+  <path d='M32 96 L66 94' opacity='0.6'/>
+  <path d='M33 106 L63 104' opacity='0.6'/>
+  <rect x='72' y='76' width='24' height='30' rx='2' transform='rotate(-4 84 91)' stroke-dasharray='3 4'/>
+  <path d='M34 120 L99 116' opacity='0.5'/>
+  <path d='M35 130 L100 126' opacity='0.5'/>
+  <path d='M36 140 L80 137' opacity='0.5'/>
+  <path d='M128 150 L228 150'/>
+  <rect x='140' y='88' width='22' height='62'/>
+  <rect x='174' y='110' width='22' height='40'/>
+  <path d='M143 100 L158 100 M143 112 L158 112' opacity='0.4'/>
+  <path d='M204 78 Q212 60 220 78 L220 150 L204 150 Z'/>
+  <path d='M212 66 L212 48'/>
+  <path d='M212 48 L224 52 L212 56'/>
+  <path d='M208 96 Q212 90 216 96 L216 104 L208 104 Z' opacity='0.7'/>
+  <path d='M208 118 Q212 112 216 118 L216 126 L208 126 Z' opacity='0.7'/>
+  <circle cx='151' cy='78' r='4' fill='currentColor'/>
+  <circle cx='185' cy='100' r='4' fill='currentColor'/>
+  <path d='M120 28 q6 -8 12 0 q6 8 12 0' opacity='0.5'/>
+</svg></div>
+  </div>
+  <section><h2>The story</h2><p>Ashgrove University sits on a wet green hill above the river, and for sixty years its graduate school has been quietly proud of itself. Then, on Monday morning, the student paper, The Ashgrove Lantern, ran a front page in red ink: 45% of men who applied for postgraduate places this year were admitted, against just 31% of women. By lunchtime the story was trending nationally.</p><p>Provost Dr. Miriam Okafor has a board meeting on Friday and a solicitor&#x27;s letter on her desk. The Lantern&#x27;s editor, Callum Reid, a third-year who has never lost an argument, says the numbers speak for themselves. Miriam is not so sure. Every admissions committee she has ever sat on fought about budgets and lab benches, never about whether an applicant was a man or a woman.</p><p>She has sent you the full applicant file for the cycle: 2,930 applications, every decision recorded. She has already checked the Lantern&#x27;s arithmetic, and it is correct. What she needs before Friday is the truth behind it. Find the one thing the headline left out, and name it.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>two-level groupby</li><li>rates within subgroups</li><li>logistic regression with controls</li></ul>
+    <p>Every single-column summary looks fine. The fault only shows across columns, inside groups, or over time. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>One row per application to Ashgrove&#x27;s graduate school for the 2025-26 cycle, with the final decision. The pooled figures are being quoted as proof of something. One thing about this file changes what they mean. Find it. 2930 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>applicant_id</code></td><td>string, unique application reference</td></tr><tr><td><code>submitted_on</code></td><td>date (YYYY-MM-DD) the application was submitted</td></tr><tr><td><code>gender</code></td><td>categorical, applicant&#x27;s self-reported gender (F/M)</td></tr><tr><td><code>age</code></td><td>int, applicant&#x27;s age in years at submission</td></tr><tr><td><code>residency</code></td><td>categorical, domestic or international fee status</td></tr><tr><td><code>undergrad_gpa</code></td><td>float, undergraduate GPA on a 4.0 scale</td></tr><tr><td><code>department</code></td><td>categorical, the department the applicant applied to</td></tr><tr><td><code>admitted</code></td><td>int, 1 if offered a place, 0 if rejected</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/hard_ashgrove_admissions_s7q">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/nine-crews-one-storyteller/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Nine Crews, One Storyteller</b>
+    <span class="lr-skill">Use Benford&#x27;s law to spot invented numbers</span>
+    <span class="lr-hook">Nine film crews. 2,160 cash claims. Forty lakh rupees over budget. Every receipt adds up, and that is what worries the accountant.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/hall-c-has-a-heartbeat/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Hall C Has a Heartbeat</b>
+    <span class="lr-skill">Find a periodic signal buried in noisy sensor data</span>
+    <span class="lr-hook">Six server racks. Ten days of readings. Every average is textbook, yet disks keep dying in Hall C. Something in there keeps time.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/echoes-in-the-static/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Echoes in the Static</b>
+    <span class="lr-skill">Detect near-duplicate records across many columns</span>
+    <span class="lr-hook">An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

@@ -24,11 +24,17 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 
 
 def fresh_exec_globals(df):
-    """A blank kernel namespace, like a fresh Jupyter/Kaggle notebook: only
-    the dataset itself is preloaded as `df`. The player imports whatever
-    they want under whatever alias they like. Persists across cells for
-    the current case, so an import in one cell is still there in the next."""
-    return {"__builtins__": __builtins__, "df": df}
+    """A blank kernel namespace, like a fresh Jupyter/Kaggle notebook: the
+    dataset is preloaded as `df`, plus load_data() for a fresh copy any time
+    (so overwriting or mutating df is never fatal). The player imports
+    whatever they want. Persists across cells for the current case."""
+    pristine = df.copy()
+
+    def load_data():
+        """Return a fresh, untouched copy of this case's dataset."""
+        return pristine.copy()
+
+    return {"__builtins__": __builtins__, "df": pristine.copy(), "load_data": load_data}
 
 
 def format_value(val):

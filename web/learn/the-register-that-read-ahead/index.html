@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Register That Read Ahead: Find a feature recorded after the outcome · ML Detective</title>
+<meta name="description" content="Find a feature recorded after the outcome. A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the…">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/the-register-that-read-ahead/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="The Register That Read Ahead: Find a feature recorded after the outcome · ML Detective">
+<meta property="og:description" content="Find a feature recorded after the outcome. A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the…">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/the-register-that-read-ahead/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "The Register That Read Ahead", "description": "Find a feature recorded after the outcome. A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.", "url": "https://ml-detective.vercel.app/learn/the-register-that-read-ahead/", "teaches": "Find a feature recorded after the outcome", "learningResourceType": "Interactive exercise", "educationalLevel": "Normal", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, groupby on missing vs present values, reasoning about when data was collected, leakage in classification", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Normal case</span></nav>
+<article class="lr-case" style="--c-bg:#0f1a2b;--c-ink:#e9eef5;--c-accent:#e8b04a">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Normal case · data forensics in Python</p>
+      <h1>The Register That Read Ahead</h1>
+      <p class="lr-lead">Find a feature recorded after the outcome.</p>
+      <p class="lr-hookline">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/normal_carrow_belle_register_k7q">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 180' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'>
+  <path d='M22 112 q10 -3 20 0 q10 3 20 0 q10 -3 20 0 q10 3 20 0 q10 -3 20 0 q10 3 20 0 q10 -3 20 0 q10 3 20 0 q10 -3 22 1'/>
+  <path d='M18 136 q12 -4 24 0 q12 4 24 0 q12 -4 24 0 q12 4 24 0 q12 -4 24 0 q12 4 24 0 q12 -4 24 0 q12 4 26 -1' opacity='0.6'/>
+  <path d='M34 100 L150 88 L160 106 L44 118 Z'/>
+  <path d='M60 97 L58 78 L128 71 L132 90'/>
+  <rect x='74' y='56' width='12' height='20' rx='2' transform='rotate(-6 80 66)'/>
+  <rect x='100' y='52' width='12' height='20' rx='2' transform='rotate(-6 106 62)'/>
+  <line x1='78' y1='56' x2='84' y2='55' stroke-width='5' opacity='0.8'/>
+  <line x1='104' y1='52' x2='110' y2='51' stroke-width='5' opacity='0.8'/>
+  <circle cx='72' cy='86' r='2.5' fill='currentColor'/>
+  <circle cx='88' cy='84' r='2.5' fill='currentColor'/>
+  <circle cx='104' cy='82' r='2.5' fill='currentColor'/>
+  <circle cx='120' cy='80' r='2.5' fill='currentColor'/>
+  <path d='M174 122 q14 8 34 0 l-4 -9 q-13 5 -26 0 z'/>
+  <line x1='191' y1='114' x2='191' y2='98'/>
+  <path d='M191 99 l12 6 l-12 4' opacity='0.8'/>
+  <path d='M20 40 q18 -10 36 -2 q14 -10 30 0' stroke-dasharray='4 7' opacity='0.5'/>
+  <path d='M150 34 q16 -8 32 0 q14 -8 30 2' stroke-dasharray='4 7' opacity='0.5'/>
+  <path d='M196 30 l2 6 l6 0 l-5 4 l2 6 l-5 -4 l-5 4 l2 -6 l-5 -4 l6 0 z' opacity='0.7'/>
+  <circle cx='40' cy='22' r='1.5' fill='currentColor'/>
+  <circle cx='224' cy='58' r='1.5' fill='currentColor'/>
+</svg></div>
+  </div>
+  <section><h2>The story</h2><p>In April 1913 the steamer Carrow Belle went down in fog off Cape Race with 1,310 souls aboard. A century later the Halifax Harbourfront Maritime Museum is building an exhibit around her, and curator Maeve Lindqvist wants one wall to answer a hard question honestly: what actually decided who lived?</p><p>Her volunteer analyst, Jonah Achebe, digitised the shipping company’s register and trained a kiosk model on it. Visitors type in a class, an age, a port, and the screen tells them whether they would have made it home. In testing, it has almost never been wrong.</p><p>Maeve is not celebrating. Descendants of the passengers are flying in for opening night on Friday, and she refuses to show them a machine that is right for the wrong reasons. “That register was kept by clerks,” she says, “not by fortune tellers.”</p><p>She has handed you Jonah’s table, all 1,310 rows of it, with a pot of museum coffee and a polite warning about the Friday deadline. One thing in it is carrying information that no clerk could have written down on the morning she sailed. Find it before the doors open.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>groupby on missing vs present values</li><li>reasoning about when data was collected</li><li>leakage in classification</li></ul>
+    <p>The fault is a relationship: a feature against the target, against time, or against another source. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>A synthetic reconstruction of a fictional 1913 steamer’s passenger register, one row per passenger, prepared for a survival-prediction exhibit. One thing in this table can’t be trusted as a predictor. Find it. 1310 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>passenger_id</code></td><td>int, unique register number</td></tr><tr><td><code>pclass</code></td><td>int, ticket class (1 = first, 2 = second, 3 = third)</td></tr><tr><td><code>sex</code></td><td>text, female / male</td></tr><tr><td><code>age</code></td><td>float, age in years (blank where the clerk left it empty)</td></tr><tr><td><code>sibsp</code></td><td>int, siblings or spouses travelling with the passenger</td></tr><tr><td><code>parch</code></td><td>int, parents or children travelling with the passenger</td></tr><tr><td><code>fare</code></td><td>float, ticket price in pounds sterling</td></tr><tr><td><code>embarked</code></td><td>text, port of embarkation (S = Southampton, C = Cherbourg, Q = Queenstown)</td></tr><tr><td><code>boat</code></td><td>text, boat code noted in the company register (blank if none)</td></tr><tr><td><code>survived</code></td><td>int, 1 if the passenger survived the sinking, 0 if not (the target)</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/normal_carrow_belle_register_k7q">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/eleven-days-from-mars/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Eleven Days From Mars</b>
+    <span class="lr-skill">Catch mixed units hiding in one column</span>
+    <span class="lr-hook">A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-model-that-knew-too-much/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Model That Knew Too Much</b>
+    <span class="lr-skill">Spot target leakage before you train a model</span>
+    <span class="lr-hook">A salary model scored perfectly on its first try. The CFO doesn&#x27;t trust perfect.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/death-cap-dinner-or-doubt/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Death Cap, Dinner, or Doubt</b>
+    <span class="lr-skill">Find the annotator whose labels can&#x27;t be trusted</span>
+    <span class="lr-hook">A foraging app is about to tell hikers which mushrooms are dinner. Its five teachers don’t all agree.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

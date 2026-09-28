@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data cleaning and pandas practice cases · ML Detective</title>
+<meta name="description" content="15 hands-on data forensics cases: find the one planted fault with pandas and Python, in your browser. Practise data cleaning, leakage, units, Simpson&#x27;s paradox and more.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="Data cleaning and pandas practice cases · ML Detective">
+<meta property="og:description" content="15 hands-on data forensics cases: find the one planted fault with pandas and Python, in your browser. Practise data cleaning, leakage, units, Simpson&#x27;s paradox and more.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../site.css">
+<link rel="stylesheet" href="../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "ML Detective cases", "itemListElement": [{"@type": "ListItem", "position": 1, "url": "https://ml-detective.vercel.app/learn/where-should-the-chai-go/", "name": "Where Should the Chai Go?"}, {"@type": "ListItem", "position": 2, "url": "https://ml-detective.vercel.app/learn/the-tuesday-ledger/", "name": "The Tuesday Ledger"}, {"@type": "ListItem", "position": 3, "url": "https://ml-detective.vercel.app/learn/the-spreadsheet-that-ate-genes/", "name": "The Spreadsheet That Ate Genes"}, {"@type": "ListItem", "position": 4, "url": "https://ml-detective.vercel.app/learn/the-mangoes-were-perfectly-fine/", "name": "The Mangoes Were Perfectly Fine"}, {"@type": "ListItem", "position": 5, "url": "https://ml-detective.vercel.app/learn/the-year-it-rained-backwards/", "name": "The Year It Rained Backwards"}, {"@type": "ListItem", "position": 6, "url": "https://ml-detective.vercel.app/learn/too-many-people-on-the-beach/", "name": "Too Many People on the Beach"}, {"@type": "ListItem", "position": 7, "url": "https://ml-detective.vercel.app/learn/the-register-that-read-ahead/", "name": "The Register That Read Ahead"}, {"@type": "ListItem", "position": 8, "url": "https://ml-detective.vercel.app/learn/eleven-days-from-mars/", "name": "Eleven Days From Mars"}, {"@type": "ListItem", "position": 9, "url": "https://ml-detective.vercel.app/learn/the-model-that-knew-too-much/", "name": "The Model That Knew Too Much"}, {"@type": "ListItem", "position": 10, "url": "https://ml-detective.vercel.app/learn/death-cap-dinner-or-doubt/", "name": "Death Cap, Dinner, or Doubt"}, {"@type": "ListItem", "position": 11, "url": "https://ml-detective.vercel.app/learn/the-fridge-with-two-witnesses/", "name": "The Fridge With Two Witnesses"}, {"@type": "ListItem", "position": 12, "url": "https://ml-detective.vercel.app/learn/forty-five-percent-versus-thirty-one/", "name": "Forty-Five Percent Versus Thirty-One"}, {"@type": "ListItem", "position": 13, "url": "https://ml-detective.vercel.app/learn/nine-crews-one-storyteller/", "name": "Nine Crews, One Storyteller"}, {"@type": "ListItem", "position": 14, "url": "https://ml-detective.vercel.app/learn/hall-c-has-a-heartbeat/", "name": "Hall C Has a Heartbeat"}, {"@type": "ListItem", "position": 15, "url": "https://ml-detective.vercel.app/learn/echoes-in-the-static/", "name": "Echoes in the Static"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<section class="lr-intro">
+  <p class="lr-kicker">Learn · 15 cases</p>
+  <h1>Data cleaning and pandas practice, one case at a time</h1>
+  <p class="lr-lead">Every case is a real-looking dataset with exactly one planted problem: an impossible value, a leaky feature, a unit mix-up, a pattern hiding across columns. Find it with your own Python, right in the browser.</p>
+  <p>Several are modelled on real data disasters, from spreadsheet software renaming genes to a spacecraft lost to mixed units. Start with Easy if you're new to pandas; Hard cases need grouping, statistics and a little signal processing.</p>
+  <a class="btn btn-tape btn-lg" href="/play/">Play in your browser <span aria-hidden="true">→</span></a>
+</section>
+<section class="lr-group"><h2>Easy <span>6 cases</span></h2>
+<p>The fault lives in one column. Summary statistics, value counts and a histogram will get you there.</p><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-tuesday-ledger/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Tuesday Ledger</b>
+    <span class="lr-skill">Spot impossible values with summary statistics</span>
+    <span class="lr-hook">A yarn shop&#x27;s weekly orders. The accountant says one thing in here can&#x27;t be real.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-spreadsheet-that-ate-genes/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Spreadsheet That Ate Genes</b>
+    <span class="lr-skill">Catch values corrupted by spreadsheet software</span>
+    <span class="lr-hook">A career-making cancer result, one shared spreadsheet, and 1,400 genes. Something got eaten in transit.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-mangoes-were-perfectly-fine/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Mangoes Were Perfectly Fine</b>
+    <span class="lr-skill">Find a column that carries no information</span>
+    <span class="lr-hook">Every truck of Alphonsos arrived at a perfect temperature. So why is Bengaluru sending half of them back?</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-year-it-rained-backwards/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>The Year It Rained Backwards</b>
+    <span class="lr-skill">Detect missing-value codes posing as real data</span>
+    <span class="lr-hook">A tea estate&#x27;s rain gauges say 2023 was a catastrophe. The tea bushes look suspiciously well-watered.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/too-many-people-on-the-beach/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Too Many People on the Beach</b>
+    <span class="lr-skill">Check whether IDs are really unique</span>
+    <span class="lr-hook">A sold-out beach festival let in more people than it sold tickets to. The gate log knows how.</span>
+  </a>
+</li></ul></section><section class="lr-group"><h2>Normal <span>5 cases</span></h2>
+<p>The fault is a relationship: a feature against the target, against time, or against another source.</p><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/the-register-that-read-ahead/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Register That Read Ahead</b>
+    <span class="lr-skill">Find a feature recorded after the outcome</span>
+    <span class="lr-hook">A lost steamer’s passenger list guesses who came home with spooky precision. Paper isn’t supposed to see the future.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/eleven-days-from-mars/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Eleven Days From Mars</b>
+    <span class="lr-skill">Catch mixed units hiding in one column</span>
+    <span class="lr-hook">A Mars orbiter keeps arriving lower than planned. Every thruster firing checks out — on paper.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-model-that-knew-too-much/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Model That Knew Too Much</b>
+    <span class="lr-skill">Spot target leakage before you train a model</span>
+    <span class="lr-hook">A salary model scored perfectly on its first try. The CFO doesn&#x27;t trust perfect.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/death-cap-dinner-or-doubt/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>Death Cap, Dinner, or Doubt</b>
+    <span class="lr-skill">Find the annotator whose labels can&#x27;t be trusted</span>
+    <span class="lr-hook">A foraging app is about to tell hikers which mushrooms are dinner. Its five teachers don’t all agree.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/the-fridge-with-two-witnesses/">
+    <span class="lr-level lr-normal">Normal</span>
+    <b>The Fridge With Two Witnesses</b>
+    <span class="lr-skill">Tell a genuine second sensor from a disguised copy</span>
+    <span class="lr-hook">Two thermometers swear 4,000 vaccine doses never warmed up. The inspector has heard perfect alibis before.</span>
+  </a>
+</li></ul></section><section class="lr-group"><h2>Hard <span>4 cases</span></h2>
+<p>Every single-column summary looks fine. The fault only shows across columns, inside groups, or over time.</p><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/forty-five-percent-versus-thirty-one/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Forty-Five Percent Versus Thirty-One</b>
+    <span class="lr-skill">Untangle Simpson&#x27;s paradox with a confounding variable</span>
+    <span class="lr-hook">Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its scandal. The spreadsheet disagrees.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/nine-crews-one-storyteller/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Nine Crews, One Storyteller</b>
+    <span class="lr-skill">Use Benford&#x27;s law to spot invented numbers</span>
+    <span class="lr-hook">Nine film crews. 2,160 cash claims. Forty lakh rupees over budget. Every receipt adds up, and that is what worries the accountant.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/hall-c-has-a-heartbeat/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Hall C Has a Heartbeat</b>
+    <span class="lr-skill">Find a periodic signal buried in noisy sensor data</span>
+    <span class="lr-hook">Six server racks. Ten days of readings. Every average is textbook, yet disks keep dying in Hall C. Something in there keeps time.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/echoes-in-the-static/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Echoes in the Static</b>
+    <span class="lr-skill">Detect near-duplicate records across many columns</span>
+    <span class="lr-hook">An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>

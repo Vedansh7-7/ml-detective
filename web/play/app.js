@@ -125,6 +125,11 @@ async function leaveSplash() {
   const [tab, code] = location.hash.slice(1).split("/");
   if (tab === "stakeout" && code) enterRoom(code);
   if (tab === "upload" && code) openSharedPack(code);
+  // from a /learn/ page's "Play this case" button
+  if (tab === "case" && code) {
+    caseItemById(code).then((item) => { if (item) openStory(item); });
+    history.replaceState(null, "", location.pathname);
+  }
 }
 $("#join-form").addEventListener("submit", (e) => { e.preventDefault(); leaveSplash(); });
 
@@ -279,7 +284,8 @@ async function beginInvestigation() {
 
   // sticky-note case notes
   $("#notes-desc").textContent = meta.description;
-  $("#notes-shape").textContent = `${data.shape[0]} rows × ${data.shape[1]} columns · loaded as df`;
+  $("#notes-shape").textContent =
+    `${data.shape[0]} rows × ${data.shape[1]} columns · loaded as df · load_data() gives you a fresh copy`;
   const cols = $("#notes-cols");
   cols.innerHTML = "";
   Object.entries(meta.columns).forEach(([name, desc]) => {
@@ -297,7 +303,8 @@ async function beginInvestigation() {
   // fresh notebook: only df exists in the kernel -- imports are up to you
   $("#cells").innerHTML = "";
   cellSeq = 0;
-  newCell("import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndf.head()");
+  newCell("import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n" +
+          "# df is the case's data. Broke it? df = load_data() gives you a fresh copy.\ndf.head()");
 
   $("#win-overlay").classList.remove("show");
   state.solved = false;
@@ -435,6 +442,11 @@ function renderOutput(output, data) {
     output.appendChild(img);
   });
 }
+
+$("#reset-vars").addEventListener("click", async () => {
+  const r = await api("/api/reset");
+  showToast(r.error || "Variables cleared. df is back to the original data.");
+});
 
 $("#add-cell").addEventListener("click", () => {
   const last = $("#cells").lastElementChild;

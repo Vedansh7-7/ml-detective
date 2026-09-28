@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echoes in the Static: Detect near-duplicate records across many columns · ML Detective</title>
+<meta name="description" content="Detect near-duplicate records across many columns. An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.">
+<link rel="canonical" href="https://ml-detective.vercel.app/learn/echoes-in-the-static/">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ML Detective">
+<meta property="og:title" content="Echoes in the Static: Detect near-duplicate records across many columns · ML Detective">
+<meta property="og:description" content="Detect near-duplicate records across many columns. An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.">
+<meta property="og:url" content="https://ml-detective.vercel.app/learn/echoes-in-the-static/">
+<meta property="og:image" content="https://ml-detective.vercel.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="../../learn/learn.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Echoes in the Static", "description": "Detect near-duplicate records across many columns. An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.", "url": "https://ml-detective.vercel.app/learn/echoes-in-the-static/", "teaches": "Detect near-duplicate records across many columns", "learningResourceType": "Interactive exercise", "educationalLevel": "Hard", "isAccessibleForFree": true, "inLanguage": "en", "keywords": "data cleaning, pandas practice, python, duplicate detection with tolerance, per-group counts, pairwise distances", "provider": {"@type": "Organization", "name": "ML Detective", "url": "https://ml-detective.vercel.app"}}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body class="learn">
+<header class="lr-bar">
+  <a class="brand" href="/" aria-label="ML Detective home"><span class="brand-ml">ML</span><span class="brand-det">DETECTIVE</span></a>
+  <nav class="lr-nav" aria-label="Main">
+    <a href="/learn/">All cases</a>
+    <a class="btn btn-tape btn-sm" href="/play/">Play</a>
+  </nav>
+</header>
+<main class="lr-main">
+<nav class="lr-crumbs" aria-label="Breadcrumb"><a href="/learn/">Learn</a> › <span>Hard case</span></nav>
+<article class="lr-case" style="--c-bg:#0d1a1b;--c-ink:#d6ebe8;--c-accent:#35e0c2">
+  <div class="lr-hero">
+    <div>
+      <p class="lr-kicker">Hard case · data forensics in Python</p>
+      <h1>Echoes in the Static</h1>
+      <p class="lr-lead">Detect near-duplicate records across many columns.</p>
+      <p class="lr-hookline">An unmanned weather rig in the North Sea. Every chart looks clean. The night engineer says it sounds wrong.</p>
+      <a class="btn btn-tape btn-lg" href="/play/#case/hard_sensor_readings">Play this case <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="lr-doodle" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <!-- lattice radio tower -->
+  <path d="M58 160 L80 42 L102 160"/>
+  <path d="M65 124 H95"/>
+  <path d="M70 96 H90"/>
+  <path d="M74 70 H86"/>
+  <path d="M65 124 L90 96 M95 124 L70 96"/>
+  <path d="M70 96 L86 70 M90 96 L74 70"/>
+  <circle cx="80" cy="35" r="5"/>
+  <!-- broadcast arcs -->
+  <path d="M64 22 q16 -14 32 0"/>
+  <path d="M54 12 q26 -22 52 0" opacity=".6"/>
+  <!-- sea -->
+  <path d="M8 166 q15 -8 30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0 t30 0"/>
+  <!-- oscilloscope with a skipping signal -->
+  <rect x="124" y="54" width="104" height="72" rx="9"/>
+  <path d="M132 92 q6 -18 12 0 t12 0 l8 -12 h6 l3 12 l3 -12 h6 l3 12 l3 -12 h6 l3 12 q6 -18 12 0 t10 0"/>
+  <path d="M152 126 V140 M200 126 V140 M140 140 H212"/>
+  <!-- gulls -->
+  <path d="M150 28 q5 -6 10 0 q5 -6 10 0"/>
+  <path d="M188 38 q4 -5 8 0 q4 -5 8 0" opacity=".7"/>
+</svg>
+</div>
+  </div>
+  <section><h2>The story</h2><p>Station Kestrel is an unmanned weather outpost bolted to a decommissioned rig 90 km off the Scottish coast. A mesh of small devices reports temperature, humidity, pressure and vibration back to shore.</p><p>Every dashboard is green. Every histogram is textbook. The data team has signed it off twice.</p><p>Only Tomasz, the night-shift engineer, disagrees. He says the station sounds wrong after midnight, &quot;like a record that has started to skip.&quot; Nobody believes him. Pull the 1,500 readings and prove him right.</p></section>
+  <section><h2>What you'll practise</h2><ul><li>duplicate detection with tolerance</li><li>per-group counts</li><li>pairwise distances</li></ul>
+    <p>Every single-column summary looks fine. The fault only shows across columns, inside groups, or over time. You write real pandas, NumPy and scikit-learn code in a notebook that runs in your browser. Nothing to install.</p></section>
+  <section><h2>The data</h2><p>A fleet of IoT devices reports temperature/humidity/pressure/vibration. Nothing looks wrong column-by-column -- but a small group of rows shouldn&#x27;t be there. Find what&#x27;s off. 1500 rows, loaded as <code>df</code>.</p>
+    <table class="lr-cols"><thead><tr><th>Column</th><th>What it holds</th></tr></thead><tbody><tr><td><code>reading_id</code></td><td>int, unique id</td></tr><tr><td><code>device_id</code></td><td>int, sensor device id (100-998)</td></tr><tr><td><code>temperature</code></td><td>float, Celsius</td></tr><tr><td><code>humidity</code></td><td>float, percent</td></tr><tr><td><code>pressure</code></td><td>float, hPa</td></tr><tr><td><code>vibration</code></td><td>float, arbitrary units, non-negative</td></tr></tbody></table></section>
+  <p class="lr-cta"><a class="btn btn-ink" href="/play/#case/hard_sensor_readings">Open the case <span aria-hidden="true">→</span></a></p>
+</article>
+<section class="lr-related"><h2>More cases</h2><ul class="lr-grid"><li class="lr-card">
+  <a href="/learn/forty-five-percent-versus-thirty-one/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Forty-Five Percent Versus Thirty-One</b>
+    <span class="lr-skill">Untangle Simpson&#x27;s paradox with a confounding variable</span>
+    <span class="lr-hook">Ashgrove admitted 45% of the men who applied and 31% of the women. The student paper has its scandal. The spreadsheet disagrees.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/nine-crews-one-storyteller/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Nine Crews, One Storyteller</b>
+    <span class="lr-skill">Use Benford&#x27;s law to spot invented numbers</span>
+    <span class="lr-hook">Nine film crews. 2,160 cash claims. Forty lakh rupees over budget. Every receipt adds up, and that is what worries the accountant.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/hall-c-has-a-heartbeat/">
+    <span class="lr-level lr-hard">Hard</span>
+    <b>Hall C Has a Heartbeat</b>
+    <span class="lr-skill">Find a periodic signal buried in noisy sensor data</span>
+    <span class="lr-hook">Six server racks. Ten days of readings. Every average is textbook, yet disks keep dying in Hall C. Something in there keeps time.</span>
+  </a>
+</li><li class="lr-card">
+  <a href="/learn/where-should-the-chai-go/">
+    <span class="lr-level lr-easy">Easy</span>
+    <b>Where Should the Chai Go?</b>
+    <span class="lr-skill">Clean up inconsistent category labels</span>
+    <span class="lr-hook">A chai startup is about to bet its savings on the wrong place. The board deck says so, anyway.</span>
+  </a>
+</li></ul></section>
+</main>
+<footer class="lr-foot">
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a>
+</footer>
+</body>
+</html>
