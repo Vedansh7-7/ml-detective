@@ -46,6 +46,12 @@ G = kernel.fresh_exec_globals(_df)
 json.dumps({"shape": list(_df.shape)})`));
   },
 
+  // clear every variable and give back a clean df (the game and its score carry on)
+  async reset() {
+    py.runPython("G = kernel.fresh_exec_globals(_df)");
+    return { ok: true };
+  },
+
   async run({ code, cellName }) {
     // fetch whatever the cell imports (sklearn, scipy, matplotlib...) on first use
     await py.loadPackagesFromImports(code);

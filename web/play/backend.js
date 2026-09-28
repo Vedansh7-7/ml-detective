@@ -160,6 +160,12 @@ const routes = {
     return { ok: true };
   },
 
+  "/api/reset": async () => {
+    if (!game) return { error: "no active game -- open a case first" };
+    await engine.call("reset");
+    return { ok: true };
+  },
+
   "/api/run": async ({ code, cell_id }) => {
     if (!game) return { error: "no active game -- open a case first" };
     game.steps += 1;
