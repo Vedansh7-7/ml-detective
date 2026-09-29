@@ -1,7 +1,7 @@
 // Online mode: Supabase session, shared boards, server-checked verdicts,
 // Scout and presence. backend.js falls back to local play if this can't
 // connect (offline, or guest sign-in unavailable).
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm";
 import { captchaToken } from "./captcha.js";
 import { SUPABASE_KEY, SUPABASE_URL } from "./config.js";
 

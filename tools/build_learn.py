@@ -48,7 +48,10 @@ def page(title, description, path, body, head_extra="", depth=1):
 <meta property="og:url" content="{canonical}">
 <meta property="og:image" content="{SITE_URL}/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Crect x='6' y='20' width='52' height='26' fill='%23ffe600'/%3E%3Ctext x='32' y='41' font-family='Arial Black,Arial' font-weight='900' font-size='20' text-anchor='middle' fill='%230a0a0a'%3EML%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="{up}site.css">
 <link rel="stylesheet" href="{up}learn/learn.css">
 {head_extra}
@@ -67,7 +70,7 @@ def page(title, description, path, body, head_extra="", depth=1):
 {body}
 </main>
 <footer class="lr-foot">
-  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a> · <a href="mailto:vedansh.shrivastavaa@gmail.com">Contact</a> · <a href="/privacy/">Privacy</a>
+  <a href="/">ML Detective</a> · <a href="/learn/">All cases</a> · <a href="/play/">Play in your browser</a> · <a href="mailto:vedansh.shrivastavaa@gmail.com">Contact</a> · <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>
   <br>© 2026 Vedansh Shrivastava · Free for non-commercial use · <a href="https://github.com/Vedansh7-7/ml-detective/blob/main/COMMERCIAL.md" rel="noopener">Licence</a>
 </footer>
 </body>
@@ -182,7 +185,7 @@ def build(web_dir, levels, doodles_dir):
                      "/learn/", hub, hub_schema))
 
     today = datetime.date.today().isoformat()
-    urls = ["/", "/play/", "/learn/", "/privacy/"] + [f"/learn/{c['slug']}/" for c in cases]
+    urls = ["/", "/play/", "/learn/", "/privacy/", "/terms/"] + [f"/learn/{c['slug']}/" for c in cases]
     with open(os.path.join(web_dir, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for u in urls:

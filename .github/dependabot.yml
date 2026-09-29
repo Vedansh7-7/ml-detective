@@ -1,0 +1,16 @@
+# Weekly checks for outdated or vulnerable dependencies. Security fixes
+# arrive as pull requests; nothing merges on its own.
+#
+# Not covered here (bumped by hand, pinned in the code):
+#   - Pyodide:      web/play/py-worker.js, web/play/gen-worker.js
+#   - supabase-js:  web/play/online.js, web/admin/admin.js (jsDelivr +esm)
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      python-deps:
+        patterns: ["*"]
