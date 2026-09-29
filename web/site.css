@@ -709,7 +709,7 @@ code { font-family: var(--mono); }
   box-shadow: var(--hard-sm);
 }
 .m-stakeout .tag-tape { background: var(--confirm); transform: rotate(1.5deg); }
-.m-scout .tag-tape { background: var(--ink); color: var(--tape); }
+.m-library .tag-tape { background: var(--ink); color: var(--tape); }
 .m-upload .tag-tape { background: var(--alarm); color: var(--white); transform: rotate(2deg); }
 .join-code {
   font-size: 12px;

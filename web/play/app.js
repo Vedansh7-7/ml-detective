@@ -43,6 +43,7 @@ const state = {
 // screens + transitions
 // ---------------------------------------------------------------------------
 function go(toId, mode = "fade") {
+  $("#library-open").hidden = toId !== "hero" || !!state.local;
   const from = document.querySelector(".screen.active:not(.leaving)");
   const to = document.getElementById(toId);
   if (from === to) return;
@@ -122,8 +123,8 @@ async function leaveSplash() {
   loadArchive();
   go("hero", "fade");
   // arrived through a Stakeout invite link (play/#stakeout/CODE)
-  const [tab, code] = location.hash.slice(1).split("/");
-  if (tab === "stakeout" && code) enterRoom(code);
+  const [tab, code, extra] = location.hash.slice(1).split("/");
+  if (tab === "stakeout" && code) enterRoom(code, null, { watch: extra === "watch" });
   if (tab === "upload" && code) openSharedPack(code);
   // from a /learn/ page's "Play this case" button
   if (tab === "case" && code) {
@@ -245,7 +246,6 @@ function openStory(item) {
   $(".intro-title", intro).textContent = item.story.title;
   renderNarrative($(".intro-narrative", intro), item.story.narrative);
   paintDoodle($(".intro-doodle", intro), item.story.doodle);
-  $("#intro-scout").hidden = state.local || !(state.solvedIds && state.solvedIds.has(item.story.id));
 
   go("story-intro", "travel");
 }
@@ -269,6 +269,15 @@ async function beginInvestigation() {
   $("#begin-btn").disabled = false;
   if (data.error) { showToast(data.error); return; }
   const { story, meta } = data;
+  state.roomGame = room || null;
+  const rules = room ? state.room.settings : null;
+  $("#room-stat").hidden = !(room && state.room.ends_at);
+  $("#lives-stat").hidden = !(rules && rules.lives);
+  if (rules && rules.lives) $("#lives-left").textContent = rules.lives;
+  if (room && state.room.ends_at) $("#room-left").textContent = fmtClock(Date.parse(state.room.ends_at) - Date.now());
+  $("#answer-box").disabled = false;
+  $("#submit-btn").disabled = false;
+  $("#answer-box").placeholder = "What's hiding in this data?";
 
   // top bar
   $(".ide-title").textContent = story.title;
@@ -303,13 +312,21 @@ async function beginInvestigation() {
   // fresh notebook: only df exists in the kernel -- imports are up to you
   $("#cells").innerHTML = "";
   cellSeq = 0;
-  newCell("import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n" +
-          "# df is the case's data. Broke it? df = load_data() gives you a fresh copy.\ndf.head()");
+  const seed = state.seedCells;
+  state.seedCells = null;
+  if (seed && seed.length) {
+    let last = null;
+    seed.forEach((code) => { last = newCell(code, last); });
+  } else {
+    newCell("import pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n" +
+            "# df is the case's data. Broke it? df = load_data() gives you a fresh copy.\ndf.head()");
+  }
 
   $("#win-overlay").classList.remove("show");
   state.solved = false;
   startTimer();
   go("ide", "travel");
+  sendProgress("playing");
 }
 
 function startTimer() {
@@ -326,6 +343,7 @@ function stopTimer() {
 }
 
 function backToArchive() {
+  if (!state.solved) api("/api/save");
   stopTimer();
   setNotes(false);
   setDrawer(false);
@@ -409,6 +427,7 @@ async function runCell(cell) {
     if (typeof data.steps === "number") {
       gutter.textContent = `[${data.steps}]`;
       $("#steps").textContent = data.steps;
+      sendProgress("playing");
     } else {
       gutter.textContent = "[!]";
     }
@@ -507,14 +526,20 @@ async function submitVerdict() {
   const answer = $("#answer-box").value.trim();
   if (!answer) return;
 
-  const data = await api("/api/submit", { answer, share: $("#share-scout").checked });
-  if (data.error) { showToast(data.error); return; }
+  const data = await api("/api/submit", { answer });
+  if (data.error) {
+    showToast(data.error);
+    if (data.over || data.out) lockVerdict(data.error);
+    return;
+  }
 
   if (data.correct) {
     state.solved = true;
     (state.solvedIds ??= new Set()).add(state.story.id);
-    $("#win-scout").hidden = !!state.local || !!data.custom;   // uploaded cases aren't in Scout
+    $("#win-library").hidden = !!state.local || !!data.custom;   // private uploads aren't saved online
     stopTimer();
+    sendProgress("solved");
+    if (data.won) showToast("You solved it first. You win the round!");
     $("#win-time").textContent = fmtTime(data.elapsed_seconds);
     $("#win-steps").textContent = data.steps;
     $("#win-tries").textContent = data.attempts;
@@ -528,10 +553,20 @@ async function submitVerdict() {
   }
 
   $("#attempts").textContent = data.attempts;
+  const rules = inRoomGame() ? state.room.settings : null;
+  if (rules && rules.lives) $("#lives-left").textContent = Math.max(0, rules.lives - data.attempts);
+  const hint = data.hint || (rules && rules.hints === "off" ? "No hints in this round."
+    : rules && rules.hints === "after" ? `Hints unlock ${rules.hints_after} min into the round.` : "");
   const li = el("li");
-  li.append(el("span", "wrong-guess", answer), document.createTextNode(data.hint));
+  li.append(el("span", "wrong-guess", answer), document.createTextNode(hint));
   $("#hint-list").appendChild(li);
-  $("#answer-box").select();
+  if (data.out) {
+    lockVerdict("You're out of guesses for this round.");
+    sendProgress("out");
+  } else {
+    sendProgress("playing");
+    $("#answer-box").select();
+  }
 }
 // briefcase splash before the win card; resolves when it's done or skipped
 const SPLASH_MS = 3000;
@@ -566,79 +601,110 @@ $("#win-stay").addEventListener("click", () => $("#win-overlay").classList.remov
 $("#win-home").addEventListener("click", backToArchive);
 
 // ---------------------------------------------------------------------------
-// Scout: other detectives' notebooks for a case you've closed. The backend
-// only returns them once you have a solve of your own for that case.
+// notebook viewer: your Library, and a Stakeout room's debrief / watch view
 // ---------------------------------------------------------------------------
-function setScout(open) {
-  $("#scout").hidden = !open;
+function setViewer(open) {
+  $("#viewer").hidden = !open;
 }
 
-async function openScout(caseId) {
-  setScout(true);
-  const list = $("#scout-list");
-  const view = $("#scout-view");
+function openViewer(kicker, title) {
+  $("#viewer-kicker").textContent = kicker;
+  $("#viewer-title").textContent = title;
+  $("#viewer-list").innerHTML = "";
+  viewerMessage("Loading…");
+  setViewer(true);
+}
+
+function viewerMessage(text) {
+  const view = $("#viewer-view");
+  view.innerHTML = "";
+  view.appendChild(el("p", "viewer-empty", text));
+}
+
+function fillViewer(entries, onPick) {
+  const list = $("#viewer-list");
   list.innerHTML = "";
-  view.innerHTML = "";
-  view.appendChild(el("p", "scout-empty", "Loading notebooks…"));
-  const data = await api("/api/scout", { case_id: caseId });
-  view.innerHTML = "";
-  if (data.error) {
-    view.appendChild(el("p", "scout-empty", data.error));
-    return;
-  }
-  if (!data.solves.length) {
-    view.appendChild(el("p", "scout-empty",
-      "No shared notebooks for this case yet. Yours will show up here for the next detective."));
-    return;
-  }
-  view.appendChild(el("p", "scout-empty", "Pick a solve on the left to read its notebook."));
-  data.solves.forEach((s, i) => {
+  entries.forEach((entry) => {
     const li = el("li");
-    const btn = el("button", "scout-pick");
+    const btn = el("button", "viewer-pick");
     btn.type = "button";
-    btn.append(el("b", null, `#${i + 1} ${s.player}`),
-               el("span", null, `${s.score} pts · ${fmtTime(s.elapsed_seconds)} · ${s.cells} cells · ${s.attempts} ${s.attempts === 1 ? "try" : "tries"}`));
+    btn.append(el("b", null, entry.label), el("span", null, entry.sub));
     btn.addEventListener("click", () => {
-      list.querySelectorAll(".scout-pick").forEach((b) => b.classList.toggle("on", b === btn));
-      showScoutNotebook(s, caseId);
+      list.querySelectorAll(".viewer-pick").forEach((b) => b.classList.toggle("on", b === btn));
+      onPick(entry);
     });
     li.appendChild(btn);
     list.appendChild(li);
   });
 }
 
-function showScoutNotebook(solve, caseId) {
-  const view = $("#scout-view");
+function showNotebook(heading, cells, actions = []) {
+  const view = $("#viewer-view");
   view.innerHTML = "";
-  const head = el("div", "scout-nb-head");
-  head.appendChild(el("span", null, `${solve.player}'s notebook · ${solve.score} pts`));
-  // forking only makes sense inside the same case's notebook
-  const inThisCase = $("#ide").classList.contains("active") && state.story && state.story.id === caseId;
-  if (inThisCase) {
-    const fork = el("button", "fb-btn", "Fork into my notebook");
-    fork.addEventListener("click", () => {
-      let last = $("#cells").lastElementChild;
-      solve.notebook.forEach((code) => { last = newCell(code, last); });
-      setScout(false);
-      $("#win-overlay").classList.remove("show");   // back to the notebook to use them
-      showToast(`Forked ${solve.notebook.length} cells. Run them to see the outputs.`);
-    });
-    head.appendChild(fork);
-  } else {
-    head.appendChild(el("span", "scout-note", "Open the case to fork this notebook"));
-  }
+  const head = el("div", "viewer-nb-head");
+  head.appendChild(el("span", null, heading));
+  actions.forEach((a) => head.appendChild(a));
   view.appendChild(head);
-  (solve.notebook || []).forEach((code, i) => {
-    const cell = el("div", "scout-cell");
-    cell.append(el("span", "scout-gutter", `[${i + 1}]`), el("pre", null, code));
+  if (!cells || !cells.length) {
+    view.appendChild(el("p", "viewer-empty", "No cells were saved for this one."));
+    return;
+  }
+  cells.forEach((code, i) => {
+    const cell = el("div", "viewer-cell");
+    cell.append(el("span", "viewer-gutter", `[${i + 1}]`), el("pre", null, code));
     view.appendChild(cell);
   });
 }
 
-$("#scout-close").addEventListener("click", () => setScout(false));
-$("#scout").addEventListener("click", (e) => { if (e.target.id === "scout") setScout(false); });
-$("#win-scout").addEventListener("click", () => openScout(state.story.id));
-$("#intro-scout").addEventListener("click", () => openScout(state.story.id));
+$("#viewer-close").addEventListener("click", () => setViewer(false));
+$("#viewer").addEventListener("click", (e) => { if (e.target.id === "viewer") setViewer(false); });
+
+// ---------- Library: every case you've opened, with your notebook ----------
+const fmtWhen = (iso) => new Date(iso).toLocaleString(undefined,
+  { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+async function openLibrary() {
+  const btn = $("#library-open");
+  btn.classList.remove("opening");
+  void btn.offsetWidth;
+  btn.classList.add("opening");
+  openViewer("LIBRARY", "Your cases and notebooks");
+  const data = await api("/api/library");
+  if (data.error) { viewerMessage(data.error); return; }
+  if (!data.games.length) {
+    viewerMessage("Nothing here yet. Every case you open is kept here, with the notebook you wrote.");
+    return;
+  }
+  viewerMessage("Pick a case on the left to read your notebook.");
+  const status = (g) => (g.solved_at ? `solved · ${g.score} pts` : g.notebook ? "unfinished" : "opened");
+  fillViewer(data.games.map((g) => ({
+    ...g,
+    label: g.title,
+    sub: `${g.level} · ${status(g)}${g.room_code ? ` · Stakeout ${g.room_code}` : ""} · ${fmtWhen(g.started_at)}`,
+  })), (g) => {
+    const actions = [];
+    if (g.source === "core" && g.notebook && g.notebook.length) {
+      const again = el("button", "fb-btn", "Open in a new notebook");
+      again.addEventListener("click", async () => {
+        const item = await caseItemById(g.case_id);
+        if (!item) { showToast("That case can't be reopened here."); return; }
+        setViewer(false);
+        state.story = item.story;
+        state.meta = item.meta;
+        state.seedCells = g.notebook;
+        applyTheme(item.story.palette);
+        await beginInvestigation();
+      });
+      actions.push(again);
+    }
+    showNotebook(`${g.title} · ${status(g)}`, g.notebook, actions);
+  });
+}
+$("#library-open").addEventListener("click", openLibrary);
+$("#win-library").addEventListener("click", () => {
+  $("#win-overlay").classList.remove("show");
+  openLibrary();
+});
 
 // ---------------------------------------------------------------------------
 // Weekly Challenge: one case a week, its own board and past winners.
@@ -717,13 +783,46 @@ async function renderWeekly() {
 document.addEventListener("tabchange", (e) => { if (e.detail === "weekly") renderWeekly(); });
 
 // ---------------------------------------------------------------------------
-// Stakeout: friends race the same case. The host opens a room (6-letter
-// code + link), everyone joins, the host starts a shared countdown, and the
-// room board fills up live.
+// Stakeout: friends race the same case. The host opens a room (6-letter code
+// + link) with its rules, everyone joins, the host starts a shared countdown,
+// and the room board fills up live. The server enforces the rules.
 // ---------------------------------------------------------------------------
-let roomUnsub = null;
+let roomLink = null;         // { unsub, send } for the live room channel
 let roomPoll = null;
+let roomClock = null;
 const roomSeen = new Set();
+
+const PRESETS = {
+  casual:   { label: "Casual", blurb: "No clock, hints on, guess as often as you like.",
+              case_mode: "pick", time_limit: 0, win: "score", hints: "on", lives: 0 },
+  race:     { label: "Race", blurb: "First correct verdict wins. 10-minute cap.",
+              case_mode: "pick", time_limit: 10, win: "race", hints: "on", lives: 0 },
+  hardcore: { label: "Hardcore", blurb: "Mystery case, no hints, one guess, 10 minutes.",
+              case_mode: "mystery", time_limit: 10, win: "score", hints: "off", lives: 1 },
+};
+const ROOM_DEFAULTS = { preset: "casual", case_id: null, case_mode: "pick", level: "any", time_limit: 0,
+                        win: "score", hints: "on", hints_after: 3, lives: 0, max_players: 10,
+                        debrief: true, spectators: false, upload_id: null };
+// kept for this browser session only; a new session starts from Casual again
+const ROOM_SETTINGS_KEY = "mld.room.settings";
+function loadRoomSettings() {
+  try { return { ...ROOM_DEFAULTS, ...JSON.parse(sessionStorage.getItem(ROOM_SETTINGS_KEY) || "{}") }; }
+  catch { return { ...ROOM_DEFAULTS }; }
+}
+function saveRoomSettings(s) {
+  try { sessionStorage.setItem(ROOM_SETTINGS_KEY, JSON.stringify(s)); } catch { /* storage unavailable */ }
+}
+function rulesList(s) {
+  return [
+    s.win === "race" ? "first to solve wins" : "best score wins",
+    s.time_limit ? `${s.time_limit} min` : "no time limit",
+    s.hints === "off" ? "no hints" : s.hints === "after" ? `hints after ${s.hints_after} min` : "hints on",
+    s.lives === 1 ? "one guess" : s.lives ? `${s.lives} guesses` : "unlimited guesses",
+    `up to ${s.max_players} players`,
+    ...(s.debrief ? ["debrief"] : []),
+    ...(s.spectators ? ["spectators allowed"] : []),
+  ];
+}
 
 async function caseItemById(id) {
   const { levels } = await api("/api/levels");
@@ -738,13 +837,17 @@ async function renderStakeout() {
   if (state.room) return renderRoom();
   const body = $("#stakeout-body");
   body.innerHTML = "";
+  const s = loadRoomSettings();
+  const [{ levels }, mine] = await Promise.all([api("/api/levels"), api("/api/upload/mine")]);
+  const uploads = (mine && mine.uploads) || [];
+  if (s.case_mode === "upload" && !uploads.length) s.case_mode = "pick";
 
   const grid = el("div", "stakeout-grid");
   const host = el("div", "stakeout-box");
   host.appendChild(el("h3", null, "Start a Stakeout"));
   host.appendChild(el("p", "level-blurb", "Pick a case. You'll get a code to send your friends."));
+
   const pick = el("select", "stakeout-select");
-  const { levels } = await api("/api/levels");
   levels.forEach(({ level, stories }) => {
     const group = el("optgroup");
     group.label = level.toUpperCase();
@@ -755,53 +858,164 @@ async function renderStakeout() {
     });
     pick.appendChild(group);
   });
+  if (s.case_id && [...pick.options].some((o) => o.value === s.case_id)) pick.value = s.case_id;
+
+  // Customize: three presets; Advanced for the individual rules
+  const custom = el("details", "room-customize");
+  custom.appendChild(el("summary", null, "Customize"));
+  const presets = el("div", "preset-row");
+  Object.entries(PRESETS).forEach(([key, p]) => {
+    const b = el("button", "preset-chip");
+    b.type = "button";
+    b.dataset.preset = key;
+    b.append(el("b", null, p.label), el("span", null, p.blurb));
+    b.addEventListener("click", () => {
+      Object.assign(s, { preset: key, case_mode: p.case_mode, time_limit: p.time_limit, win: p.win,
+                         hints: p.hints, lives: p.lives });
+      sync();
+    });
+    presets.appendChild(b);
+  });
+  custom.appendChild(presets);
+
+  const adv = el("details", "room-advanced");
+  adv.appendChild(el("summary", null, "Advanced"));
+  const form = el("div", "adv-grid");
+  const bound = [];   // [control, key] pairs to refresh when a preset changes values
+  const row = (label, control, note) => {
+    const r = el("label", "adv-row");
+    r.append(el("span", "adv-label", label), control);
+    if (note) r.appendChild(el("small", "adv-note", note));
+    form.appendChild(r);
+    return r;
+  };
+  const select = (key, options, asNumber = false) => {
+    const sel = el("select", "adv-select");
+    options.forEach(([v, t]) => { const o = el("option", null, t); o.value = String(v); sel.appendChild(o); });
+    sel.addEventListener("change", () => { s[key] = asNumber ? Number(sel.value) : sel.value; s.preset = "custom"; sync(); });
+    bound.push([sel, key]);
+    return sel;
+  };
+  const toggle = (key) => {
+    const c = el("input");
+    c.type = "checkbox";
+    c.addEventListener("change", () => { s[key] = c.checked; s.preset = "custom"; sync(); });
+    bound.push([c, key]);
+    return c;
+  };
+  row("Case", select("case_mode", [["pick", "A case I pick"], ["random", "Random case"],
+    ["mystery", "Mystery case (revealed at 3-2-1)"], ...(uploads.length ? [["upload", "One of my uploaded cases"]] : [])]));
+  const levelRow = row("Level", select("level", [["any", "Any level"], ["easy", "Easy"], ["normal", "Normal"], ["hard", "Hard"]]));
+  const uploadRow = row("Uploaded case", select("upload_id", uploads.map((u) => [u.id, `${u.title} (${u.level})`])),
+    "Shared with the room by link. It counts on the room board only.");
+  row("Time limit", select("time_limit", [[0, "No limit"], [5, "5 minutes"], [10, "10 minutes"],
+    [15, "15 minutes"], [20, "20 minutes"]], true));
+  row("Winner", select("win", [["score", "Best score when the round ends"], ["race", "First correct verdict (race)"]]));
+  row("Hints", select("hints", [["on", "Sharpen after each wrong guess"], ["after", "Unlock after a few minutes"], ["off", "Off"]]));
+  const afterRow = row("Hints unlock after", select("hints_after", [[1, "1 minute"], [2, "2 minutes"],
+    [3, "3 minutes"], [5, "5 minutes"]], true));
+  row("Guesses", select("lives", [[0, "Unlimited (wrong ones cost points)"], [3, "3 lives"], [1, "One guess"]], true));
+  const maxIn = el("input", "adv-number");
+  maxIn.type = "number"; maxIn.min = "2"; maxIn.max = "10";
+  maxIn.addEventListener("change", () => {
+    s.max_players = Math.min(10, Math.max(2, Math.floor(Number(maxIn.value) || 10)));
+    s.preset = "custom";
+    sync();
+  });
+  bound.push([maxIn, "max_players"]);
+  row("Max players", maxIn);
+  row("Debrief", toggle("debrief"), "When the round ends, players can read each other's notebooks.");
+  row("Spectators", toggle("spectators"), "Watchers see live progress, and each player's code once that player finishes.");
+  adv.appendChild(form);
+  custom.appendChild(adv);
+
+  const rules = el("p", "room-rules");
   const open = el("button", "brut-btn small", "Open a room");
   const hostMsg = el("p", "admin-msg");
+
+  function sync() {
+    if (s.case_mode === "upload" && !s.upload_id && uploads[0]) s.upload_id = uploads[0].id;
+    bound.forEach(([c, key]) => { if (c.type === "checkbox") c.checked = !!s[key]; else c.value = String(s[key] ?? ""); });
+    presets.querySelectorAll(".preset-chip").forEach((b) => b.classList.toggle("on", b.dataset.preset === s.preset));
+    pick.hidden = s.case_mode !== "pick";
+    levelRow.hidden = !(s.case_mode === "random" || s.case_mode === "mystery");
+    uploadRow.hidden = s.case_mode !== "upload";
+    afterRow.hidden = s.hints !== "after";
+    s.case_id = pick.value;
+    const name = PRESETS[s.preset] ? PRESETS[s.preset].label : "Custom";
+    rules.textContent = `${name} · ${rulesList(s).join(" · ")}`;
+    saveRoomSettings(s);
+  }
+  pick.addEventListener("change", sync);
+
   open.addEventListener("click", async () => {
     open.disabled = true;
-    const r = await api("/api/rooms/create", { case_id: pick.value });
+    hostMsg.textContent = s.case_mode === "upload" ? "Sharing your case with the room…" : "";
+    const settings = { ...s };
+    delete settings.case_id;
+    const r = await api("/api/rooms/create", { settings, case_id: s.case_mode === "pick" ? pick.value : null });
     open.disabled = false;
     if (r.error) { hostMsg.textContent = r.error; return; }
+    hostMsg.textContent = "";
     enterRoom(r.code);
   });
-  host.append(pick, open, hostMsg);
+  host.append(pick, custom, rules, open, hostMsg);
+  sync();
 
   const join = el("form", "stakeout-box");
   join.appendChild(el("h3", null, "Join with a code"));
   join.appendChild(el("p", "level-blurb", "Got a code from a friend? Type it in."));
   const code = el("input", "stakeout-code-input");
   code.maxLength = 6; code.placeholder = "K7Q2XM"; code.autocomplete = "off"; code.spellcheck = false;
+  const watchBox = el("label", "watch-toggle");
+  const watch = el("input");
+  watch.type = "checkbox";
+  watchBox.append(watch, document.createTextNode(" Just watch (if the room allows spectators)"));
   const go = el("button", "brut-btn small", "Join");
   go.type = "submit";
   const joinMsg = el("p", "admin-msg");
-  join.addEventListener("submit", (e) => { e.preventDefault(); enterRoom(code.value, joinMsg); });
-  join.append(code, go, joinMsg);
+  join.addEventListener("submit", (e) => { e.preventDefault(); enterRoom(code.value, joinMsg, { watch: watch.checked }); });
+  join.append(code, watchBox, go, joinMsg);
 
   grid.append(host, join);
   body.appendChild(grid);
 }
 
-async function enterRoom(rawCode, msgEl) {
+function roomFromRow(room, me, extra = {}) {
+  return {
+    code: room.code, case_id: room.case_id, status: room.status, starts_at: room.starts_at, ends_at: room.ends_at,
+    settings: { ...ROOM_DEFAULTS, ...(room.settings || {}) }, host: room.host_id === me,
+    title: room.cases ? room.cases.title : null, level: room.cases ? room.cases.level : null,
+    winner: room.winner ? room.winner.name : null, people: [], progress: {}, ...extra,
+  };
+}
+
+async function enterRoom(rawCode, msgEl, { watch = false } = {}) {
   const code = String(rawCode || "").trim().toUpperCase();
-  const r = await api("/api/rooms/get", { code });
-  if (r.error) {
-    if (msgEl) msgEl.textContent = r.error; else showToast(r.error);
-    return;
+  const say = (text) => { if (msgEl) msgEl.textContent = text; else showToast(text); };
+  if (watch) {
+    const w = await api("/api/rooms/spectate", { code });
+    if (w.error) { say(w.error); return; }
   }
+  const r = await api("/api/rooms/get", { code });
+  if (r.error) { say(r.error); return; }
   leaveRoom(false);
-  const { room, me } = r;
-  state.room = { code, case_id: room.case_id, status: room.status, starts_at: room.starts_at,
-                 host: room.host_id === me, title: room.cases.title, level: room.cases.level, people: [] };
+  state.room = roomFromRow(r.room, r.me, { watch });
   selectTab("stakeout");
-  history.replaceState(null, "", `#stakeout/${code}`);
+  history.replaceState(null, "", `#stakeout/${code}${watch ? "/watch" : ""}`);
   renderRoom();
 
-  roomUnsub = await watchRoom(code, state.name || "detective", {
-    onRoom: (row) => {
-      const was = state.room && state.room.status;
-      if (!state.room) return;
-      Object.assign(state.room, { status: row.status, starts_at: row.starts_at });
-      if (was !== "running" && row.status === "running") startCountdown(row.starts_at);
+  roomLink = await watchRoom(code, { name: state.name || "detective", watch }, {
+    onRoom: async (row) => {
+      if (!state.room || state.room.code !== code) return;
+      const was = state.room.status;
+      const fresh = await api("/api/rooms/get", { code });      // joined names (case, winner)
+      if (!state.room || fresh.error) return;
+      Object.assign(state.room, roomFromRow(fresh.room, fresh.me, {
+        watch: state.room.watch, people: state.room.people, progress: state.room.progress,
+      }));
+      if (was === "lobby" && row.status === "running" && !state.room.watch) startCountdown(row.starts_at);
+      if (row.status === "done" && was !== "done") roundOver();
       renderRoom();
     },
     onPeople: (people) => {
@@ -809,22 +1023,80 @@ async function enterRoom(rawCode, msgEl) {
       state.room.people = people;
       renderRoom();
     },
+    onProgress: (p) => {
+      if (!state.room) return;
+      state.room.progress[p.id] = p;
+      renderRoomProgress();
+    },
   });
   pollRoomBoard();
   roomPoll = setInterval(pollRoomBoard, 3000);
+  clearInterval(roomClock);
+  roomClock = setInterval(tickRoomClock, 1000);
 }
 
 function leaveRoom(rerender = true) {
-  if (roomUnsub) roomUnsub();
-  roomUnsub = null;
+  if (roomLink) roomLink.unsub();
+  roomLink = null;
   clearInterval(roomPoll);
-  roomPoll = null;
+  clearInterval(roomClock);
+  roomPoll = roomClock = null;
   roomSeen.clear();
   state.room = null;
+  state.roomGame = null;
   if (rerender) {
     history.replaceState(null, "", "#stakeout");
     renderStakeout();
   }
+}
+
+const inRoomGame = () => !!(state.room && state.roomGame && state.roomGame === state.room.code);
+
+// players tell the room how they're doing (cells run, guesses, status)
+function sendProgress(status) {
+  if (!inRoomGame() || !roomLink) return;
+  roomLink.send({ name: state.name, steps: Number($("#steps").textContent) || 0,
+                  tries: Number($("#attempts").textContent) || 0, status });
+}
+
+function fmtClock(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+function tickRoomClock() {
+  const room = state.room;
+  if (!room || room.status !== "running" || !room.ends_at) return;
+  const left = Date.parse(room.ends_at) - Date.now();
+  document.querySelectorAll(".room-left").forEach((n) => { n.textContent = fmtClock(left); });
+  if (inRoomGame()) $("#room-left").textContent = fmtClock(left);
+  if (left <= 0) {
+    room.status = "done";
+    roundOver();
+    renderRoom();
+  }
+}
+
+// the round ended (clock, race winner, or the host): lock your verdict, keep your notebook
+function roundOver() {
+  const room = state.room;
+  if (!room || room.overShown) return;
+  room.overShown = true;
+  if (inRoomGame() && !state.solved) {
+    lockVerdict("This round is over.");
+    api("/api/save");
+    sendProgress("out");
+  }
+  if (!room.watch) {
+    const who = room.winner ? `${room.winner} solved it first.` : "Round over.";
+    showToast(room.settings.debrief ? `${who} The debrief is open in the Stakeout tab.` : who);
+  }
+}
+
+function lockVerdict(reason) {
+  $("#answer-box").disabled = true;
+  $("#submit-btn").disabled = true;
+  $("#answer-box").placeholder = reason;
 }
 
 let roomBoardRows = [];
@@ -849,10 +1121,30 @@ async function pollRoomBoard() {
   }
 }
 
+function renderRoomProgress() {
+  const box = $("#room-progress");
+  if (!box || !state.room) return;
+  box.innerHTML = "";
+  const rows = Object.values(state.room.progress);
+  if (!rows.length) { box.appendChild(el("p", "board-empty", "No one has started yet.")); return; }
+  const t = el("table", "progress-table");
+  const head = el("tr");
+  ["Detective", "Cells run", "Guesses", ""].forEach((h) => head.appendChild(el("th", null, h)));
+  t.appendChild(head);
+  rows.forEach((p) => {
+    const tr = el("tr");
+    const status = p.status === "solved" ? "✓ solved" : p.status === "out" ? "finished" : "investigating…";
+    [p.name, p.steps, p.tries, status].forEach((v) => tr.appendChild(el("td", null, String(v))));
+    t.appendChild(tr);
+  });
+  box.appendChild(t);
+}
+
 function renderRoom() {
   const body = $("#stakeout-body");
   if (!state.room || !body) return;
   const room = state.room;
+  const s = room.settings;
   body.innerHTML = "";
 
   const head = el("div", "room-head");
@@ -861,24 +1153,45 @@ function renderRoom() {
   const link = `${location.origin}${location.pathname}#stakeout/${room.code}`;
   const copy = el("button", "fb-btn", "Copy invite link");
   copy.addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(link); copy.textContent = "Copied"; }
-    catch { copy.textContent = link; }
+    try { await navigator.clipboard.writeText(link); copy.textContent = "Copied"; } catch { copy.textContent = link; }
   });
   const leave = el("button", "fb-btn ghost", "Leave room");
   leave.addEventListener("click", () => leaveRoom());
   const info = el("div", "room-info");
-  info.append(el("div", "weekly-kicker", `${room.level.toUpperCase()} CASE`), el("h3", null, room.title));
-  head.append(codeBox, info, copy, leave);
+  const caseLabel = room.title || (s.case_mode === "mystery" ? "Mystery case" : s.case_mode === "random" ? "Random case"
+    : s.case_mode === "upload" ? "An uploaded case" : "A case");
+  const levelLabel = room.level || (s.level !== "any" ? s.level : "any level");
+  info.append(el("div", "weekly-kicker", `${levelLabel.toUpperCase()} · ${room.watch ? "WATCHING" : "STAKEOUT"}`),
+              el("h3", null, room.status === "lobby" && s.case_mode === "mystery" ? "Mystery case" : caseLabel));
+  head.append(codeBox, info, copy);
+  if (s.spectators) {
+    const watchCopy = el("button", "fb-btn ghost", "Copy watch link");
+    watchCopy.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(`${link}/watch`); watchCopy.textContent = "Copied"; }
+      catch { watchCopy.textContent = `${link}/watch`; }
+    });
+    head.appendChild(watchCopy);
+  }
+  head.appendChild(leave);
   body.appendChild(head);
 
+  const rules = el("div", "room-rule-chips");
+  rulesList(s).forEach((r) => rules.appendChild(el("span", "rule-chip", r)));
+  body.appendChild(rules);
+
   const people = el("div", "room-people");
-  people.appendChild(el("span", "weekly-kicker", `${room.people.length || 1} IN THE ROOM`));
-  (room.people.length ? room.people : [{ name: state.name }]).forEach((p) => people.appendChild(el("span", "room-chip", p.name)));
+  const players = room.people.filter((p) => !p.watch);
+  const watchers = room.people.length - players.length;
+  people.appendChild(el("span", "weekly-kicker",
+    `${players.length || 1} IN THE ROOM${watchers ? ` · ${watchers} WATCHING` : ""}`));
+  (players.length ? players : [{ name: state.name }]).forEach((p) => people.appendChild(el("span", "room-chip", p.name)));
   body.appendChild(people);
 
   const action = el("div", "room-action");
   if (room.status === "lobby") {
-    if (room.host) {
+    if (room.watch) {
+      action.appendChild(el("p", "level-blurb", "You're watching. The round starts when the host is ready."));
+    } else if (room.host) {
       const start = el("button", "brut-btn", "Start the Stakeout");
       start.addEventListener("click", async () => {
         start.disabled = true;
@@ -889,18 +1202,61 @@ function renderRoom() {
     } else {
       action.appendChild(el("p", "level-blurb", "Waiting for the host to start. The case opens for everyone at once."));
     }
+  } else if (room.status === "running") {
+    if (room.ends_at) action.appendChild(el("p", "room-clock", "")).append("Time left ", el("b", "room-left", fmtClock(Date.parse(room.ends_at) - Date.now())));
+    if (room.watch) {
+      action.appendChild(el("p", "level-blurb", "The Stakeout is on. Finished players' notebooks open below as they finish."));
+    } else {
+      const openCase = el("button", "brut-btn", state.solvedIds && state.solvedIds.has(room.case_id) ? "Open the case again" : "Open the case");
+      openCase.addEventListener("click", () => openRoomCase());
+      action.append(el("p", "level-blurb", "The Stakeout is on."), openCase);
+    }
+    if (room.host) {
+      const end = el("button", "fb-btn ghost", "End the round");
+      end.addEventListener("click", async () => {
+        end.disabled = true;
+        const r = await api("/api/rooms/end", { code: room.code });
+        if (r.error) { end.disabled = false; showToast(r.error); }
+      });
+      action.appendChild(end);
+    }
   } else {
-    const openCase = el("button", "brut-btn", state.solvedIds && state.solvedIds.has(room.case_id) ? "Open the case again" : "Open the case");
-    openCase.addEventListener("click", () => openRoomCase());
-    action.append(el("p", "level-blurb", "The Stakeout is on."), openCase);
+    action.appendChild(el("p", "room-over", room.winner ? `Round over. ${room.winner} solved it first.` : "Round over."));
+  }
+  const canRead = (room.watch && room.status !== "lobby") || (room.status === "done" && s.debrief && !room.watch);
+  if (canRead) {
+    const read = el("button", "brut-btn small", room.watch ? "Read finished players' notebooks" : "Debrief: read everyone's notebooks");
+    read.addEventListener("click", () => openRoomNotebooks(room.code));
+    action.appendChild(read);
   }
   body.appendChild(action);
+
+  if (room.watch) {
+    body.appendChild(el("h3", "weekly-past-head", "LIVE PROGRESS"));
+    const progress = el("div", null);
+    progress.id = "room-progress";
+    body.appendChild(progress);
+    renderRoomProgress();
+  }
 
   body.appendChild(el("h3", "weekly-past-head", "ROOM BOARD"));
   const board = el("div", null);
   board.id = "room-board";
   board.appendChild(roomBoardRows.length ? boardTable(roomBoardRows) : el("p", "board-empty", "No one has closed it yet."));
   body.appendChild(board);
+}
+
+async function openRoomNotebooks(code) {
+  openViewer(state.room && state.room.watch ? "WATCHING" : "DEBRIEF", "How everyone worked it");
+  const data = await api("/api/rooms/notebooks", { code });
+  if (data.error) { viewerMessage(data.error); return; }
+  if (!data.notebooks.length) { viewerMessage("No notebooks to show yet. They appear as players finish."); return; }
+  viewerMessage("Pick a detective on the left to read their notebook.");
+  fillViewer(data.notebooks.map((n) => ({
+    ...n,
+    label: n.player,
+    sub: n.solved ? `solved · ${n.score} pts · ${fmtTime(n.elapsed_seconds)}` : `didn't solve · ${n.attempts} ${n.attempts === 1 ? "guess" : "guesses"}`,
+  })), (n) => showNotebook(`${n.player}'s notebook`, n.notebook));
 }
 
 function startCountdown(startsAt) {
@@ -922,8 +1278,14 @@ function startCountdown(startsAt) {
 }
 
 async function openRoomCase() {
-  if (!state.room) return;
-  const item = await caseItemById(state.room.case_id);
+  if (!state.room || state.room.watch) return;
+  let item = state.room.case_id ? await caseItemById(state.room.case_id) : null;
+  if (!item && state.room.case_id && state.room.case_id.startsWith("pack_")) {
+    showToast("Opening the host's case…");
+    const r = await api("/api/rooms/pack", { pack_code: state.room.settings.pack_code, case_id: state.room.case_id });
+    if (r.error) { showToast(r.error); return; }
+    item = r.item;
+  }
   if (!item) { showToast("That case isn't in this version of the site."); return; }
   state.story = item.story;
   state.meta = item.meta;
@@ -1092,7 +1454,7 @@ selectTab(location.hash.slice(1));
 // ---------------------------------------------------------------------------
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    setScout(false);
+    setViewer(false);
     setDrawer(false);
     setNotes(false);
     setFeedback(false);
