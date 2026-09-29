@@ -1409,3 +1409,60 @@ textarea.code {
   z-index: 100;
   transform: translateX(-50%);
 }
+
+/* ===================================================================
+   Notebook margin doodles: hand-drawn in the case's accent ink.
+   Decoration only; shown where the margins are wide enough.
+   =================================================================== */
+@font-face {
+  font-family: "Caveat";
+  src: url("../fonts/caveat-600.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+.scratch { display: none; }
+@media (min-width: 1400px) and (min-height: 640px) {
+  .scratch {
+    display: block;
+    position: absolute;
+    inset: 90px 0 0 0;
+    pointer-events: none;
+    z-index: 0;
+    color: var(--s-accent);
+  }
+  .ide-main { position: relative; z-index: 1; }
+}
+.scratch svg { position: absolute; top: 20px; width: 240px; height: 640px; overflow: visible; }
+.scratch-left { left: 104px; }
+.scratch-right { right: 78px; }
+.scratch path {
+  stroke: currentColor;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .85;
+}
+.scratch path.dot { stroke-width: 6; }
+.scratch text {
+  fill: currentColor;
+  font-family: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  font-weight: 600;
+  font-size: 44px;
+  opacity: .85;
+}
+.scratch text.big { font-size: 52px; }
+
+/* ink draws itself in each time a case opens */
+@media (prefers-reduced-motion: no-preference) {
+  #ide.active .scratch path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: scratch-draw .55s ease-out var(--d, 0s) forwards;
+  }
+  #ide.active .scratch text {
+    opacity: 0;
+    animation: scratch-write .5s ease-out var(--d, 0s) forwards;
+  }
+}
+@keyframes scratch-draw { to { stroke-dashoffset: 0; } }
+@keyframes scratch-write { from { opacity: 0; } to { opacity: .85; } }
