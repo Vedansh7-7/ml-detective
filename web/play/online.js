@@ -1,5 +1,5 @@
 // Online mode: Supabase session, shared boards, server-checked verdicts,
-// Scout and presence. backend.js falls back to local play if this can't
+// the Library, Stakeout rooms and presence. backend.js falls back to local play if this can't
 // connect (offline, or guest sign-in unavailable).
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm";
 import { captchaToken } from "./captcha.js";
@@ -86,10 +86,26 @@ export async function mySolvedCases() {
   return [...new Set(data.map((r) => r.case_id))];
 }
 
-export async function scout(caseId) {
-  const { data, error } = await sb.rpc("scout", { p_case: caseId });
+// Library: this player's own past games (solved or not) with their notebooks
+export async function library() {
+  const { data, error } = await sb.rpc("my_library");
   if (error) throw error;
   return data;
+}
+
+// save an unsolved game's notebook for the Library; `keepalive` lets it
+// finish while the tab is closing
+export async function saveNotebook(gameId, notebook, { keepalive = false } = {}) {
+  if (!keepalive) return callGame({ action: "save_notebook", game_id: gameId, notebook });
+  const { data } = await sb.auth.getSession();
+  if (!data.session) return null;
+  return fetch(`${SUPABASE_URL}/functions/v1/game`, {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY,
+               Authorization: `Bearer ${data.session.access_token}` },
+    body: JSON.stringify({ action: "save_notebook", game_id: gameId, notebook }),
+  }).catch(() => null);
 }
 
 export async function sendFeedback(row) {
@@ -111,36 +127,37 @@ export async function weeks() {
 }
 
 // ---------- Stakeout rooms ----------
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // no 0/O or 1/I to misread
-const newCode = () => Array.from(crypto.getRandomValues(new Uint32Array(6)),
-  (n) => CODE_ALPHABET[n % CODE_ALPHABET.length]).join("");
-
-export async function createRoom(caseId) {
-  for (let tries = 0; tries < 5; tries++) {
-    const code = newCode();
-    const { error } = await sb.from("rooms").insert({ code, host_id: user.id, case_id: caseId });
-    if (!error) return code;
-    if (error.code !== "23505") throw error;         // anything but a code collision
-  }
-  throw new Error("couldn't open a room, try again");
+// Rooms are opened, started and ended by the `game` function, which checks
+// the settings and enforces them; the browser only reads and listens.
+async function roomCall(payload) {
+  const r = await callGame(payload);
+  if (r && r.error) throw new Error(r.error);
+  return r;
 }
+export const createRoom = (settings, caseId) => roomCall({ action: "create_room", settings, case_id: caseId }).then((r) => r.code);
+export const startRoom = (code) => roomCall({ action: "start_room", code });
+export const endRoom = (code) => roomCall({ action: "end_room", code });
+export const spectate = (code) => roomCall({ action: "spectate", code });
 
 export async function getRoom(code) {
-  const { data, error } = await sb.from("rooms").select("code, host_id, case_id, status, starts_at, cases(title, level)")
+  const { data, error } = await sb.from("rooms")
+    .select("code, host_id, case_id, status, starts_at, ends_at, settings, winner_id, cases(title, level), winner:players!rooms_winner_id_fkey(name)")
     .eq("code", code.toUpperCase()).maybeSingle();
   if (error) throw error;
   return data;
 }
 
-export async function startRoom(code, delaySeconds = 5) {
-  const startsAt = new Date(Date.now() + delaySeconds * 1000).toISOString();
-  const { error } = await sb.from("rooms").update({ status: "running", starts_at: startsAt }).eq("code", code);
+// notebooks a debrief or a spectator may read (the database decides which)
+export async function roomNotebooks(code) {
+  const { data, error } = await sb.rpc("room_notebooks", { p_code: code });
   if (error) throw error;
+  return data;
 }
 
-// live room: row changes (lobby -> running) + who's in it (presence)
-export function watchRoom(code, name, { onRoom, onPeople }) {
-  const channel = sb.channel(`room:${code}`, { config: { presence: { key: user.id } } });
+// live room: row changes (lobby -> running -> done), who's in it (presence),
+// and players' progress (broadcast: cells run, guesses, status)
+export function watchRoom(code, me, { onRoom, onPeople, onProgress }) {
+  const channel = sb.channel(`room:${code}`, { config: { presence: { key: user.id }, broadcast: { self: false } } });
   channel
     .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `code=eq.${code}` },
         (payload) => onRoom(payload.new))
@@ -148,13 +165,19 @@ export function watchRoom(code, name, { onRoom, onPeople }) {
       const people = Object.values(channel.presenceState()).map((metas) => metas[0]);
       onPeople(people);
     })
+    .on("broadcast", { event: "progress" }, ({ payload }) => onProgress && onProgress(payload))
     .subscribe((status) => {
-      if (status === "SUBSCRIBED") channel.track({ name, id: user.id });
+      if (status === "SUBSCRIBED") channel.track({ ...me, id: user.id });
     });
-  return () => sb.removeChannel(channel);
+  return {
+    unsub: () => sb.removeChannel(channel),
+    send: (progress) => channel.send({ type: "broadcast", event: "progress", payload: { ...progress, id: user.id } }),
+  };
 }
 
 // ---------- Upload: share a pack by link ----------
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // no 0/O or 1/I to misread
+
 export async function sharePack(pack) {
   for (let tries = 0; tries < 5; tries++) {
     const code = Array.from(crypto.getRandomValues(new Uint32Array(8)),

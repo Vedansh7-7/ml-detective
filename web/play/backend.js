@@ -87,7 +87,7 @@ function newGame(item) {
     item, level: item.level, verdict: null, gameId: null, csv: null,
     startTime: Date.now(), steps: 0, attempts: 0, solved: false,
     cells: new Set(), errored: new Set(), runtime: 0,
-    notebook: new Map(),      // cellId -> latest code run in that cell (for Scout)
+    notebook: new Map(),      // cellId -> latest code run in that cell (for the Library)
   };
 }
 
@@ -128,6 +128,7 @@ const routes = {
     : { online: 1, results: rankedLocal(), now: Date.now() / 1000 }),
 
   "/api/start": async ({ story_id, room_code }) => {
+    await saveCurrent();            // leaving an unsolved game: keep its notebook for the Library
     const item = await findCase(story_id);
     if (!item) return { error: `unknown story '${story_id}'` };
     const csv = item.csv ?? await fetch(item.csvUrl ?? `${CASES}/${story_id}/data.csv`).then((r) => {
@@ -186,12 +187,26 @@ const routes = {
     return { ...out, steps: game.steps };
   },
 
-  "/api/submit": async ({ answer, share }) => {
+  "/api/submit": async ({ answer }) => {
     if (!game) return { error: "no active game -- open a case first" };
     if (game.solved) return { error: "already solved -- start a new case" };
     const text = String(answer || "").trim();
     if (game.custom) return submitCustom(text);
-    return online ? submitOnline(text, share) : submitLocal(text);
+    return online ? submitOnline(text) : submitLocal(text);
+  },
+
+  // keep the open (unsolved) game's notebook for the Library
+  "/api/save": async () => {
+    await saveCurrent();
+    return { ok: true };
+  },
+
+  // ---------- Library: your own past games ----------
+  "/api/library": async () => {
+    await ready;
+    if (!online) return { error: "The Library needs the online archive -- you're playing offline right now." };
+    await saveCurrent();
+    return { games: await online.library() };
   },
 
   // ---------- Weekly Challenge ----------
@@ -262,10 +277,21 @@ const routes = {
   },
 
   // ---------- Stakeout ----------
-  "/api/rooms/create": async ({ case_id }) => {
+  "/api/rooms/create": async ({ settings, case_id }) => {
     await ready;
     if (!online) return { error: "Stakeout needs the online archive -- you're playing offline right now." };
-    return { code: await online.createRoom(case_id) };
+    let packCode = null;
+    if (settings.case_mode === "upload") {
+      const saved = readJSON(STORE_UPLOADS, []).find((u) => u.id === settings.upload_id);
+      if (!saved) return { error: "pick one of your uploaded cases" };
+      const { processPack } = await import("./packlab.js");
+      const res = await processPack(saved.text, engine);
+      if (res.errors.length) return { error: res.errors[0] };
+      packCode = await online.sharePack(res.pack);       // everyone in the room opens the same pack
+    }
+    const clean = { ...settings, pack_code: packCode };
+    delete clean.upload_id;
+    return { code: await online.createRoom(clean, case_id) };
   },
   "/api/rooms/get": async ({ code }) => {
     await ready;
@@ -274,10 +300,14 @@ const routes = {
     if (!room) return { error: "No Stakeout with that code. Check it with the host." };
     return { room, me: online.currentUser().id };
   },
-  "/api/rooms/start": async ({ code }) => {
-    await online.startRoom(code);
-    return { ok: true };
+  "/api/rooms/start": async ({ code }) => online.startRoom(code),
+  "/api/rooms/end": async ({ code }) => online.endRoom(code),
+  "/api/rooms/spectate": async ({ code }) => {
+    await ready;
+    if (!online) return { error: "Stakeout needs the online archive -- you're playing offline right now." };
+    return online.spectate(code);
   },
+  "/api/rooms/notebooks": async ({ code }) => ({ notebooks: await online.roomNotebooks(code) }),
   "/api/rooms/board": async ({ code }) => {
     const rows = await online.boardRows({ roomCode: code, source: null });
     if (!rows.length) return { results: [] };
@@ -286,24 +316,24 @@ const routes = {
     const par = parFor(rows[0].level, all, rows[0].par);
     return { results: rank(rows, () => par) };
   },
+  // a room playing an uploaded case: open the shared pack as that room's case
+  "/api/rooms/pack": async ({ pack_code, case_id }, onStep) => {
+    const pack = await online.getPack(pack_code);
+    if (!pack) return { error: "The host's uploaded case couldn't be opened." };
+    const { processPack } = await import("./packlab.js");
+    const res = await processPack(JSON.stringify(pack), engine, onStep);
+    if (res.errors.length) return { error: res.errors[0] };
+    const c = res.case;
+    const item = { level: c.story.level, story: { ...c.story, id: case_id, doodle: c.svg }, meta: c.meta, csv: res.csv };
+    registerCase(item);                                   // not `custom`: verdicts go through the server
+    return { item };
+  },
 
-  // the cases *this* player has closed (for SOLVED stamps and Scout access)
+  // the cases *this* player has closed (for SOLVED stamps)
   "/api/mine": async () => {
     await ready;
     if (online) return { solved: await online.mySolvedCases() };
     return { solved: [...new Set(readJSON(STORE_SOLVES, []).map((s) => s.dataset_id))] };
-  },
-
-  "/api/scout": async ({ case_id }) => {
-    await ready;
-    if (!online) return { error: "Scout needs the online archive -- you're playing offline right now." };
-    // re-score on the same (possibly learned) par the board uses, so the numbers match
-    const [solves, forCase] = await Promise.all([online.scout(case_id), online.boardRows({ caseIds: [case_id] })]);
-    if (!forCase.length) return { solves };
-    const par = parFor(forCase[0].level, forCase, forCase[0].par);
-    const rescored = solves.map((s) => ({ ...s, score: score(statsOf(s), par) }));
-    rescored.sort((x, y) => y.score - x.score);
-    return { solves: rescored };
   },
 
   "/api/feedback": async ({ text, rating }) => {
@@ -321,12 +351,11 @@ const routes = {
   },
 };
 
-async function submitOnline(text, share) {
+async function submitOnline(text) {
   const res = await online.callGame({
     action: "verdict",
     game_id: game.gameId,
     answer: text,
-    share: share !== false,
     notebook: [...game.notebook.values()],
     stats: {
       steps: game.steps,
@@ -413,11 +442,19 @@ async function submitLocal(text) {
   return { correct: false, attempts: game.attempts, hint: hints[Math.min(game.attempts, hints.length) - 1] };
 }
 
-// live Stakeout room (realtime row changes + presence); returns an unsubscribe
-export async function watchRoom(code, name, handlers) {
+// live Stakeout room (realtime row changes, presence, progress); returns { unsub, send }
+export async function watchRoom(code, me, handlers) {
   await ready;
-  return online ? online.watchRoom(code, name, handlers) : () => {};
+  return online ? online.watchRoom(code, me, handlers) : { unsub: () => {}, send: () => {} };
 }
+
+// the open game's notebook, saved once when you leave it unsolved
+async function saveCurrent({ keepalive = false } = {}) {
+  if (!online || !game || !game.gameId || game.solved || !game.notebook.size || game.savedSteps === game.steps) return;
+  game.savedSteps = game.steps;
+  await online.saveNotebook(game.gameId, [...game.notebook.values()], { keepalive });
+}
+addEventListener("pagehide", () => { saveCurrent({ keepalive: true }); });
 
 export async function api(path, body, onStep) {
   const route = routes[path];

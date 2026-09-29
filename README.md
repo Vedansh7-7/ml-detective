@@ -22,8 +22,8 @@ Online features use Supabase:
 
 - **Cases** with a shared, ranked board. Verdicts are checked and games timed by the `game` edge function; answers never reach the browser.
 - **Weekly Challenge:** a new case each week with its own board. The admin drops it from the Weekly tab (validated in the browser with the same checks as `story_ingest.py`).
-- **Stakeout:** race friends on the same case with a room code and a live board.
-- **Scout:** after you close a case, read how other detectives cracked it.
+- **Stakeout:** race friends on the same case with a room code and a live board. The host picks the rules (Casual, Race, Hardcore, or custom: mystery case, time limit, hints, guesses, debrief, spectators); the `game` function enforces them.
+- **Library:** every case you've opened, with your notebook, solved or not.
 - **Upload:** write your own case with the master prompt, play it privately or share a link.
 
 Without the backend the game still plays, with a per-browser board.
