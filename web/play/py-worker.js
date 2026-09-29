@@ -55,6 +55,8 @@ json.dumps({"shape": list(_df.shape)})`));
   async run({ code, cellName }) {
     // fetch whatever the cell imports (sklearn, scipy, matplotlib...) on first use
     await py.loadPackagesFromImports(code);
+    // pandas plots (df.plot, df.hist, df.boxplot) need matplotlib without importing it
+    if (/\.(plot|hist|boxplot)\b|scatter_matrix/.test(code)) await py.loadPackage("matplotlib");
     if (!seabornInstalled && /\bseaborn\b/.test(code)) {
       await py.runPythonAsync("import micropip\nawait micropip.install('seaborn')");
       seabornInstalled = true;

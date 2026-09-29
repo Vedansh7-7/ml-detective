@@ -4,7 +4,7 @@
 // player's guest session. Everything shown here
 // is also enforced server-side: admin_overview() and the waitlist/feedback
 // reads refuse anyone who isn't in `admins` or hasn't entered the code.
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm";
 import { captchaToken } from "../play/captcha.js";
 import { SUPABASE_KEY, SUPABASE_URL } from "../play/config.js";
 
