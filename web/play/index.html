@@ -157,41 +157,53 @@
     </div>
   </div>
 
-  <!-- margin doodles, drawn in the case's accent ink (decoration only) -->
+  <!-- margin doodles in the case's accent ink (decoration only):
+       two hints pinned to the STORY ribbon and the CASE NOTES tab,
+       and a few faint data-detective sketches -->
   <div class="scratch" aria-hidden="true">
-    <svg class="scratch-left" viewBox="0 0 240 640" fill="none">
-      <!-- curly arrow up to the STORY ribbon + "pull" -->
-      <path pathLength="1" style="--d:.05s" d="M78 196c-34-8-56-40-52-82 3-34 16-62 36-86"/>
-      <path pathLength="1" style="--d:.35s" d="M44 40l18-16 10 24"/>
-      <text x="96" y="70" transform="rotate(-6 96 70)" style="--d:.45s">pull</text>
-      <!-- magnifying glass -->
-      <path pathLength="1" style="--d:.6s" d="M120 186c-2-24 20-42 42-38 20 3 32 22 28 42-4 22-26 34-46 28-14-4-24-17-24-32z"/>
-      <path pathLength="1" style="--d:.85s" d="M180 206c18 10 36 20 52 32"/>
-      <!-- blob face -->
-      <path pathLength="1" style="--d:1s" d="M34 300c-6-18 8-32 24-30 16 1 26 14 22 30-3 14-18 20-30 17-9-2-14-8-16-17z"/>
-      <path pathLength="1" class="dot" style="--d:1.2s" d="M52 290v1M64 292v1"/>
-      <path pathLength="1" style="--d:1.25s" d="M50 306c5 4 11 4 16 0"/>
-      <!-- scratchpad -->
-      <text x="40" y="470" transform="rotate(-38 40 470)" class="big" style="--d:1.35s">scratchpad</text>
-      <!-- circled question mark -->
-      <path pathLength="1" style="--d:1.6s" d="M96 562c-6-26 16-48 40-44 24 3 36 28 28 50-8 20-32 28-50 18-10-6-16-14-18-24z"/>
-      <path pathLength="1" style="--d:1.85s" d="M124 540c2-10 18-12 22-2 3 8-4 13-10 17-3 2-4 6-4 10"/>
-      <path pathLength="1" class="dot" style="--d:2.05s" d="M132 578v1"/>
+    <!-- hint: curve from the caption up into the ribbon's tail -->
+    <svg class="sk sk-hint sk-story" viewBox="0 0 230 130" fill="none">
+      <path pathLength="1" style="--d:.1s" d="M92 94C60 100 30 82 27 36"/>
+      <path pathLength="1" style="--d:.55s" d="M17 47l10-15 11 14"/>
+      <text x="98" y="94" style="--d:.5s">pull me</text>
+      <text x="98" y="120" class="sm" style="--d:.65s">for the story</text>
     </svg>
-    <svg class="scratch-right" viewBox="0 0 240 640" fill="none">
-      <!-- tiny face -->
-      <path pathLength="1" class="dot" style="--d:.1s" d="M34 20v1M48 20v1"/>
-      <path pathLength="1" style="--d:.2s" d="M34 34h16"/>
-      <!-- "#plan" with a hook arrow to the CASE NOTES tab -->
-      <path pathLength="1" style="--d:.4s" d="M96 108l-8 40M114 104l-8 40M80 120l40-4M78 134l40-4"/>
-      <text x="124" y="150" transform="rotate(-8 124 150)" class="big" style="--d:.65s">plan</text>
-      <path pathLength="1" style="--d:.95s" d="M150 186c-4 22 0 34 20 34 22 0 42-12 58-34"/>
-      <path pathLength="1" style="--d:1.2s" d="M210 180l20 4-4 20"/>
-      <!-- smiley -->
-      <path pathLength="1" class="dot" style="--d:1.35s" d="M90 300v1M106 298v1"/>
-      <path pathLength="1" style="--d:1.45s" d="M84 312c6 12 22 14 30 0"/>
-      <!-- star -->
-      <path pathLength="1" style="--d:1.65s" d="M120 520l12 44-38-26h46l-40 28z"/>
+    <!-- hint: curve from the caption across to the sticky-note tab -->
+    <svg class="sk sk-hint sk-notes" viewBox="0 0 230 170" fill="none">
+      <path pathLength="1" style="--d:.4s" d="M128 98C150 72 184 58 224 58"/>
+      <path pathLength="1" style="--d:.85s" d="M211 47l15 11-15 11"/>
+      <text x="12" y="124" style="--d:.8s">case notes</text>
+      <text x="12" y="150" class="sm" style="--d:.95s">clues + your verdict</text>
+    </svg>
+    <!-- a histogram with one bar where no bar should be -->
+    <svg class="sk sk-decor sk-hist" viewBox="0 0 210 150" fill="none">
+      <path pathLength="1" style="--d:1s" d="M10 131c60 1 120-1 190 0M12 131c-1-36 1-72 0-110"/>
+      <path pathLength="1" style="--d:1.15s" d="M20 131V111h14v20M38 131V86h14v45M56 131V51h14v80M74 131V36h14v95M92 131V71h14v60M110 131v-25h14v25M176 131v-17h13v17"/>
+      <path pathLength="1" style="--d:1.6s" d="M166 115c1-17 30-21 36-5 6 14-8 26-22 24-12-2-18-10-14-22"/>
+      <text x="146" y="78" transform="rotate(-8 146 78)" class="sm" style="--d:1.9s">hmm…</text>
+    </svg>
+    <!-- a scatter with a trend, and one point that doesn't belong -->
+    <svg class="sk sk-decor sk-scatter" viewBox="0 0 210 160" fill="none">
+      <path pathLength="1" style="--d:1.2s" d="M12 141c62 1 124-1 188 0M13 141c-1-40 1-84 0-126"/>
+      <path pathLength="1" class="dot" style="--d:1.4s" d="M30 121v1M44 113v1M53 119v1M64 101v1M76 97v1M88 91v1M97 81v1M110 75v1M122 71v1M134 59v1M146 55v1M160 45v1M172 41v1M70 41v1"/>
+      <path pathLength="1" style="--d:1.7s" d="M24 126c50-28 104-56 160-88"/>
+      <path pathLength="1" style="--d:2s" d="M54 39c0-14 22-20 30-8 8 12-4 24-16 22-10-1-14-6-14-14"/>
+      <text x="92" y="30" class="sm" style="--d:2.2s">suspect?</text>
+    </svg>
+    <!-- how a case gets solved -->
+    <svg class="sk sk-decor sk-list" viewBox="0 0 200 150" fill="none">
+      <path pathLength="1" style="--d:1.5s" d="M6 13h17l1 17H7zM6 45h17l-1 17H7zM7 77h16l1 17H6zM6 109h18v17H7z"/>
+      <path pathLength="1" style="--d:1.9s" d="M9 22l5 6 12-16"/>
+      <text x="36" y="29" class="sm" style="--d:1.6s">look</text>
+      <text x="36" y="61" class="sm" style="--d:1.7s">plot</text>
+      <text x="36" y="93" class="sm" style="--d:1.8s">suspect</text>
+      <text x="36" y="125" class="sm" style="--d:1.9s">prove it</text>
+    </svg>
+    <!-- a small magnifying glass -->
+    <svg class="sk sk-decor sk-glass" viewBox="0 0 150 130" fill="none">
+      <path pathLength="1" style="--d:1.3s" d="M22 52c-2-20 16-36 34-34 19 2 30 18 28 36-3 19-21 30-38 27-14-3-23-14-24-29z"/>
+      <path pathLength="1" style="--d:1.6s" d="M78 76c12 10 24 20 36 32"/>
+      <path pathLength="1" style="--d:1.75s" d="M36 44c4-8 10-12 18-12"/>
     </svg>
   </div>
 

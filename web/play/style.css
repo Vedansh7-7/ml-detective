@@ -1411,8 +1411,11 @@ textarea.code {
 }
 
 /* ===================================================================
-   Notebook margin doodles: hand-drawn in the case's accent ink.
-   Decoration only; shown where the margins are wide enough.
+   Notebook margin doodles, in the case's accent ink.
+   Two faint hints pinned to the STORY ribbon (left: 28px, 78px tall)
+   and the CASE NOTES tab (right edge, ~104-236px down), plus fainter
+   data-detective sketches. Decoration only; wide screens only, where
+   the margins are empty.
    =================================================================== */
 @font-face {
   font-family: "Caveat";
@@ -1421,48 +1424,53 @@ textarea.code {
   font-display: swap;
 }
 .scratch { display: none; }
-@media (min-width: 1400px) and (min-height: 640px) {
+@media (min-width: 1480px) and (min-height: 660px) {
   .scratch {
     display: block;
     position: absolute;
-    inset: 90px 0 0 0;
+    inset: 0;
     pointer-events: none;
     z-index: 0;
     color: var(--s-accent);
   }
   .ide-main { position: relative; z-index: 1; }
 }
-.scratch svg { position: absolute; top: 20px; width: 240px; height: 640px; overflow: visible; }
-.scratch-left { left: 104px; }
-.scratch-right { right: 78px; }
-.scratch path {
+.sk { position: absolute; overflow: visible; }
+.sk-story  { left: 24px;  top: 58px;  width: 230px; height: 130px; }
+.sk-notes  { right: 42px; top: 112px; width: 230px; height: 170px; }
+.sk-hist   { left: 44px;  top: 44%;   width: 210px; height: 150px; }
+.sk-glass  { left: 96px;  top: 74%;   width: 150px; height: 130px; }
+.sk-scatter{ right: 70px; top: 42%;   width: 210px; height: 160px; }
+.sk-list   { right: 96px; top: 68%;   width: 200px; height: 150px; }
+
+.sk path {
   stroke: currentColor;
-  stroke-width: 3.2;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: .85;
 }
-.scratch path.dot { stroke-width: 6; }
-.scratch text {
+.sk path.dot { stroke-width: 5; }
+.sk text {
   fill: currentColor;
   font-family: "Caveat", "Segoe Print", "Bradley Hand", cursive;
   font-weight: 600;
-  font-size: 44px;
-  opacity: .85;
+  font-size: 30px;
 }
-.scratch text.big { font-size: 52px; }
+.sk text.sm { font-size: 24px; }
+.sk-hint  { opacity: .5; }   /* readable, but quiet */
+.sk-decor { opacity: .26; }  /* background texture */
 
 /* ink draws itself in each time a case opens */
 @media (prefers-reduced-motion: no-preference) {
-  #ide.active .scratch path {
+  #ide.active .sk path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: scratch-draw .55s ease-out var(--d, 0s) forwards;
+    animation: scratch-draw .6s ease-out var(--d, 0s) forwards;
   }
-  #ide.active .scratch text {
+  #ide.active .sk text {
     opacity: 0;
     animation: scratch-write .5s ease-out var(--d, 0s) forwards;
   }
 }
 @keyframes scratch-draw { to { stroke-dashoffset: 0; } }
-@keyframes scratch-write { from { opacity: 0; } to { opacity: .85; } }
+@keyframes scratch-write { to { opacity: 1; } }
